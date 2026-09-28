@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KI-Werkstatt Predictive Maintenance</title>
+<style>
+:root{
+  --bg:#f6f7f9; --card:#ffffff; --ink:#1c2230; --muted:#5b6475; --line:#dde1e8;
+  --accent:#1f5fbf; --accent-soft:#e6eefb; --ok:#1b8a4b; --ok-soft:#e3f4ea;
+  --warn:#c05a00; --warn-soft:#fdeede; --bad:#b3261e; --bad-soft:#fbe7e6;
+  --cls0:#2f6fd1; --cls1:#e0780f; --zone:rgba(224,120,15,.13);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#12151b; --card:#1b2029; --ink:#e7eaf0; --muted:#9aa3b3; --line:#2d3441;
+    --accent:#6ea2ff; --accent-soft:#1d2b45; --ok:#4cc07f; --ok-soft:#18311f;
+    --warn:#f0a050; --warn-soft:#3a2a17; --bad:#ff7a70; --bad-soft:#3a1c1a;
+    --cls0:#6ea2ff; --cls1:#f0a050; --zone:rgba(240,160,80,.16);
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+.hwrap{max-width:1100px;margin:0 auto;padding:10px 16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.brand{font-weight:700;font-size:1.05rem}
+.brand small{display:block;font-weight:400;color:var(--muted);font-size:.8rem}
+nav{display:flex;flex-wrap:wrap;gap:6px}
+nav button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:6px 10px;border-radius:999px;font:inherit;font-size:.85rem;cursor:pointer}
+nav button.active{background:var(--accent);border-color:var(--accent);color:#fff}
+nav button.done::after{content:" ✓"}
+main{max-width:1100px;margin:0 auto;padding:20px 16px 60px}
+section.station{display:none}
+section.station.active{display:block}
+h1{font-size:1.6rem;margin:.2em 0 .3em}
+h2{font-size:1.2rem;margin:1.4em 0 .5em}
+.lead{color:var(--muted);margin-top:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:14px 0}
+.task{border-left:4px solid var(--accent)}
+.task h3{margin:0 0 6px;font-size:1rem}
+.task h3 .tag{display:inline-block;background:var(--accent-soft);color:var(--accent);border-radius:6px;padding:1px 8px;font-size:.78rem;margin-right:6px;vertical-align:1px}
+.info{border-left:4px solid var(--muted)}
+.story{border-left:4px solid var(--warn);background:var(--warn-soft)}
+.row{display:flex;flex-wrap:wrap;gap:16px}
+.row>*{flex:1 1 300px;min-width:0}
+textarea,input[type=text],input[type=number],select{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+textarea{min-height:84px;resize:vertical}
+button.btn{font:inherit;border:0;border-radius:8px;padding:8px 14px;background:var(--accent);color:#fff;cursor:pointer;margin:8px 8px 0 0}
+button.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+button.btn.small{padding:6px 10px;font-size:.88rem}
+button.btn[disabled]{opacity:.4;cursor:not-allowed}
+.fb{margin-top:10px;padding:10px 12px;border-radius:8px;display:none}
+.fb.show{display:block}
+.fb.ok{background:var(--ok-soft);color:var(--ok)}
+.fb.bad{background:var(--bad-soft);color:var(--bad)}
+.fb.neutral{background:var(--accent-soft);color:var(--ink)}
+.eh{display:none;margin-top:10px;padding:12px;border-radius:8px;background:var(--accent-soft)}
+.eh.show{display:block}
+.eh ul{margin:.3em 0 .3em 1.2em;padding:0}
+.hint{font-size:.85rem;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.chip{border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;user-select:none;background:var(--card)}
+.chip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.chip.good{outline:2px solid var(--ok)}
+.chip.poor{outline:2px dashed var(--bad)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:.88rem;font-variant-numeric:tabular-nums}
+th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th{background:var(--bg);font-weight:600}
+th:first-child,td:first-child{text-align:left}
+table.wrap td,table.wrap th{text-align:left;white-space:normal;vertical-align:top}
+#dataTable td.cell{cursor:pointer}
+#dataTable td.cell:hover{background:var(--accent-soft)}
+#dataTable td.marked{background:var(--warn-soft);outline:2px solid var(--warn);outline-offset:-2px}
+#dataTable td.hit{background:var(--ok-soft);outline:2px solid var(--ok);outline-offset:-2px}
+#dataTable td.miss{background:var(--bad-soft);outline:2px dashed var(--bad);outline-offset:-2px}
+#dataTable td.fp{background:var(--bg);text-decoration:line-through;outline:2px dotted var(--muted);outline-offset:-2px}
+tr.mine td{background:var(--accent-soft)}
+.empty{color:var(--muted);font-style:italic}
+.kpis{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}
+.kpi{flex:1 1 120px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.kpi b{display:block;font-size:1.35rem}
+.kpi span{font-size:.8rem;color:var(--muted)}
+.plotwrap{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px}
+svg text{fill:var(--muted);font-size:12px}
+.slider{margin:10px 0}
+.slider label{display:flex;justify-content:space-between;font-size:.9rem}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:.8rem;background:var(--bg);border:1px solid var(--line);color:var(--muted)}
+.badge.won{background:var(--ok-soft);color:var(--ok);border-color:var(--ok)}
+.tree{display:flex;flex-direction:column;align-items:flex-start;gap:6px;font-size:.9rem}
+.node{border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--bg)}
+.node.q{border-color:var(--accent)}
+.node.leaf1{background:var(--warn-soft);border-color:var(--cls1)}
+.node.leaf0{background:var(--accent-soft);border-color:var(--cls0)}
+.branch{margin-left:22px;padding-left:12px;border-left:2px solid var(--line);display:flex;flex-direction:column;gap:6px}
+.lbl{font-size:.75rem;color:var(--muted)}
+.errlist select{min-width:140px}
+.legend{display:flex;gap:16px;font-size:.85rem;color:var(--muted);flex-wrap:wrap;padding:4px 8px}
+.mini{font-size:.85rem}
+.v-good{color:var(--ok)} .v-ok{color:var(--warn)} .v-bad{color:var(--bad)}
+.seq{display:flex;flex-direction:column;gap:6px;margin:8px 0;min-height:40px;padding:8px;border:1px dashed var(--line);border-radius:10px}
+.seq .chip{border-radius:8px;display:flex;gap:8px;align-items:center}
+.seq .num{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:.8rem;flex:none}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:6px}
+.tile{border:1px solid var(--line);border-radius:8px;padding:5px 7px;font-size:.78rem;background:var(--bg)}
+.tile b{display:block;font-size:.8rem}
+.cm{border-collapse:separate;border-spacing:4px;width:auto}
+.cm td,.cm th{text-align:center;padding:6px 8px;border:0;white-space:normal}
+.cm input{width:70px;text-align:center}
+.cm .cell0{background:var(--ok-soft);border-radius:8px}
+.cm .cell1{background:var(--bad-soft);border-radius:8px}
+.cm small{display:block;color:var(--muted);font-size:.72rem}
+.inline-in{display:inline-block;width:90px}
+footer{max-width:1100px;margin:0 auto;padding:0 16px 30px;color:var(--muted);font-size:.8rem}
+#lz{white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.85rem;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px}
+@media print{
+  header,nav,footer,section.station:not(#s-laufzettel),.noprint{display:none!important}
+  #s-laufzettel{display:block!important}
+  body{background:#fff;color:#000}
+  #lz{border:0}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="hwrap">
+    <div class="brand"><a href="../index.html" style="color:var(--accent);text-decoration:none;font-weight:400;font-size:.8rem">← Kursübersicht KI-Kon</a><br>KI-Werkstatt Predictive Maintenance<small>B 1 · Der KI-Zyklus zum Selbermachen</small></div>
+    <nav id="nav">
+      <button data-go="s-mission">Mission</button>
+      <button data-go="s-daten">① Daten</button>
+      <button data-go="s-regel">② Sei die KI</button>
+      <button data-go="s-train">③ Training</button>
+      <button data-go="s-test">④ Prüfstand</button>
+      <button data-go="s-einsatz">⑤ Einsatz</button>
+      <button data-go="s-zyklus">KI-Zyklus</button>
+      <button data-go="s-laufzettel">Laufzettel</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+<!-- ================= MISSION ================= -->
+<section class="station" id="s-mission">
+  <h1>Mission: Der Förderband-Motor darf nicht mehr ausfallen</h1>
+  <div class="card story">
+    <p><b>Montag, 6:00 Uhr, Halle 3.</b> Das Hauptförderband steht still. Der Antriebsmotor ist ausgefallen, weil das Lager festgelaufen ist. Die Linie steht 9 Stunden, und der Ausfall kostet rund <b>40.000 €</b>.</p>
+    <p>Die Instandhaltungsleiterin sagt: <i>„Wir zeichnen seit Monaten Sensordaten an 160 baugleichen Motoren auf. Baut mir daraus ein System, das uns <b>vorher</b> warnt, dass ein Motor gewartet werden muss.“</i></p>
+    <p>Ihr seid das Entwicklungsteam. Bis zum Ende der Werkstatt habt ihr ein KI-Modell entwickelt, getestet und in Betrieb genommen.</p>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Euer Team</h3>
+    <div class="row">
+      <div><label class="hint">Namen (für den Laufzettel)</label><input type="text" id="teamName" placeholder="z. B. Müller / Schmidt"></div>
+      <div><label class="hint">Rollen: Wechselt an jeder Station!</label>
+        <p class="mini" style="margin:.3em 0"><b>Pilot:</b> bedient die Seite · <b>Navigator:</b> liest vor, begründet, tippt die Antworten</p></div>
+    </div>
+  </div>
+
+  <div class="card task">
+    <h3><span class="tag">Auftrag M1</span>Welche Daten braucht ihr?</h3>
+    <p>Ihr dürft aus Kostengründen <b>höchstens 6</b> Messgrößen dauerhaft am Motor erfassen. Wählt die aus, die am ehesten auf einen bevorstehenden Schaden hinweisen.</p>
+    <div class="chips" id="sensorChips"></div>
+    <p class="hint"><span id="sensorCount">0</span> von 6 gewählt</p>
+    <label class="hint">Begründet eure <b>zwei wichtigsten</b> Messgrößen technisch: Welcher Schaden kündigt sich darin an, und was passiert, wenn niemand reagiert?</label>
+    <textarea id="m1text" data-save="m1text" placeholder="z. B. Vibration, weil …"></textarea>
+    <button class="btn" id="m1check">Mit der Anlage vergleichen</button>
+    <div class="fb" id="m1fb"></div>
+  </div>
+
+  <div class="card info">
+    <b>So funktioniert die Werkstatt</b>
+    <ul class="mini">
+      <li>Ihr arbeitet die Stationen der Reihe nach ab. Den <b>KI-Zyklus</b> setzt ihr erst am Ende aus euren Erfahrungen zusammen.</li>
+      <li>Bei Freitext-Aufgaben gilt: <b>erst schreiben, dann vergleichen.</b> Den Erwartungshorizont könnt ihr erst aufklappen, wenn ihr eine Antwort geschrieben habt.</li>
+      <li>Alle Antworten landen automatisch im <b>Laufzettel</b>. Den gebt ihr am Ende als PDF ab.</li>
+    </ul>
+    <button class="btn" data-next="s-daten">Weiter zu Station ①</button>
+  </div>
+</section>
+
+<!-- ================= STATION 1 ================= -->
+<section class="station" id="s-daten">
+  <h1>① Datendetektive</h1>
+  <p class="lead">Die Instandhaltung hat euch einen Auszug aus den Sensordaten geschickt. Bevor eine KI daraus lernen kann, muss jemand prüfen, ob die Daten überhaupt stimmen.</p>
+
+  <div class="row">
+    <div class="card info">
+      <b>Datenblatt Motor (Hersteller)</b>
+      <table class="mini" style="margin-top:6px">
+        <tr><td>Bauart</td><td>Drehstrom-Asynchronmotor, 4-polig</td></tr>
+        <tr><td>Nennleistung</td><td>4 kW bei 400 V / 50 Hz</td></tr>
+        <tr><td>Nenndrehzahl</td><td>1.450 U/min</td></tr>
+        <tr><td>Nennstrom</td><td>8,5 A</td></tr>
+        <tr><td>Lagertemperatur</td><td>Betrieb 40–85 °C, Abschaltung &gt; 95 °C</td></tr>
+        <tr><td>Schwingstärke</td><td>&lt; 2,8 gut · 2,8–4,5 erhöht · &gt; 4,5 kritisch (mm/s)</td></tr>
+      </table>
+    </div>
+    <div class="card info">
+      <b>Spalten der Tabelle</b>
+      <ul class="mini" style="margin:.4em 0 0 1.1em;padding:0">
+        <li>Lagertemperatur, Vibration, Motorstrom, Drehzahl, Betriebsstunden und Last sind <b>Messwerte</b>.</li>
+        <li><b>Wartung (1/0):</b> Wurde der Motor in den folgenden 2 Wochen tatsächlich wartungsbedürftig? Diese Spalte hat die Instandhaltung <b>nachträglich</b> eingetragen.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card task">
+    <h3><span class="tag">Auftrag 1.1</span>Eingang und Ausgang des Modells</h3>
+    <p>Das KI-Modell ist für euch eine <b>Blackbox</b>. Zieht die Grenze: Welche Spalten gehen hinein, und welche Spalte soll das Modell vorhersagen? Klickt jede Spalte an, bis sie richtig einsortiert ist.</p>
+    <div class="chips" id="ioChips"></div>
+    <p class="hint">Grau = nicht zugeordnet · 1× Klick = Eingang · 2× Klick = Ausgang · 3× Klick = gar nicht verwenden</p>
+    <button class="btn" id="ioCheck">Prüfen</button>
+    <div class="fb" id="ioFb"></div>
+  </div>
+
+  <div class="card task">
+    <h3><span class="tag">Auftrag 1.2</span>Findet die fehlerhaften Werte</h3>
+    <p>In diesem Auszug stecken <b>8 fehlerhafte Zellen</b>. Klickt alle Zellen an, die ihr für fehlerhaft haltet. Nutzt das Datenblatt! Ein zweiter Klick hebt die Markierung wieder auf.</p>
+    <div class="tablewrap"><table id="dataTable"></table></div>
+    <p class="hint">Markiert: <b id="markCount">0</b></p>
+    <button class="btn" id="errCheck">Prüfen</button>
+    <div class="fb" id="errFb"></div>
+  </div>
+
+  <div class="card task" id="errClassCard" style="display:none">
+    <h3><span class="tag">Auftrag 1.3</span>Fehlerart und Maßnahme</h3>
+    <p>Ordnet jedem Fehler eine <b>Fehlerart</b> zu und entscheidet, was mit dem Wert passieren soll. Schaut dabei auch auf die <b>Wartungs-Spalte</b> der Zeile!</p>
+    <div class="tablewrap"><table class="errlist wrap" id="errList"></table></div>
+    <button class="btn" id="classCheck">Prüfen</button>
+    <div class="fb" id="classFb"></div>
+    <h3 style="margin-top:18px">Begründung</h3>
+    <label class="hint">Warum ist es keine gute Idee, <b>jede</b> fehlerhafte Zeile einfach zu löschen? Bezieht euch auf ein konkretes Beispiel aus der Tabelle.</label>
+    <textarea data-save="t13" data-eh="eh13"></textarea>
+    <button class="btn ghost" data-reveal="eh13" disabled>Erwartungshorizont zeigen</button>
+    <div class="eh" id="eh13"><b>Erwartungshorizont</b><ul>
+      <li>Jede gelöschte Zeile ist verlorenes Wissen. Wartungsfälle (1) sind <b>selten</b> (nur etwa jeder fünfte Motor), und genau aus ihnen muss die KI lernen. Beispiel <b>M-014</b>: ein Wartungsfall, bei dem nur die Drehzahl fehlerhaft ist.</li>
+      <li>Oft ist nur <b>ein</b> Wert falsch, die anderen Messwerte der Zeile sind brauchbar. Beispiel <b>M-005</b> und <b>M-012</b>: offensichtliche Stellen- bzw. Kommafehler lassen sich sicher korrigieren.</li>
+      <li>Manche Werte lassen sich aus anderen Messgrößen <b>ableiten</b>. Beispiel <b>M-020</b>: Die Last folgt aus dem Motorstrom.</li>
+      <li>Wird systematisch gelöscht (z. B. immer dann, wenn der Sensor bei Hitze ausfällt), fehlen der KI genau die kritischen Situationen, und der Datensatz wird <b>verzerrt</b>.</li>
+    </ul>
+    <p class="mini"><b>Selbstcheck:</b> Habt ihr (a) den Informationsverlust, (b) die Seltenheit der Wartungsfälle und (c) die Alternativen „korrigieren / aus anderen Größen ableiten“ mit einem Beispiel aus der Tabelle genannt?</p></div>
+  </div>
+
+  <div class="card task">
+    <h3><span class="tag">Auftrag 1.4</span>Schätzfrage</h3>
+    <p>Welcher Anteil der Arbeitszeit in einem KI-Projekt entfällt auf das Sammeln, Prüfen und Aufbereiten der Daten?</p>
+    <div class="slider"><label><span>Eure Schätzung</span><b><span id="estVal">30</span> %</b></label>
+      <input type="range" id="est" min="0" max="100" step="5" value="30"></div>
+    <button class="btn" id="estCheck">Auflösen</button>
+    <div class="fb neutral" id="estFb"></div>
+  </div>
+
+  <button class="btn" data-next="s-regel">Weiter zu Station ②</button>
+</section>
+
+<!-- ================= STATION 2 ================= -->
+<section class="station" id="s-regel">
+  <h1>② Sei selbst die KI</h1>
+  <p class="lead">Die Daten sind bereinigt. Bevor ein Computer lernt, versucht ihr es selbst: Findet eine Regel, die aus Vibration und Lagertemperatur vorhersagt, ob ein Motor gewartet werden muss.</p>
+
+  <div class="row">
+    <div style="flex:2 1 460px">
+      <div class="plotwrap">
+        <div class="legend"><span><svg width="12" height="12"><circle cx="6" cy="6" r="5" fill="var(--cls0)"/></svg> Wartung = 0 (in Ordnung)</span><span><svg width="12" height="12"><polygon points="6,1 11,11 1,11" fill="var(--cls1)"/></svg> Wartung = 1</span><span><svg width="14" height="12"><rect x="1" y="1" width="12" height="10" fill="var(--zone)" stroke="var(--cls1)" stroke-dasharray="3 2"/></svg> Eure Regel sagt „Wartung“</span></div>
+        <svg id="plot" viewBox="0 0 640 420" width="100%" role="img" aria-label="Streudiagramm Vibration gegen Lagertemperatur"></svg>
+      </div>
+      <label class="mini" style="display:block;margin-top:6px"><input type="checkbox" id="showErr"> Falsch vorhergesagte Motoren einkreisen</label>
+    </div>
+    <div class="card" style="flex:1 1 280px;margin-top:0">
+      <b>Eure Regel</b>
+      <select id="ruleMode" style="margin-top:8px">
+        <option value="and">Vibration UND Temperatur über Grenzwert</option>
+        <option value="or">Vibration ODER Temperatur über Grenzwert</option>
+        <option value="vib">nur Vibration über Grenzwert</option>
+        <option value="temp">nur Temperatur über Grenzwert</option>
+      </select>
+      <div class="slider"><label><span>Grenzwert Vibration</span><b><span id="vxVal"></span> mm/s</b></label><input type="range" id="vx" min="1.5" max="6" step="0.1" value="5"></div>
+      <div class="slider"><label><span>Grenzwert Lagertemperatur</span><b><span id="tyVal"></span> °C</b></label><input type="range" id="ty" min="45" max="90" step="1" value="85"></div>
+      <div class="kpis">
+        <div class="kpi"><b id="kAcc">–</b><span>Trefferquote</span></div>
+        <div class="kpi"><b id="kMiss">–</b><span>übersehene Wartungsfälle</span></div>
+        <div class="kpi"><b id="kFA">–</b><span>Fehlalarme</span></div>
+      </div>
+      <p class="hint" style="margin:0"><span id="nInfo"></span></p>
+    </div>
+  </div>
+
+  <div class="card">
+    <b>Eure Regel als Entscheidungsbaum</b>
+    <div class="tree" id="tree" style="margin-top:8px"></div>
+  </div>
+
+  <div class="card task">
+    <h3><span class="tag">Auftrag 2.1</span>Challenge: Trefferquote ≥ 90 % <span class="badge" id="b21">offen</span></h3>
+    <p>Stellt Regel und Grenzwerte so ein, dass mindestens 90 % der 160 Motoren richtig vorhergesagt werden.</p>
+    <p class="mini">Beste Trefferquote bisher: <b id="best">–</b> <span class="hint" id="bestRule"></span></p>
+  </div>
+
+  <div class="card task">
+    <h3><span class="tag">Auftrag 2.2</span>Kein Ausfall darf durchrutschen <span class="badge" id="b22">offen</span></h3>
+    <p>Jetzt ändert sich die Vorgabe: Die Leiterin will, dass <b>kein einziger</b> Wartungsfall übersehen wird. Stellt die Regel so ein, und schaut euch an, was mit den Fehlalarmen passiert.</p>
+    <label class="hint">Was kostet ein übersehener Wartungsfall, was kostet ein Fehlalarm? Welche Einstellung würdet ihr der Leiterin empfehlen? Begründet mit euren Zahlen.</label>
+    <textarea data-save="t22" data-eh="eh22"></textarea>
+    <button class="btn ghost" data-reveal="eh22" disabled>Erwartungshorizont zeigen</button>
+    <div class="eh" id="eh22"><b>Erwartungshorizont</b><ul>
+      <li>Ein <b>übersehener Wartungsfall</b> kann zu einem Ausfall wie am Montag führen (Stillstand, ca. 40.000 €).</li>
+      <li>Ein <b>Fehlalarm</b> kostet eine unnötige Inspektion (Techniker, kurze Stillstandszeit, vielleicht einige Hundert €).</li>
+      <li>Wenn kein Fall übersehen werden darf, steigt die Zahl der Fehlalarme deutlich. Die Trefferquote sinkt dabei, obwohl das Modell für den Betrieb vielleicht <b>besser</b> ist.</li>
+      <li>Die Empfehlung hängt vom Kostenverhältnis ab. Wenige übersehene Fälle sind meist wichtiger als eine hohe Trefferquote. Außerdem gilt: Zu viele Fehlalarme führen dazu, dass die Warnungen ignoriert werden.</li>
+    </ul>
+    <p class="mini"><b>Selbstcheck:</b> Habt ihr beide Fehlerarten mit Kosten bewertet und eure konkreten Zahlen (übersehen / Fehlalarme) genannt?</p></div>
+  </div>
+
+  <div class="card task">
+    <h3><span class="tag">Auftrag 2.3</span>Was habt ihr gerade gemacht?</h3>
+    <label class="hint">Ihr habt aus Daten eine Entscheidungsregel abgeleitet. Was müsste ein Computer tun, um das <b>ohne euch</b> zu schaffen? Beschreibt es in 2–3 Sätzen, ohne Fachbegriffe.</label>
+    <textarea data-save="t23" data-eh="eh23"></textarea>
+    <button class="btn ghost" data-reveal="eh23" disabled>Erwartungshorizont zeigen</button>
+    <div class="eh" id="eh23"><b>Erwartungshorizont</b><ul>
+      <li>Er stellt Grenzwerte (zunächst zufällig) ein, prüft an den bekannten Daten, wie viele Motoren er richtig vorhersagt, und verschiebt die Grenzwerte dann in die Richtung, in der es besser wird.</li>
+      <li>Das wiederholt er viele Male, bis es sich kaum noch verbessert. Genau das ist <b>Training</b> (→ Station ③).</li>
+      <li>Die Form der Regel (hier: Entscheidungsbaum mit Grenzwerten) ist die <b>Struktur</b> des Modells. Die konkreten Grenzwerte sind die <b>Parameter</b>, die gelernt werden.</li>
+    </ul></div>
+  </div>
+
+  <div class="card info">
+    <b>Blick unter die Haube:</b> Euer Entscheidungsbaum ist eine echte KI-Struktur. Andere Strukturen sind z. B. <b>künstliche neuronale Netze</b> (erkennen Muster in Bildern, siehe später YOLO) oder <b>Clusterverfahren</b> (finden Gruppen in Daten ohne Wartungs-Spalte). Welche Struktur passt, hängt von der Aufgabe und den Daten ab.
+  </div>
+
+  <button class="btn" data-next="s-train">Weiter zu Station ③</button>
+</section>
+
+<!-- ================= STATION 3 ================= -->
+<section class="station" id="s-train">
+  <h1>③ Die Maschine lernt</h1>
+  <p class="lead">Jetzt sucht der Computer die Regel selbst. Er verwendet eine andere Struktur als ihr: eine <b>Trennlinie</b>, die beliebig schräg liegen darf. Er startet mit einer schlechten Linie und verbessert sie Motor für Motor.</p>
+
+  <div class="card info mini">
+    <b>So lernt das Modell:</b> Es nimmt einen Motor aus den Daten, macht eine Vorhersage und vergleicht sie mit der Wartungs-Spalte. Liegt es falsch, verschiebt und dreht es die Linie ein kleines Stück in die richtige Richtung. Wie groß dieser Schritt ist, legt die <b>Lernrate</b> fest. Wenn alle 160 Motoren einmal dran waren, ist <b>eine Epoche</b> vorbei.
+  </div>
+
+  <div class="row">
+    <div style="flex:2 1 460px">
+      <div class="plotwrap">
+        <div class="legend"><span><svg width="12" height="12"><circle cx="6" cy="6" r="5" fill="var(--cls0)"/></svg> Wartung = 0</span><span><svg width="12" height="12"><polygon points="6,1 11,11 1,11" fill="var(--cls1)"/></svg> Wartung = 1</span><span><svg width="14" height="12"><rect x="1" y="1" width="12" height="10" fill="var(--zone)"/></svg> Modell sagt „Wartung“</span></div>
+        <svg id="plot3" viewBox="0 0 640 420" width="100%" role="img" aria-label="Trennlinie des Modells"></svg>
+      </div>
+    </div>
+    <div class="card" style="flex:1 1 280px;margin-top:0">
+      <b>Trainingsparameter</b>
+      <label class="hint" style="display:block;margin-top:8px">Lernrate</label>
+      <select id="lr">
+        <option value="klein">klein (vorsichtige Schritte)</option>
+        <option value="mittel" selected>mittel</option>
+        <option value="gross">groß (riesige Schritte)</option>
+      </select>
+      <div>
+        <button class="btn small" id="ep1">+1 Epoche</button>
+        <button class="btn small" id="ep10">+10 Epochen</button>
+        <button class="btn small" id="epAuto">▶ bis Epoche 60</button>
+        <button class="btn small ghost" id="epReset">Neu starten</button>
+      </div>
+      <div class="kpis">
+        <div class="kpi"><b id="k3ep">0</b><span>Epoche</span></div>
+        <div class="kpi"><b id="k3acc">–</b><span>Trefferquote</span></div>
+      </div>
+      <p class="mini" style="margin:0">Parameter der Linie: <span id="k3par"></span></p>
+    </div>
+  </div>
+
+  <div class="card">
+    <b>Lernkurve</b> <span class="hint">· Klickt in die Kurve, um euren Stopppunkt zu setzen (Auftrag 3.3)</span>
+    <svg id="curve" viewBox="0 0 640 230" width="100%" role="img" aria-label="Lernkurve Trefferquote über Epochen" style="cursor:crosshair"></svg>
+  </div>
+
+  <div class="card task">
+    <h3><span class="tag">Auftrag 3.1</span>Beobachten</h3>
+    <p>Startet neu und trainiert mit mittlerer Lernrate <b>Epoche für Epoche</b> (5× „+1 Epoche“). Beobachtet die Linie und die Trefferquote.</p>
+    <label class="hint">Was passiert mit der Linie und der Trefferquote in den ersten 5 Epochen? Was ändert sich dabei am Modell, was bleibt gleich?</label>
+    <textarea data-save="t31" data-eh="eh31"></textarea>
+    <button class="btn ghost" data-reveal="eh31" disabled>Erwartungshorizont zeigen</button>
+    <div class="eh" id="eh31"><b>Erwartungshorizont</b><ul>
+      <li>Die Linie startet an einer falschen Stelle (Trefferquote um 30 %) und wandert bzw. dreht sich mit jeder Epoche in Richtung der Grenze zwischen den beiden Gruppen.</li>
+      <li>Die Trefferquote steigt anfangs in großen Sprüngen, dann immer langsamer.</li>
+      <li>Es ändern sich nur die <b>Parameter</b> (Lage und Neigung der Linie). Die <b>Struktur</b> (eine gerade Trennlinie) und die <b>Daten</b> bleiben gleich.</li>
+    </ul></div>
+  </div>
+
+  <div class="card task">
+    <h3><span class="tag">Auftrag 3.2</span>Begriff Epoche</h3>
+    <label class="hint">Erklärt einem Kollegen aus der Instandhaltung, was eine Epoche ist. Verwendet dabei den Motordatensatz.</label>
+    <textarea data-save="t32" data-eh="eh32"></textarea>
+    <button class="btn ghost" data-reveal="eh32" disabled>Erwartungshorizont zeigen</button>
+    <div class="eh" id="eh32"><b>Erwartungshorizont</b><ul>
+      <li>Eine Epoche ist <b>ein vollständiger Durchlauf</b> durch alle Trainingsdaten.</li>
+      <li>Konkret: Jeder der 160 Motoren (jede Zeile der Tabelle) wurde einmal zum Lernen verwendet, also einmal vorhergesagt, mit der Wartungs-Spalte verglichen und die Parameter angepasst.</li>
+      <li>Nach 60 Epochen hat das Modell jeden Motor 60-mal „gesehen“.</li>
+    </ul></div>
+  </div>
+
+  <div class="card task">
+    <h3><span class="tag">Auftrag 3.3</span>Wann stoppt ihr das Training? <span class="badge" id="b33">offen</span></h3>
+    <p>Startet neu, trainiert mit <b>mittlerer</b> Lernrate bis Epoche 60 und klickt in der Lernkurve auf die Epoche, bei der ihr das Training beenden würdet.</p>
+    <p class="mini">Euer Stopppunkt: <b id="stopVal">–</b></p>
+    <label class="hint">Begründet euren Stopppunkt. Was spricht gegen früheres, was gegen späteres Stoppen?</label>
+    <textarea data-save="t33"></textarea>
+    <button class="btn" id="stopCheck">Stopppunkt prüfen</button>
+    <div class="fb" id="stopFb"></div>
+  </div>
+
+  <div class="card task">
+    <h3><span class="tag">Auftrag 3.4</span>Trainingsparameter Lernrate</h3>
+    <p>Trainiert jeweils neu bis Epoche 60 mit <b>kleiner</b> und mit <b>großer</b> Lernrate. Vergleicht die Lernkurven mit der mittleren Lernrate.</p>
+    <label class="hint">Beschreibt, wie sich die Lernkurve bei kleiner und bei großer Lernrate verhält, und erklärt warum.</label>
+    <textarea data-save="t34" data-eh="eh34"></textarea>
+    <button class="btn ghost" data-reveal="eh34" disabled>Erwartungshorizont zeigen</button>
+    <div class="eh" id="eh34"><b>Erwartungshorizont</b><ul>
+      <li><b>Klein:</b> Die Kurve steigt sehr langsam, das Plateau wird erst nach 40–50 Epochen erreicht. Grund: Die Linie wird nach jedem Motor nur minimal verschoben. Das kostet viel Rechenzeit.</li>
+      <li><b>Groß:</b> Die Kurve steigt sofort, <b>springt</b> danach aber unruhig auf und ab. Grund: Jeder einzelne Motor verschiebt die Linie so stark, dass sie über das Ziel hinausschießt, ähnlich einem Regler mit zu hoher Verstärkung.</li>
+      <li>Die Lernrate ist ein <b>Trainingsparameter</b>: Sie wird nicht gelernt, sondern vom Entwickler eingestellt. Passt das Ergebnis nicht, muss man sie anpassen (Rückpfeil im KI-Zyklus).</li>
+    </ul></div>
+  </div>
+
+  <div class="card task">
+    <h3><span class="tag">Auftrag 3.5</span>Mensch gegen Maschine</h3>
+    <p>Eure beste Regel aus Station ②: <b id="cmpHuman">–</b> · Modell nach dem Training: <b id="cmpMachine">–</b></p>
+    <label class="hint">Die Maschine hat eine <b>schräge</b> Linie gefunden, ihr konntet nur senkrechte und waagrechte Grenzen setzen. Was bedeutet eine schräge Grenze technisch? Denkt an einen Motor mit 3,5 mm/s und 70 °C.</label>
+    <textarea data-save="t35" data-eh="eh35"></textarea>
+    <button class="btn ghost" data-reveal="eh35" disabled>Erwartungshorizont zeigen</button>
+    <div class="eh" id="eh35"><b>Erwartungshorizont</b><ul>
+      <li>Bei einer schrägen Linie werden Vibration und Temperatur <b>gemeinsam</b> gewichtet: Etwas erhöhte Vibration <b>und</b> etwas erhöhte Temperatur zusammen reichen für eine Warnung, auch wenn keiner der Werte allein einen festen Grenzwert überschreitet.</li>
+      <li>Umgekehrt braucht ein Motor mit sehr ruhigem Lauf eine deutlich höhere Temperatur, bis gewarnt wird.</li>
+      <li>Das ist näher an der Realität: Schäden zeigen sich meist in mehreren Größen gleichzeitig. Die Struktur des Modells bestimmt, welche Regeln es überhaupt lernen <b>kann</b>.</li>
+    </ul></div>
+  </div>
+
+  <button class="btn" data-next="s-test">Weiter zu Station ④</button>
+</section>
+
+<!-- ================= STATION 4 ================= -->
+<section class="station" id="s-test">
+  <h1>④ Prüfstand</h1>
+  <p class="lead">Ein Motor muss vor der Auslieferung auf den Prüfstand. Ein KI-Modell auch. Die entscheidende Frage: Wie gut ist es bei Motoren, die es <b>noch nie gesehen</b> hat?</p>
+
+  <div class="card task">
+    <h3><span class="tag">Auftrag 4.1</span>Trainings- und Testdaten trennen</h3>
+    <p>Legt fest, welcher Anteil der 160 Motoren zum Training verwendet wird. Der Rest wird zurückgehalten und erst zum Testen verwendet.</p>
+    <div class="slider"><label><span>Trainingsdaten</span><b><span id="splitVal">80</span> % / Testdaten <span id="splitVal2">20</span> %</b></label>
+      <input type="range" id="split" min="50" max="90" step="10" value="80"></div>
+    <button class="btn" id="runTest">Aufteilen, trainieren und testen</button>
+    <div id="testRes" style="display:none">
+      <div class="tablewrap" style="margin-top:12px"><table>
+        <thead><tr><th>Modell</th><th>Trefferquote Training</th><th>Trefferquote Test</th></tr></thead>
+        <tbody>
+          <tr><td><b>A</b>: Trennlinie aus Station ③ (30 Epochen)</td><td id="aTr"></td><td id="aTe"></td></tr>
+          <tr><td><b>B</b>: Der „Auswendiglerner“: merkt sich jeden Trainingsmotor exakt; unbekannte Motoren = „in Ordnung“</td><td id="bTr"></td><td id="bTe"></td></tr>
+        </tbody></table></div>
+    </div>
+    <label class="hint" style="display:block;margin-top:12px">Warum muss ein Modell mit Daten getestet werden, die es beim Training nicht gesehen hat? Erklärt es mit Modell B und mit einem Vergleich aus eurer eigenen Ausbildung.</label>
+    <textarea data-save="t41" data-eh="eh41"></textarea>
+    <button class="btn ghost" data-reveal="eh41" disabled>Erwartungshorizont zeigen</button>
+    <div class="eh" id="eh41"><b>Erwartungshorizont</b><ul>
+      <li>Modell B erreicht im Training 100 %, weil es jeden Motor auswendig kennt. Bei unbekannten Motoren versagt es: Es erkennt fast keinen Wartungsfall. Ein Test mit den Trainingsdaten hätte ein <b>viel zu gutes</b> Bild ergeben.</li>
+      <li>Vergleich: Wer nur die Lösungen der Probeklausur auswendig lernt, schreibt die Probeklausur fehlerfrei, die echte Klausur mit neuen Aufgaben aber nicht. Das nennt man <b>Überanpassung</b> (Overfitting).</li>
+      <li>Im Betrieb bekommt das Modell nur neue Messwerte. Deshalb zählt allein die Trefferquote auf den Testdaten. Typisch ist eine Aufteilung von 80 % Training / 20 % Test.</li>
+      <li>Wenige Testdaten (z. B. 10 %) machen das Testergebnis unsicher, wenige Trainingsdaten (z. B. 50 %) verschlechtern das Modell.</li>
+    </ul></div>
+  </div>
+
+  <div class="card task" id="cmCard" style="display:none">
+    <h3><span class="tag">Auftrag 4.2</span>Testergebnisse auswerten <span class="badge" id="b42">offen</span></h3>
+    <p>Hier sind die Vorhersagen von <b>Modell A</b> für alle Testmotoren. Zählt aus und tragt die Anzahl in die Wahrheitsmatrix (<i>Confusion Matrix</i>) ein.</p>
+    <div class="tiles" id="tiles"></div>
+    <div class="row" style="margin-top:14px">
+      <div>
+        <table class="cm">
+          <tr><th></th><th>Vorhersage:<br>Wartung</th><th>Vorhersage:<br>in Ordnung</th></tr>
+          <tr><th>Tatsächlich:<br>Wartung</th><td class="cell0"><input type="number" id="cTP" min="0"><small>richtig erkannt</small></td><td class="cell1"><input type="number" id="cFN" min="0"><small>übersehen</small></td></tr>
+          <tr><th>Tatsächlich:<br>in Ordnung</th><td class="cell1"><input type="number" id="cFP" min="0"><small>Fehlalarm</small></td><td class="cell0"><input type="number" id="cTN" min="0"><small>richtig entwarnt</small></td></tr>
+        </table>
+      </div>
+      <div class="mini">
+        <p style="margin-top:0">Berechnet aus eurer Matrix (in %, eine Nachkommastelle):</p>
+        <p><b>Trefferquote</b> (Accuracy) = richtige Vorhersagen / alle Testmotoren<br><input type="number" step="0.1" id="cAcc" class="inline-in"> %</p>
+        <p><b>Erkennungsrate</b> (Recall) = richtig erkannte / alle tatsächlichen Wartungsfälle<br><input type="number" step="0.1" id="cRec" class="inline-in"> %</p>
+        <p><b>Alarm-Zuverlässigkeit</b> (Precision) = richtig erkannte / alle Alarme<br><input type="number" step="0.1" id="cPre" class="inline-in"> %</p>
+      </div>
+    </div>
+    <button class="btn" id="cmCheck">Prüfen</button>
+    <div class="fb" id="cmFb"></div>
+  </div>
+
+  <div class="card task" id="trapCard" style="display:none">
+    <h3><span class="tag">Auftrag 4.3</span>Die Accuracy-Falle</h3>
+    <p>Ein Anbieter bietet Modell <b>C</b> an. Es ist billig, und das Datenblatt verspricht eine hohe Trefferquote. Hier sein Ergebnis auf denselben Testdaten:</p>
+    <div class="row"><div id="cmC"></div><div class="mini" id="cmCtext"></div></div>
+    <label class="hint">Der Einkäufer will Modell C kaufen: „Die Trefferquote ist doch fast so gut!“ Überzeugt ihn in 3–4 Sätzen vom Gegenteil. Verwendet die Kennzahlen.</label>
+    <textarea data-save="t43" data-eh="eh43"></textarea>
+    <button class="btn ghost" data-reveal="eh43" disabled>Erwartungshorizont zeigen</button>
+    <div class="eh" id="eh43"><b>Erwartungshorizont</b><ul>
+      <li>Modell C sagt <b>immer</b> „in Ordnung“. Weil die meisten Motoren tatsächlich in Ordnung sind, hat es trotzdem eine hohe Trefferquote.</li>
+      <li>Seine Erkennungsrate ist aber <b>0 %</b>: Es erkennt keinen einzigen Wartungsfall. Für Predictive Maintenance ist es also völlig nutzlos, der Motor fällt genauso aus wie ohne KI.</li>
+      <li>Merke: Wenn eine Klasse selten ist, sagt die Trefferquote allein wenig aus. Man muss Erkennungsrate und Alarm-Zuverlässigkeit (bzw. die ganze Confusion Matrix) betrachten.</li>
+      <li>Genau diese Kennzahlen begegnen euch bei der Objekterkennung (YOLO) wieder: <b>Precision</b> und <b>Recall</b>.</li>
+    </ul></div>
+  </div>
+
+  <button class="btn" data-next="s-einsatz">Weiter zu Station ⑤</button>
+</section>
+
+<!-- ================= STATION 5 ================= -->
+<section class="station" id="s-einsatz">
+  <h1>⑤ Einsatz an der Anlage</h1>
+  <p class="lead">Das Modell hat den Prüfstand bestanden. Jetzt muss es an die Anlage: Es braucht Hardware, auf der es läuft, und eine Anbindung an die Steuerung. Und dann kommt der Sommer …</p>
+
+  <div class="card task">
+    <h3><span class="tag">Auftrag 5.1</span>Die Signalkette <span class="badge" id="b51">offen</span></h3>
+    <p>Bringt die Stationen der Signalkette in die richtige Reihenfolge: vom Lager bis zum Wartungsauftrag. Klickt die Bausteine in der richtigen Reihenfolge an. Ein Klick auf einen eingeordneten Baustein nimmt ihn wieder heraus.</p>
+    <div class="chips" id="chainPool"></div>
+    <div class="seq" id="chainSeq"></div>
+    <button class="btn" id="chainCheck">Prüfen</button>
+    <div class="fb" id="chainFb"></div>
+  </div>
+
+  <div class="card task">
+    <h3><span class="tag">Auftrag 5.2</span>Edge oder Cloud?</h3>
+    <p>Das KI-Modell kann direkt an der Anlage auf einem <b>Edge-Gateway</b> im Schaltschrank laufen oder in der <b>Cloud</b> (Rechenzentrum, über Internet). In Halle 3 gibt es nur eine instabile Internetverbindung. Die Vibration wird mehrere tausend Mal pro Sekunde gemessen.</p>
+    <label class="hint">Wo lasst ihr das Modell laufen? Nennt mindestens zwei technische Gründe und einen Vorteil der anderen Variante.</label>
+    <textarea data-save="t52" data-eh="eh52"></textarea>
+    <button class="btn ghost" data-reveal="eh52" disabled>Erwartungshorizont zeigen</button>
+    <div class="eh" id="eh52"><b>Erwartungshorizont</b><ul>
+      <li><b>Edge</b> ist hier sinnvoll: funktioniert auch ohne Internet; kurze Reaktionszeit (Meldung an die SPS in Millisekunden bis Sekunden); die riesige Menge an Schwingungsdaten muss nicht übertragen werden; Produktionsdaten verlassen das Werk nicht.</li>
+      <li><b>Vorteil Cloud:</b> mehr Rechenleistung; Daten vieler Anlagen und Standorte lassen sich zentral sammeln und vergleichen; neue Modellversionen lassen sich leichter einspielen und nachtrainieren.</li>
+      <li>In der Praxis oft kombiniert: Das Modell rechnet an der Anlage (Edge), das Nachtraining passiert zentral.</li>
+    </ul></div>
+  </div>
+
+  <div class="card task">
+    <h3><span class="tag">Auftrag 5.3</span>Der Betrieb läuft</h3>
+    <p>Das Modell (Trennlinie aus Vibration und Lagertemperatur) überwacht ab März alle Motoren. Jede Woche werden 40 Motoren bewertet. Später trägt die Instandhaltung nach, ob tatsächlich eine Wartung nötig war.</p>
+    <button class="btn" id="runOps">▶ 12 Wochen Betrieb simulieren</button>
+    <div class="plotwrap" style="margin-top:10px">
+      <div class="legend"><span><svg width="12" height="12"><rect width="12" height="12" fill="var(--cls1)"/></svg> Fehlalarme</span><span><svg width="12" height="12"><rect width="12" height="12" fill="var(--bad)"/></svg> übersehene Wartungsfälle</span><span><svg width="16" height="12"><line x1="0" y1="6" x2="16" y2="6" stroke="var(--ink)" stroke-width="2" stroke-dasharray="4 3"/></svg> Hallentemperatur</span></div>
+      <svg id="ops" viewBox="0 0 640 260" width="100%" role="img" aria-label="Fehlalarme pro Betriebswoche"></svg>
+    </div>
+    <label class="hint" style="display:block;margin-top:10px">Was ist ab Woche 7 passiert? Warum „irrt“ sich das Modell plötzlich, obwohl es im Test gut war?</label>
+    <textarea data-save="t53" data-eh="eh53"></textarea>
+    <button class="btn ghost" data-reveal="eh53" disabled>Erwartungshorizont zeigen</button>
+    <div class="eh" id="eh53"><b>Erwartungshorizont</b><ul>
+      <li>Ab Woche 7 steigt die Hallentemperatur (Sommer). Alle Lager werden dadurch wärmer, <b>auch die intakten</b>. Das Modell deutet die höhere Lagertemperatur als Schadenszeichen und löst sehr viele Fehlalarme aus.</li>
+      <li>Das Modell wurde nur mit Winterdaten trainiert. Situationen, die in den Trainingsdaten nicht vorkamen, kennt es nicht. Es „weiß“ nichts über die Ursache der Erwärmung.</li>
+      <li>Wenn sich die Bedingungen im Betrieb gegenüber den Trainingsdaten verändern, spricht man von <b>Datendrift</b>. Deshalb muss ein KI-Modell im Einsatz dauerhaft überwacht werden.</li>
+    </ul></div>
+  </div>
+
+  <div class="card task" id="fixCard">
+    <h3><span class="tag">Auftrag 5.4</span>Das Modell reparieren</h3>
+    <p>Die Instandhaltung schlägt zwei Lösungen vor. Probiert beide aus. Winter = Wochen 1–6, Sommer = Wochen 7–12; in beiden Zeiträumen gab es jeweils rund 50 echte Wartungsfälle.</p>
+    <button class="btn ghost" id="fixA">Lösung A: mit den Sommerdaten nachtrainieren</button>
+    <button class="btn ghost" id="fixB">Lösung B: neue Eingangsgröße „Übertemperatur = Lagertemperatur − Hallentemperatur“</button>
+    <div class="tablewrap" style="margin-top:10px"><table id="fixTable">
+      <thead><tr><th>Modell</th><th>Fehlalarme<br>Winter / <b>Sommer</b></th><th>übersehene Wartungsfälle<br>Winter / <b>Sommer</b></th><th>Trefferquote<br>alle 12 Wochen</th></tr></thead><tbody></tbody></table></div>
+    <div class="row" style="margin-top:12px">
+      <div><label class="hint">An welchen Schritt der Entwicklung müsst ihr für die bessere Lösung zurück?</label>
+        <select id="backTo" data-save-sel="backTo">
+          <option value="">– wählen –</option><option value="struktur">Auswahl der KI-Struktur</option><option value="daten">Bereitstellung der Daten</option><option value="training">Training</option><option value="test">Evaluation / Test</option></select></div>
+    </div>
+    <label class="hint" style="display:block;margin-top:10px">Welche Lösung empfehlt ihr? Begründet mit den Zahlen. Warum ist die bessere Lösung auch für den nächsten Winter oder eine andere Halle besser?</label>
+    <textarea data-save="t54" data-eh="eh54"></textarea>
+    <button class="btn ghost" data-reveal="eh54" disabled>Erwartungshorizont zeigen</button>
+    <div class="eh" id="eh54"><b>Erwartungshorizont</b><ul>
+      <li><b>Lösung A</b> senkt die Fehlalarme im Sommer, aber das Modell „verschmiert“ Sommer und Winter: Es muss einen Kompromiss-Grenzwert finden und übersieht dadurch im Winter etwa <b>doppelt so viele</b> Wartungsfälle. Das ist gefährlich!</li>
+      <li><b>Lösung B</b> beseitigt die Ursache: Die Übertemperatur des Lagers gegenüber der Umgebung hängt nicht von der Jahreszeit ab. Das Modell funktioniert im Sommer, im Winter und in einer anderen Halle.</li>
+      <li>Rücksprung für beide: <b>Bereitstellung der Daten</b>. Bei A kommen neue Datensätze dazu, bei B eine neue, sinnvoll abgeleitete Eingangsgröße (technisches Wissen des Mechatronikers!). Danach müssen Training und Test erneut durchlaufen werden.</li>
+      <li>Erinnerung an die Mission: Wer dort die <b>Hallentemperatur</b> ausgewählt hat, hätte das Problem vermeiden können.</li>
+    </ul></div>
+  </div>
+
+  <button class="btn" data-next="s-zyklus">Weiter zum KI-Zyklus</button>
+</section>
+
+<!-- ================= SYNTHESE ================= -->
+<section class="station" id="s-zyklus">
+  <h1>Synthese: Der KI-Zyklus</h1>
+  <p class="lead">Ihr habt ein KI-Projekt einmal komplett durchlaufen. Jetzt bringt ihr eure Erfahrungen in eine allgemeine Form. Diesen Zyklus braucht ihr später wieder, z. B. bei der Objekterkennung mit YOLO.</p>
+
+  <div class="card task">
+    <h3><span class="tag">Auftrag Z1</span>Die fünf Schritte <span class="badge" id="bz1">offen</span></h3>
+    <p>Klickt die fünf Schritte in der Reihenfolge an, in der ein KI-Modell entsteht.</p>
+    <div class="chips" id="cycPool"></div>
+    <div class="seq" id="cycSeq"></div>
+    <button class="btn" id="cycCheck">Prüfen</button>
+    <div class="fb" id="cycFb"></div>
+  </div>
+
+  <div class="card task">
+    <h3><span class="tag">Auftrag Z2</span>Die Rückpfeile <span class="badge" id="bz2">offen</span></h3>
+    <p>Erfüllt das Modell bei der Evaluation die Qualitätsanforderungen nicht, muss nachgebessert werden. Wohin führt jeder Rückpfeil? Nennt zu jedem Pfeil eine Situation <b>aus der Werkstatt</b>, in der ihr ihn gebraucht habt oder gebraucht hättet.</p>
+    <div class="tablewrap"><table class="wrap" id="backTable">
+      <thead><tr><th style="width:22%">Anpassung</th><th style="width:25%">zurück zu …</th><th>Situation aus der Werkstatt</th></tr></thead><tbody></tbody></table></div>
+    <button class="btn" id="backCheck">Ziele prüfen</button>
+    <div class="fb" id="backFb"></div>
+    <div class="eh" id="ehZ2"><b>Erwartungshorizont (Situationen)</b><ul>
+      <li><b>Trainingsparameter → Training:</b> Lernrate zu klein (zu langsam) oder zu groß (Kurve springt); zu wenige Epochen (Station ③).</li>
+      <li><b>Datensätze → Bereitstellung der Daten:</b> fehlerhafte Werte (Station ①), fehlende Sommerdaten bzw. neue Eingangsgröße Übertemperatur (Station ⑤).</li>
+      <li><b>Struktur → Auswahl der KI-Struktur:</b> Mit senkrechten/waagrechten Grenzen (Entscheidungsbaum mit zwei Grenzwerten) ließ sich die schräge Grenze nicht abbilden (Station ② → ③).</li>
+      <li><b>Zusätzlich:</b> Auch aus dem <b>Einsatz</b> führt ein Pfeil zurück: Datendrift im Betrieb (Station ⑤). Der Zyklus endet also nie ganz.</li>
+    </ul></div>
+  </div>
+
+  <div class="card" id="cycleCard" style="display:none">
+    <b>Euer KI-Zyklus</b>
+    <svg id="cycleSvg" viewBox="0 0 900 250" width="100%" role="img" aria-label="KI-Zyklus mit Rückpfeilen"></svg>
+  </div>
+
+  <div class="card task">
+    <h3><span class="tag">Auftrag Z3</span>Transfer: Die Kamera prüft Bauteile</h3>
+    <p>Eine Kamera am Ende einer Fertigungslinie soll Drehteile mit Oberflächenfehlern (Kratzer, Lunker, Grat) automatisch erkennen und aussortieren. Was bedeutet jeder Schritt des KI-Zyklus für dieses Projekt?</p>
+    <div class="tablewrap"><table class="wrap" id="transTable"><tbody></tbody></table></div>
+    <button class="btn ghost" id="transReveal" disabled>Erwartungshorizont zeigen</button>
+    <div class="eh" id="ehZ3"><b>Erwartungshorizont</b><ul>
+      <li><b>Daten:</b> Hunderte Fotos guter und fehlerhafter Teile aufnehmen, gleiche Beleuchtung; jeden Fehler markieren und benennen (<i>Annotieren</i>, z. B. mit Label Studio); fehlerhafte oder unscharfe Bilder aussortieren.</li>
+      <li><b>Struktur:</b> ein künstliches neuronales Netz für Bilder, z. B. YOLO (Objekterkennung).</li>
+      <li><b>Training:</b> Das Netz lernt über viele Epochen an den Trainingsbildern; Trainingsparameter wie Epochenzahl, Bildgröße und Batch-Größe werden eingestellt; Lernkurven (Loss) beobachten.</li>
+      <li><b>Evaluation:</b> Test mit zurückgehaltenen, unbekannten Bildern; Confusion Matrix, Precision und Recall je Fehlerart. Ein übersehener Fehler (Teil geht zum Kunden) ist meist teurer als ein Fehlalarm.</li>
+      <li><b>Einsatz:</b> Modell auf einem Industrie-PC an der Linie (Edge), Anbindung an die SPS zum Ausschleusen; Überwachen auf Drift (neue Beleuchtung, neues Material, neue Kamera).</li>
+    </ul></div>
+  </div>
+
+  <button class="btn" data-next="s-laufzettel">Zum Laufzettel</button>
+</section>
+
+<!-- ================= LAUFZETTEL ================= -->
+<section class="station" id="s-laufzettel">
+  <h1>Laufzettel</h1>
+  <p class="lead noprint">Hier stehen alle eure Ergebnisse. Speichert sie als PDF und gebt sie ab.</p>
+  <div class="noprint">
+    <button class="btn" id="printBtn">Als PDF speichern / drucken</button>
+    <button class="btn ghost" id="dlBtn">Als Textdatei herunterladen</button>
+    <button class="btn ghost" id="resetBtn">Alles zurücksetzen</button>
+  </div>
+  <div id="lzCycle" style="margin-top:14px"></div>
+  <div id="lz" style="margin-top:14px"></div>
+</section>
+</main>
+<footer>KI-Werkstatt · KI-Kon · Rudolf-Diesel-Fachschule Nürnberg · Die Daten sind simuliert.</footer>
+
+<script>
+/* =========================================================
+   State & Speicherung
+   ========================================================= */
+const KEY='kiwerkstatt_v1';
+let S={};
+try{S=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){S={}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){} renderLZ()}
+const $=id=>document.getElementById(id);
+const de=(v,d=1)=>Number(v).toLocaleString('de-DE',{minimumFractionDigits:d,maximumFractionDigits:d});
+const pct=v=>de(v*100,1)+' %';
+function fb(id,cls,html){const e=$(id);e.className='fb show '+cls;e.innerHTML=html}
+
+/* =========================================================
+   Navigation
+   ========================================================= */
+function go(id){
+  document.querySelectorAll('section.station').forEach(s=>s.classList.toggle('active',s.id===id));
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.go===id));
+  S.page=id; save(); window.scrollTo(0,0);
+  if(id==='s-regel') drawPlot();
+  if(id==='s-train') draw3();
+  if(id==='s-test') showTestIfDone();
+  if(id==='s-einsatz') drawOps(S.opsShown?12:0);
+}
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
+document.querySelectorAll('[data-next]').forEach(b=>b.onclick=()=>go(b.dataset.next));
+function markDone(){
+  const done={'s-mission':!!S.m1checked,'s-daten':!!(S.errChecked&&S.classScore!=null),'s-regel':!!(S.best>=0.9&&S.won22),
+    's-train':!!S.stopOk,'s-test':!!S.cmOk,'s-einsatz':!!(S.chainOk&&S.fixA&&S.fixB),'s-zyklus':!!(S.cycOk&&S.backOk)};
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('done',!!done[b.dataset.go]));
+}
+
+/* =========================================================
+   Freitexte & Erwartungshorizonte
+   ========================================================= */
+$('teamName').value=S.team||'';
+$('teamName').oninput=e=>{S.team=e.target.value;save()};
+S.txt=S.txt||{};
+document.querySelectorAll('textarea[data-save]').forEach(t=>{
+  const k=t.dataset.save; t.value=S.txt[k]||'';
+  const btn=document.querySelector(`[data-reveal="${t.dataset.eh}"]`);
+  const upd=()=>{if(btn) btn.disabled=t.value.trim().length<40};
+  t.oninput=()=>{S.txt[k]=t.value;upd();save()};
+  upd();
+});
+document.querySelectorAll('[data-reveal]').forEach(b=>b.onclick=()=>{$(b.dataset.reveal).classList.add('show');b.style.display='none'});
+
+/* =========================================================
+   Daten (fester Zufallsgenerator: alle Teams haben dieselben Daten)
+   ========================================================= */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const clamp=(x,a,b)=>Math.min(b,Math.max(a,x));
+function genMotors(seed,N,hallOff=0,prefix='M-',start=1){
+  const rnd=mulberry32(seed),hr=mulberry32(seed+7777);
+  const gauss=()=>{let u=0,v=0;while(!u)u=rnd();while(!v)v=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};
+  const out=[];
+  for(let i=0;i<N;i++){
+    const w=rnd()<0.22?1:0;
+    const h=Math.round((w?2800+rnd()*3200:400+rnd()*5200)/10)*10;
+    const last=Math.round(clamp(55+rnd()*33+(w?4:0),50,97));
+    let vib,temp;
+    if(w){const t=rnd();
+      if(t<0.2){vib=2.8+gauss()*0.5;temp=73+gauss()*4}          // Schmierungsproblem: heiß, ruhig
+      else if(t<0.35){vib=4.3+gauss()*0.6;temp=63+gauss()*4}    // Unwucht: vibriert, normal warm
+      else{vib=3.8+gauss()*0.6;temp=70+gauss()*5}}              // Lagerverschleiß
+    else{vib=2.5+gauss()*0.6+h/6000*0.4;temp=58+gauss()*5.5+(last-70)*0.2}
+    const hall=Math.round(20+hallOff+(hr()-0.5));
+    temp+=hallOff;
+    vib=+clamp(vib,1.2,6.5).toFixed(1); temp=Math.round(clamp(temp,42,99));
+    const strom=+(5.8+last/100*3.2+gauss()*0.25+(w?0.3:0)).toFixed(1);
+    const n=Math.round(1497-last*0.55+gauss()*3);
+    out.push({id:prefix+String(start+i).padStart(3,'0'),temp,vib,strom,n,h,last,w,hall});
+  }
+  return out;
+}
+const MOTORS=genMotors(20261,160);
+
+/* =========================================================
+   MISSION
+   ========================================================= */
+const SENSORS=[
+  {k:'temp',t:'Lagertemperatur',g:1,hin:'Erhöhte Reibung im Wälzlager: Schmierstoffmangel oder gealterter Schmierstoff, Verschleiß, zu hohe Lagerbelastung',folge:'Lager läuft fest (wie am Montag), Folgeschaden an der Welle'},
+  {k:'vib',t:'Vibration',g:1,hin:'Unwucht (Lüfterrad, Kupplung), Fluchtungsfehler zwischen Motor und Getriebe, beginnende Laufbahnschäden im Lager (Pittings), gelöste Befestigungsschrauben',folge:'Lagerschaden, Kupplungs- oder Wellenbruch, Folgeschäden am Getriebe'},
+  {k:'strom',t:'Motorstrom',g:1,hin:'Mechanische Schwergängigkeit (Lager, Getriebe, blockierendes Band), Überlast; ungleiche Ströme in den drei Phasen deuten auf Wicklungsfehler',folge:'Überhitzung der Wicklung, Isolationsschaden, Auslösen des Motorschutzschalters'},
+  {k:'n',t:'Drehzahl',g:1,hin:'Steigender Schlupf durch Überlast oder Schwergängigkeit: Die Drehzahl sinkt unter den Normalwert',folge:'Thermische Überlastung des Motors, Leistungsabfall des Förderbands'},
+  {k:'h',t:'Betriebsstunden',g:1,hin:'Verbrauchter Verschleißvorrat: nominelle Lagerlebensdauer (L10h) und Schmierintervalle hängen an den Betriebsstunden',folge:'Materialermüdung (Pittings) gegen Ende der Lebensdauer, Lagerausfall'},
+  {k:'last',t:'Last (%)',g:1,hin:'Höhere Last bedeutet höhere Lagerkräfte. Beim Kugellager sinkt die Lebensdauer mit der 3. Potenz der Belastung (L10 = (C/P)³)',folge:'Deutlich früherer Lagerausfall als geplant'},
+  {k:'hallT',t:'Hallentemperatur',g:.5,hin:'Keine Schadensursache, aber wichtig zum Einordnen: Im Sommer wird jedes Lager wärmer, auch ein intaktes',folge:'Ohne sie drohen Fehlalarme bei Hitze (→ Station ⑤)'},
+  {k:'schall',t:'Geräusch (Körperschall)',g:.5,hin:'Wälzlagerschäden erzeugen hochfrequente Geräusche oft früher als messbare Vibration',folge:'Sehr frühe Warnung möglich, aber aufwendigere Auswertung'},
+  {k:'farbe',t:'Farbe des Gehäuses',g:0,hin:'Kein technischer Zusammenhang mit dem Zustand des Motors',folge:'Die KI könnte einen Zufallszusammenhang lernen'},
+  {k:'schicht',t:'Schichtleiter/in',g:0,hin:'Kein physikalischer Zusammenhang. Vorsicht: Kann zufällig mit Ausfällen zusammenhängen (z. B. Frühschicht = kalter Anlauf)',folge:'Scheinzusammenhang: Die KI „beschuldigt“ eine Person statt der Ursache'},
+  {k:'wochentag',t:'Wochentag',g:0,hin:'Kein Zustandsmerkmal des Motors. Echte Ursachen (z. B. Anlauf nach dem Wochenende) besser direkt messen',folge:'Scheinzusammenhang statt Ursache'},
+  {k:'seriennr',t:'Seriennummer',g:0,hin:'Ein Name, keine Messgröße. Die KI würde sich einzelne Motoren merken. Sinnvoller: Baujahr bzw. Fertigungscharge als eigene Größe erfassen (Serienfehler)',folge:'Auswendiglernen statt Zusammenhänge erkennen'}];
+S.sens=S.sens||[];
+function renderSensors(showEval){
+  const box=$('sensorChips');box.innerHTML='';
+  SENSORS.forEach(s=>{const c=document.createElement('span');c.className='chip'+(S.sens.includes(s.k)?' on':'');c.textContent=s.t;
+    if(showEval&&S.sens.includes(s.k)) c.classList.add(s.g>=.5?'good':'poor');
+    c.onclick=()=>{const i=S.sens.indexOf(s.k);if(i>=0)S.sens.splice(i,1);else if(S.sens.length<6)S.sens.push(s.k);renderSensors(false);save()};
+    box.appendChild(c)});
+  $('sensorCount').textContent=S.sens.length;
+}
+renderSensors(!!S.m1checked);
+function showM1(){
+  const rows=SENSORS.map(s=>`<tr class="${S.sens.includes(s.k)?'mine':''}"><td><b>${s.t}</b>${S.sens.includes(s.k)?' ✓':''}</td><td>${s.hin}</td><td>${s.folge}</td></tr>`).join('');
+  const nGood=S.sens.filter(k=>SENSORS.find(s=>s.k===k).g>0).length;
+  fb('m1fb','neutral',`<p style="margin-top:0"><b>An der Anlage werden erfasst:</b> Lagertemperatur, Vibration, Motorstrom, Drehzahl, Betriebsstunden, Last. Von euren ${S.sens.length} Messgrößen sind <b>${nGood}</b> technisch sinnvoll (grün umrandet).</p>
+  <div class="tablewrap"><table class="wrap"><thead><tr><th>Messgröße</th><th>Worauf deutet eine Veränderung hin?</th><th>Folge, wenn niemand reagiert</th></tr></thead><tbody>${rows}</tbody></table></div>
+  <p class="mini" style="margin-bottom:0">Blau hinterlegt = eure Auswahl. Vergleicht die Tabelle mit eurer Begründung und ergänzt sie, falls nötig. <i>Merke: Die KI findet nur Zusammenhänge, die in den Daten stecken. Unsinnige Daten machen sie nicht klüger, im schlimmsten Fall lernt sie Zufall.</i></p>`);
+}
+if(S.m1checked) showM1();
+$('m1check').onclick=()=>{
+  if(S.sens.length<3){fb('m1fb','bad','Wählt mindestens 3 Messgrößen aus.');return}
+  renderSensors(true);S.m1checked=true;save();markDone();showM1();
+};
+
+/* =========================================================
+   STATION 1
+   ========================================================= */
+const COLS=[{k:'id',t:'Motor-ID',sol:3},{k:'temp',t:'Lagertemp. (°C)',sol:1},{k:'vib',t:'Vibration (mm/s)',sol:1},{k:'strom',t:'Motorstrom (A)',sol:1},
+  {k:'n',t:'Drehzahl (U/min)',sol:1},{k:'h',t:'Betriebsstd. (h)',sol:1},{k:'last',t:'Last (%)',sol:1},{k:'w',t:'Wartung (1/0)',sol:2}];
+S.io=S.io||{};
+const IOL=['nicht zugeordnet','Eingang','Ausgang','nicht verwenden'];
+function renderIO(){const b=$('ioChips');b.innerHTML='';
+  COLS.forEach(c=>{const v=S.io[c.k]||0;const e=document.createElement('span');e.className='chip'+(v?' on':'');
+    e.innerHTML=`${c.t} <small>· ${IOL[v]}</small>`;e.style.background=v===2?'var(--cls1)':v===3?'var(--muted)':'';e.style.borderColor=e.style.background||'';
+    e.onclick=()=>{S.io[c.k]=((S.io[c.k]||0)+1)%4;renderIO();save()};b.appendChild(e)})}
+renderIO();
+$('ioCheck').onclick=()=>{
+  const wrong=COLS.filter(c=>(S.io[c.k]||0)!==c.sol);
+  S.ioOk=!wrong.length;save();
+  if(!wrong.length) fb('ioFb','ok','Richtig! Sechs Messgrößen gehen hinein, das Modell sagt „Wartung ja/nein“ voraus. Die Motor-ID ist nur ein Name. Würde die KI sie verwenden, könnte sie sich einzelne Motoren „merken“, statt Zusammenhänge zu lernen.');
+  else fb('ioFb','bad',`Noch nicht ganz: ${wrong.length} Spalte(n) sind falsch eingeordnet. Tipp: Was <i>weiß</i> man im Betrieb, bevor der Schaden eintritt, und was will man <i>wissen</i>?`);
+};
+
+const ROWS=MOTORS.slice(0,22).map(m=>({...m}));
+/* Maßnahmen: 1 löschen · 2 korrigieren · 3 schätzen · 4 nachfragen */
+const ERR=[
+  {r:2,k:'temp',v:-5898,art:'unplausibel',info:'−5.898 °C liegt unter dem absoluten Nullpunkt, also physikalisch unmöglich. Typisch für einen Sensor- oder Übertragungsfehler.',
+    good:[1,3],ok:[4],bad:[2],mass:'Der wahre Wert lässt sich nicht rekonstruieren. Eine „Korrektur“ wäre geraten. Da der Motor Wartung = 0 hat (häufiger Fall), ist <b>Löschen</b> vertretbar, alternativ <b>Schätzen</b> aus vergleichbaren Motoren. Nachfragen hilft kaum: Die Temperatur von damals misst niemand mehr nach.'},
+  {r:4,k:'n',v:14540,art:'unplausibel',info:'14.540 U/min ist das Zehnfache der Nenndrehzahl (1.450 U/min). Eine Stelle ist verrutscht.',
+    good:[2],ok:[3],bad:[1],mass:'Offensichtlicher Stellenfehler: <b>1.454 U/min</b> passt zur Nenndrehzahl und zur Last der Zeile. <b>Korrigieren</b> erhält alle anderen Messwerte. Löschen wäre unnötiger Informationsverlust.'},
+  {r:6,k:'w',v:7,art:'ungültig',info:'Die Spalte Wartung kennt nur 0 oder 1. Der Wert 7 ist kein gültiger Wert.',
+    good:[4],ok:[1],bad:[2,3],mass:'Die Wartungs-Spalte ist genau das, was die KI lernen soll (Zielgröße). Ein geratener Wert bringt ihr etwas Falsches bei, ein Mittelwert (z. B. 0,2) ist als Wartungsangabe sinnlos. Im <b>Wartungsprotokoll nachsehen</b> ist die beste Lösung, sonst Zeile löschen.'},
+  {r:8,k:'vib',v:null,art:'fehlend',info:'Der Vibrationswert fehlt. Der Sensor hat nichts geliefert, oder der Wert wurde nicht übertragen.',
+    good:[1,3],ok:[4],bad:[2],mass:'Es gibt keinen Wert, den man korrigieren könnte. <b>Schätzen</b> (z. B. Mittelwert ähnlicher Motoren) ist möglich, verfälscht aber ausgerechnet die wichtigste Messgröße etwas. Da Wartung = 0, ist <b>Löschen</b> gut vertretbar.'},
+  {r:11,k:'strom',v:82.0,art:'unplausibel',info:'82 A bei 8,5 A Nennstrom und normaler Last. Der Motorschutz hätte längst ausgelöst. Wahrscheinlich ein Kommafehler.',
+    good:[2],ok:[3],bad:[1],mass:'Kommafehler: <b>8,2 A</b> passt zur Last von '+MOTORS[11].last+' % und zu den Nachbarzeilen. <b>Korrigieren</b> erhält die Zeile.'},
+  {r:13,k:'n',v:0,art:'widersprüchlich',info:'Drehzahl 0, aber Nennstrom und 80 % Last: Ein stehender Motor kann keine Last antreiben. Einzeln betrachtet wäre 0 U/min möglich, im Zusammenhang ist der Wert widersprüchlich.',
+    good:[3,4],ok:[2],bad:[1],mass:'<b>Achtung: Das ist einer der seltenen Wartungsfälle!</b> Löschen würde der KI ein wertvolles Beispiel nehmen. Die Drehzahl lässt sich aus Last und Strom gut <b>abschätzen</b> (ca. 1.450 U/min), oder man fragt nach.'},
+  {r:16,k:'h',v:-320,art:'unplausibel',info:'Negative Betriebsstunden sind unmöglich.',
+    good:[4],ok:[1,3],bad:[2],mass:'Ob 320 h gemeint waren, ist reine Vermutung. Den <b>Betriebsstundenzähler</b> am Motor bzw. in der SPS kann die Instandhaltung aber schnell ablesen. <b>Nachfragen</b> ist hier einfach und sicher.'},
+  {r:19,k:'last',v:null,art:'fehlend',info:'Der Lastwert fehlt.',
+    good:[3],ok:[1,4],bad:[2],mass:'Die Last hängt eng mit dem Motorstrom zusammen. Aus '+de(MOTORS[19].strom,1)+' A lässt sich die Last gut zurückrechnen (ca. '+Math.round((MOTORS[19].strom-5.8)/0.032)+' %). Das ist eine bessere <b>Schätzung</b> als ein pauschaler Mittelwert.'}];
+ERR.forEach(e=>{ROWS[e.r][e.k]=e.v; if(e.r===13){ROWS[13].last=80;ROWS[13].strom=8.6}});
+const errKey=e=>e.r+'|'+e.k;
+S.marks=S.marks||[];
+function fmt(k,v){if(v===null||v===undefined||v==='')return '<span class="empty">leer</span>';
+  if(k==='vib'||k==='strom')return de(v,1); if(k==='id')return v; if(typeof v==='number')return v.toLocaleString('de-DE'); return v}
+function renderTable(){
+  const t=$('dataTable');let h='<thead><tr>'+COLS.map(c=>`<th>${c.t}</th>`).join('')+'</tr></thead><tbody>';
+  ROWS.forEach((r,i)=>{h+='<tr>'+COLS.map(c=>{
+    const key=i+'|'+c.k;let cls=c.k==='id'?'':'cell';
+    if(c.k!=='id'){const isErr=ERR.some(e=>errKey(e)===key),m=S.marks.includes(key);
+      if(S.errChecked){if(isErr&&m)cls+=' hit';else if(isErr)cls+=' miss';else if(m)cls+=' fp'}
+      else if(m)cls+=' marked'}
+    return `<td class="${cls}" data-key="${key}">${fmt(c.k,r[c.k])}</td>`}).join('')+'</tr>'});
+  t.innerHTML=h+'</tbody>';
+  t.querySelectorAll('td.cell').forEach(td=>td.onclick=()=>{if(S.errChecked)return;const k=td.dataset.key,i=S.marks.indexOf(k);
+    if(i>=0)S.marks.splice(i,1);else S.marks.push(k);save();renderTable()});
+  $('markCount').textContent=S.marks.length;
+}
+renderTable();
+$('errCheck').onclick=()=>{
+  if(S.errChecked){S.errChecked=false;S.marks=[];save();renderTable();$('errFb').className='fb';$('errCheck').textContent='Prüfen';return}
+  if(!S.marks.length){fb('errFb','bad','Ihr habt noch keine Zelle markiert.');return}
+  S.errChecked=true;
+  const hits=ERR.filter(e=>S.marks.includes(errKey(e))).length, fp=S.marks.length-hits;
+  S.errScore={hits,fp};save();renderTable();showErrFb();markDone();
+};
+function showErrFb(){
+  const {hits,fp}=S.errScore;
+  fb('errFb',hits===8&&!fp?'ok':'neutral',`<b>${hits} von 8</b> Fehlern gefunden, ${fp} Zelle(n) zu Unrecht markiert.<br><span class="mini">Grün = gefunden · rot gestrichelt = übersehen · durchgestrichen = war korrekt.</span>`);
+  $('errCheck').textContent='Neu starten';
+  renderErrList();$('errClassCard').style.display='block';
+}
+const ARTEN=['– wählen –','fehlend','unplausibel','widersprüchlich','ungültig'];
+const MASS=['– wählen –','Zeile löschen','Wert korrigieren','Wert schätzen','nachfragen'];
+S.cls=S.cls||{};
+function renderErrList(){
+  let h='<thead><tr><th>Motor</th><th>Spalte</th><th>Wert</th><th>Wartung</th><th>Fehlerart</th><th>Maßnahme</th></tr></thead><tbody>';
+  ERR.forEach((e,i)=>{const c=S.cls[i]||{};
+    h+=`<tr><td>${ROWS[e.r].id}</td><td>${COLS.find(x=>x.k===e.k).t}</td><td>${fmt(e.k,e.v)}</td><td>${e.k==='w'?'?':ROWS[e.r].w}</td>
+    <td><select data-i="${i}" data-f="a">${ARTEN.map((a,j)=>`<option value="${j}" ${c.a==j?'selected':''}>${a}</option>`).join('')}</select><div class="mini" id="ai${i}"></div></td>
+    <td><select data-i="${i}" data-f="m">${MASS.map((a,j)=>`<option value="${j}" ${c.m==j?'selected':''}>${a}</option>`).join('')}</select><div class="mini" id="mi${i}"></div></td></tr>`});
+  $('errList').innerHTML=h+'</tbody>';
+  $('errList').querySelectorAll('select').forEach(s=>s.onchange=()=>{const i=s.dataset.i;S.cls[i]=S.cls[i]||{};S.cls[i][s.dataset.f]=+s.value;save()});
+  if(S.classChecked) evalClass(false);
+}
+function massRating(e,m){return e.good.includes(m)?'good':e.ok.includes(m)?'ok':'bad'}
+function evalClass(write=true){
+  let ok=0,mg=0,mo=0,mopen=0;
+  ERR.forEach((e,i)=>{const c=S.cls[i]||{};const right=ARTEN[c.a]===e.art;if(right)ok++;
+    $('ai'+i).innerHTML=(right?'✓ ':'✗ ')+e.info;$('ai'+i).className='mini '+(right?'v-good':'v-bad');
+    if(!c.m){mopen++;$('mi'+i).innerHTML='';return}
+    const r=massRating(e,c.m);if(r==='good')mg++;if(r==='ok')mo++;
+    const lab={good:'✓ fachlich gut',ok:'≈ vertretbar',bad:'✗ ungünstig'}[r];
+    $('mi'+i).innerHTML=`<b class="v-${r}">${lab}.</b> ${e.mass}`});
+  if(write){S.classChecked=true;S.classScore=ok;S.massScore={good:mg,ok:mo,bad:8-mg-mo-mopen};save();markDone()}
+  fb('classFb',ok===8&&mg+mo===8?'ok':'neutral',`Fehlerarten: <b>${ok} von 8</b> richtig. Maßnahmen: <b>${mg}</b> fachlich gut, <b>${mo}</b> vertretbar, <b>${8-mg-mo-mopen}</b> ungünstig`+(mopen?`, ${mopen} noch offen`:'')+'. Lest die Begründungen unter jeder Maßnahme.');
+}
+$('classCheck').onclick=()=>{const open=ERR.filter((e,i)=>!(S.cls[i]&&S.cls[i].a&&S.cls[i].m)).length;if(open){fb('classFb','bad',`Ordnet zuerst allen 8 Fehlern eine Fehlerart <b>und</b> eine Maßnahme zu (noch ${open} offen).`);return}evalClass(true)};
+/* Schätzfrage */
+$('est').value=S.est??30;$('estVal').textContent=$('est').value;
+$('est').oninput=e=>{$('estVal').textContent=e.target.value;S.est=+e.target.value;save()};
+$('estCheck').onclick=()=>{S.estShown=true;save();fb('estFb','neutral',`Eure Schätzung: <b>${$('est').value} %</b>. In der Praxis werden meist <b>60–80 %</b> angegeben. Die Datenaufbereitung ist also der größte Teil der Arbeit, nicht das Training. <i>Stichwort: „Garbage in, garbage out.“</i>`)};
+
+/* =========================================================
+   Streudiagramm (gemeinsam für ② und ③)
+   ========================================================= */
+const X0=1,X1=6.5,Y0=40,Y1=90,PL=52,PR=620,PT=14,PB=380;
+const sx=v=>PL+(v-X0)/(X1-X0)*(PR-PL), sy=v=>PB-(v-Y0)/(Y1-Y0)*(PB-PT);
+function axes(){let g='';
+  for(let x=1;x<=6.5;x+=0.5){g+=`<line x1="${sx(x)}" x2="${sx(x)}" y1="${PT}" y2="${PB}" stroke="var(--line)"/>`;if(x%1===0)g+=`<text x="${sx(x)}" y="${PB+16}" text-anchor="middle">${de(x,0)}</text>`}
+  for(let y=40;y<=90;y+=10){g+=`<line x1="${PL}" x2="${PR}" y1="${sy(y)}" y2="${sy(y)}" stroke="var(--line)"/><text x="${PL-8}" y="${sy(y)+4}" text-anchor="end">${y}</text>`}
+  return g+`<text x="${(PL+PR)/2}" y="${PB+34}" text-anchor="middle">Vibration (mm/s)</text><text transform="translate(14 ${(PT+PB)/2}) rotate(-90)" text-anchor="middle">Lagertemperatur (°C)</text>`}
+function points(data,wrongFn){let g='';
+  data.forEach(m=>{const x=sx(m.vib),y=sy(m.temp);
+    g+=m.w?`<polygon points="${x},${y-5.5} ${x+5},${y+4} ${x-5},${y+4}" fill="var(--cls1)" stroke="var(--card)" stroke-width="1"><title>${m.id}: ${de(m.vib)} mm/s, ${m.temp} °C, Wartung 1</title></polygon>`
+          :`<circle cx="${x}" cy="${y}" r="4.2" fill="var(--cls0)" stroke="var(--card)" stroke-width="1"><title>${m.id}: ${de(m.vib)} mm/s, ${m.temp} °C, Wartung 0</title></circle>`;
+    if(wrongFn&&wrongFn(m))g+=`<circle cx="${x}" cy="${y}" r="9" fill="none" stroke="var(--bad)" stroke-width="2"/>`});
+  return g}
+
+/* ---------- STATION 2 ---------- */
+S.rule=S.rule||{mode:'and',vx:5,ty:85};
+$('ruleMode').value=S.rule.mode;$('vx').value=S.rule.vx;$('ty').value=S.rule.ty;
+const predict=(m,r)=>{const a=m.vib>r.vx,b=m.temp>r.ty;return r.mode==='and'?a&&b:r.mode==='or'?a||b:r.mode==='vib'?a:b};
+function evalRule(r){let tp=0,tn=0,fp=0,fn=0;MOTORS.forEach(m=>{const p=predict(m,r);if(p&&m.w)tp++;else if(p)fp++;else if(m.w)fn++;else tn++});return{tp,tn,fp,fn,acc:(tp+tn)/MOTORS.length}}
+function drawPlot(){
+  const r=S.rule;let g=axes();
+  const zx=sx(clamp(r.vx,X0,X1)),zy=sy(clamp(r.ty,Y0,Y1)),z='fill="var(--zone)"';
+  if(r.mode==='and')g+=`<rect x="${zx}" y="${PT}" width="${PR-zx}" height="${zy-PT}" ${z}/>`;
+  if(r.mode==='vib'||r.mode==='or')g+=`<rect x="${zx}" y="${PT}" width="${PR-zx}" height="${PB-PT}" ${z}/>`;
+  if(r.mode==='temp'||r.mode==='or')g+=`<rect x="${PL}" y="${PT}" width="${(r.mode==='or'?zx:PR)-PL}" height="${zy-PT}" ${z}/>`;
+  if(r.mode!=='temp')g+=`<line x1="${zx}" x2="${zx}" y1="${PT}" y2="${PB}" stroke="var(--cls1)" stroke-width="2" stroke-dasharray="6 4"/>`;
+  if(r.mode!=='vib')g+=`<line x1="${PL}" x2="${PR}" y1="${zy}" y2="${zy}" stroke="var(--cls1)" stroke-width="2" stroke-dasharray="6 4"/>`;
+  g+=points(MOTORS,$('showErr').checked?(m=>predict(m,r)!==!!m.w):null);
+  $('plot').innerHTML=g;
+  const e=evalRule(r);
+  $('kAcc').textContent=pct(e.acc);$('kMiss').textContent=`${e.fn} von ${e.tp+e.fn}`;$('kFA').textContent=e.fp;
+  $('vxVal').textContent=de(r.vx,1);$('tyVal').textContent=r.ty;
+  $('vx').disabled=r.mode==='temp';$('ty').disabled=r.mode==='vib';
+  $('nInfo').textContent=`160 Motoren, davon ${e.tp+e.fn} mit Wartung = 1. Ein Modell, das immer „in Ordnung“ sagt, hätte schon ${de((e.tn+e.fp)/160*100,1)} % Trefferquote!`;
+  if(e.acc>(S.best||0)){S.best=e.acc;S.bestRule={...r}}
+  if(e.fn===0&&!S.won22){S.won22=true;S.r22={...r,fp:e.fp}}
+  $('best').textContent=S.best?pct(S.best):'–';
+  $('bestRule').textContent=S.bestRule?'('+ruleText(S.bestRule)+')':'';
+  $('b21').textContent=S.best>=0.9?'geschafft':'offen';$('b21').classList.toggle('won',S.best>=0.9);
+  $('b22').textContent=S.won22?`geschafft: ${S.r22.fp} Fehlalarme`:'offen';$('b22').classList.toggle('won',!!S.won22);
+  renderTree(r);markDone();save();
+}
+function ruleText(r){const v=`Vibration > ${de(r.vx,1)} mm/s`,t=`Temperatur > ${r.ty} °C`;
+  return 'Wartung, wenn '+(r.mode==='and'?v+' UND '+t:r.mode==='or'?v+' ODER '+t:r.mode==='vib'?v:t)}
+function renderTree(r){
+  const q=t=>`<div class="node q">${t}?</div>`,L1='<div class="node leaf1">Wartung</div>',L0='<div class="node leaf0">in Ordnung</div>';
+  const br=(ja,nein)=>`<div class="branch"><span class="lbl">ja</span>${ja}<span class="lbl">nein</span>${nein}</div>`;
+  const v=`Vibration &gt; ${de(r.vx,1)} mm/s`,t=`Temperatur &gt; ${r.ty} °C`;
+  let h;
+  if(r.mode==='vib')h=q(v)+br(L1,L0);
+  else if(r.mode==='temp')h=q(t)+br(L1,L0);
+  else if(r.mode==='and')h=q(v)+br(q(t)+br(L1,L0),L0);
+  else h=q(v)+br(L1,q(t)+br(L1,L0));
+  $('tree').innerHTML=h;
+}
+$('ruleMode').onchange=e=>{S.rule.mode=e.target.value;drawPlot()};
+$('vx').oninput=e=>{S.rule.vx=+e.target.value;drawPlot()};
+$('ty').oninput=e=>{S.rule.ty=+e.target.value;drawPlot()};
+$('showErr').onchange=drawPlot;
+
+/* =========================================================
+   Lernendes Modell: Trennlinie (logistische Regression, Motor für Motor)
+   ========================================================= */
+const sig=z=>1/(1+Math.exp(-z));
+const featA=m=>[m.vib-3,(m.temp-62)/8];                 // Vibration, Lagertemperatur
+const featB=m=>[m.vib-3,(m.temp-m.hall-42)/8];          // Vibration, Übertemperatur
+const LR={klein:0.001,mittel:0.005,gross:3};
+function makeModel(feat=featA,init=[-0.6,0.9,1.2]){return{w:[...init],feat}}
+const mpred=(M,m)=>{const x=M.feat(m);return sig(M.w[0]*x[0]+M.w[1]*x[1]+M.w[2])>0.5};
+const macc=(M,D)=>D.filter(m=>mpred(M,m)===!!m.w).length/D.length;
+function epoch(M,D,lr,rng){
+  const idx=D.map((_,i)=>i);
+  for(let i=idx.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]]}
+  idx.forEach(i=>{const m=D[i],x=M.feat(m),p=sig(M.w[0]*x[0]+M.w[1]*x[1]+M.w[2]),e=p-m.w;
+    M.w[0]-=lr*e*x[0];M.w[1]-=lr*e*x[1];M.w[2]-=lr*e});
+}
+function trainModel(D,lr,E,feat=featA,seed=7){const M=makeModel(feat),r=mulberry32(seed);for(let e=0;e<E;e++)epoch(M,D,lr,r);return M}
+function counts(M,D){let tp=0,tn=0,fp=0,fn=0;D.forEach(m=>{const p=typeof M==='function'?M(m):mpred(M,m);if(p&&m.w)tp++;else if(p)fp++;else if(m.w)fn++;else tn++});return{tp,tn,fp,fn,acc:(tp+tn)/D.length}}
+
+/* ---------- STATION 3 ---------- */
+let T3=null;
+function reset3(){T3={M:makeModel(),rng:mulberry32(7+(S.restarts||0)),lr:$('lr').value,hist:[],ep:0};T3.hist.push(macc(T3.M,MOTORS));S.stop=null;draw3()}
+function step3(n){if(!T3)reset3();for(let i=0;i<n;i++){epoch(T3.M,MOTORS,LR[T3.lr],T3.rng);T3.ep++;T3.hist.push(macc(T3.M,MOTORS))}draw3()}
+$('lr').onchange=()=>{S.restarts=(S.restarts||0)+1;reset3()};
+$('ep1').onclick=()=>step3(1);
+$('ep10').onclick=()=>step3(10);
+let autoT=null;
+$('epAuto').onclick=()=>{if(autoT)return;if(!T3)reset3();autoT=setInterval(()=>{if(T3.ep>=60){clearInterval(autoT);autoT=null;return}step3(1)},90)};
+$('epReset').onclick=()=>{if(autoT){clearInterval(autoT);autoT=null}S.restarts=(S.restarts||0)+1;reset3()};
+function halfPlane(M){ // Polygon des Bereichs „Wartung“ im Diagramm + Trennlinie
+  const f=(v,t)=>{const x=M.feat({vib:v,temp:t,hall:20});return M.w[0]*x[0]+M.w[1]*x[1]+M.w[2]};
+  const P=[[X0,Y0],[X1,Y0],[X1,Y1],[X0,Y1]],out=[],cut=[];
+  for(let i=0;i<4;i++){const a=P[i],b=P[(i+1)%4],fa=f(...a),fb2=f(...b);
+    if(fa>0)out.push(a);
+    if((fa>0)!==(fb2>0)){const t=fa/(fa-fb2),q=[a[0]+t*(b[0]-a[0]),a[1]+t*(b[1]-a[1])];out.push(q);cut.push(q)}}
+  return{out,cut}}
+function draw3(){
+  if(!T3)reset3();
+  const {out,cut}=halfPlane(T3.M);let g=axes();
+  if(out.length>2)g+=`<polygon points="${out.map(p=>sx(p[0])+','+sy(p[1])).join(' ')}" fill="var(--zone)"/>`;
+  if(cut.length===2)g+=`<line x1="${sx(cut[0][0])}" y1="${sy(cut[0][1])}" x2="${sx(cut[1][0])}" y2="${sy(cut[1][1])}" stroke="var(--cls1)" stroke-width="2.5"/>`;
+  g+=points(MOTORS);
+  $('plot3').innerHTML=g;
+  $('k3ep').textContent=T3.ep;$('k3acc').textContent=pct(T3.hist[T3.hist.length-1]);
+  $('k3par').textContent=`w₁ = ${de(T3.M.w[0],2)} · w₂ = ${de(T3.M.w[1],2)} · b = ${de(T3.M.w[2],2)}`;
+  drawCurve();
+  $('cmpHuman').textContent=S.best?pct(S.best)+' ('+ruleText(S.bestRule)+')':'– (Station ② noch nicht bearbeitet)';
+  $('cmpMachine').textContent=T3.ep?pct(T3.hist[T3.hist.length-1])+' nach '+T3.ep+' Epochen':'– (noch nicht trainiert)';
+  S.t3={ep:T3.ep,lr:T3.lr,acc:T3.hist[T3.hist.length-1]};
+  $('stopVal').textContent=S.stop!=null?'Epoche '+S.stop:'–';
+  $('b33').textContent=S.stopOk?'geschafft':'offen';$('b33').classList.toggle('won',!!S.stopOk);
+}
+const CL=52,CR=620,CT=12,CB=190;
+function drawCurve(){
+  const E=Math.max(60,T3.ep),cx=e=>CL+e/E*(CR-CL),cy=a=>CB-a*(CB-CT);
+  let g='';
+  for(let a=0;a<=1.001;a+=0.25)g+=`<line x1="${CL}" x2="${CR}" y1="${cy(a)}" y2="${cy(a)}" stroke="var(--line)"/><text x="${CL-8}" y="${cy(a)+4}" text-anchor="end">${a*100} %</text>`;
+  for(let e=0;e<=E;e+=10)g+=`<text x="${cx(e)}" y="${CB+16}" text-anchor="middle">${e}</text>`;
+  g+=`<text x="${(CL+CR)/2}" y="${CB+34}" text-anchor="middle">Epochen</text>`;
+  if(T3.hist.length>1)g+=`<polyline fill="none" stroke="var(--accent)" stroke-width="2.5" points="${T3.hist.map((a,e)=>cx(e)+','+cy(a)).join(' ')}"/>`;
+  T3.hist.forEach((a,e)=>{if(e===T3.ep)g+=`<circle cx="${cx(e)}" cy="${cy(a)}" r="4" fill="var(--accent)"/>`});
+  if(S.stop!=null)g+=`<line x1="${cx(S.stop)}" x2="${cx(S.stop)}" y1="${CT}" y2="${CB}" stroke="var(--cls1)" stroke-width="2" stroke-dasharray="5 4"/><text x="${cx(S.stop)+4}" y="${CT+12}" style="fill:var(--cls1)">Stopp</text>`;
+  g+=`<rect x="${CL}" y="${CT}" width="${CR-CL}" height="${CB-CT}" fill="transparent" id="curveHit"/>`;
+  $('curve').innerHTML=g;
+  $('curveHit').onclick=ev=>{const svg=$('curve'),pt=svg.createSVGPoint();pt.x=ev.clientX;pt.y=ev.clientY;const p=pt.matrixTransform(svg.getScreenCTM().inverse());
+    S.stop=Math.round(clamp((p.x-CL)/(CR-CL)*E,0,E));S.stopLR=T3.lr;S.stopEp=T3.ep;save();draw3()};
+}
+$('stopCheck').onclick=()=>{
+  if(!T3||T3.lr!=='mittel'||T3.ep<60){fb('stopFb','bad','Trainiert zuerst neu mit <b>mittlerer</b> Lernrate bis mindestens Epoche 60.');return}
+  if(S.stop==null){fb('stopFb','bad','Klickt in die Lernkurve, um euren Stopppunkt zu setzen.');return}
+  const fin=Math.max(...T3.hist.slice(40)),plateau=T3.hist.findIndex(a=>a>=fin-0.01);
+  const s=S.stop;
+  if(s<plateau-2){S.stopOk=false;fb('stopFb','bad',`Zu früh: Bei Epoche ${s} steigt die Kurve noch deutlich (${pct(T3.hist[s])}). Das Modell hat noch nicht fertig gelernt.`)}
+  else if(s>plateau+20){S.stopOk=true;fb('stopFb','neutral',`Möglich, aber unnötig lang: Ab etwa Epoche ${plateau} verbessert sich die Trefferquote kaum noch. Jede weitere Epoche kostet Rechenzeit, und bei großen Modellen wächst die Gefahr, dass es die Trainingsdaten auswendig lernt (→ Station ④).`)}
+  else{S.stopOk=true;fb('stopFb','ok',`Gut gewählt! Ab etwa Epoche ${plateau} flacht die Kurve ab (${pct(T3.hist[plateau])}). Weiteres Training bringt kaum Verbesserung, kostet aber Rechenzeit.`)}
+  save();draw3();markDone();
+};
+
+/* ---------- STATION 4 ---------- */
+let T4=null;
+S.split=S.split||80;$('split').value=S.split;
+const updSplit=()=>{$('splitVal').textContent=S.split;$('splitVal2').textContent=100-S.split};updSplit();
+$('split').oninput=e=>{S.split=+e.target.value;updSplit();save()};
+function runTest(){
+  const r=mulberry32(99),idx=MOTORS.map((_,i)=>i);
+  for(let i=idx.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]]}
+  const nT=Math.round(160*S.split/100),TR=idx.slice(0,nT).map(i=>MOTORS[i]),TE=idx.slice(nT).map(i=>MOTORS[i]);
+  const A=trainModel(TR,LR.mittel,30);
+  const memo=new Map(TR.map(m=>[m.vib+'|'+m.temp,m.w]));
+  const B=m=>memo.has(m.vib+'|'+m.temp)?!!memo.get(m.vib+'|'+m.temp):false;
+  const C=()=>false;
+  T4={TR,TE,A,B,C,cA:counts(A,TE),cB:counts(B,TE),cC:counts(C,TE)};
+  $('aTr').textContent=pct(counts(A,TR).acc);$('aTe').textContent=pct(T4.cA.acc);
+  $('bTr').textContent=pct(counts(B,TR).acc);$('bTe').textContent=pct(T4.cB.acc)+` (erkennt ${T4.cB.tp} von ${T4.cB.tp+T4.cB.fn} Wartungsfällen)`;
+  $('testRes').style.display='block';$('cmCard').style.display='block';$('trapCard').style.display='block';
+  // Kacheln
+  const tr=mulberry32(5),order=TE.map((_,i)=>i).sort(()=>tr()-0.5);
+  $('tiles').innerHTML=order.map(i=>{const m=TE[i],p=mpred(A,m);
+    return `<div class="tile"><b>${m.id}</b>Tatsächlich: ${m.w?'<span class="v-bad">Wartung</span>':'i. O.'}<br>Vorhersage: ${p?'<span class="v-bad">Wartung</span>':'i. O.'}</div>`}).join('');
+  // Modell C
+  const c=T4.cC;
+  $('cmC').innerHTML=`<table class="cm"><tr><th></th><th>Vorhersage:<br>Wartung</th><th>Vorhersage:<br>in Ordnung</th></tr>
+    <tr><th>Tatsächlich:<br>Wartung</th><td class="cell0">${c.tp}</td><td class="cell1">${c.fn}</td></tr>
+    <tr><th>Tatsächlich:<br>in Ordnung</th><td class="cell1">${c.fp}</td><td class="cell0">${c.tn}</td></tr></table>`;
+  $('cmCtext').innerHTML=`<p style="margin-top:0">Modell C: Trefferquote <b>${pct(c.acc)}</b></p><p>Euer Modell A: Trefferquote <b>${pct(T4.cA.acc)}</b></p><p class="hint">Berechnet für Modell C selbst: Erkennungsrate und Alarm-Zuverlässigkeit.</p>`;
+  S.testRun=true;S.test4={split:S.split,aTe:T4.cA.acc,bTr:counts(B,TR).acc,bTe:T4.cB.acc};save();
+}
+$('runTest').onclick=()=>{S.cmOk=false;['cTP','cFN','cFP','cTN','cAcc','cRec','cPre'].forEach(k=>$(k).value='');$('cmFb').className='fb';runTest();markDone()};
+function showTestIfDone(){if(S.testRun&&!T4)runTest()}
+$('cmCheck').onclick=()=>{
+  if(!T4)return;const c=T4.cA,v=k=>$(k).value===''?NaN:+$(k).value;
+  const cellsOk=v('cTP')===c.tp&&v('cFN')===c.fn&&v('cFP')===c.fp&&v('cTN')===c.tn;
+  const acc=c.acc*100,rec=c.tp/(c.tp+c.fn)*100,pre=c.tp+c.fp?c.tp/(c.tp+c.fp)*100:0;
+  const near=(a,b)=>Math.abs(a-b)<=0.6;
+  const kAcc=near(v('cAcc'),acc),kRec=near(v('cRec'),rec),kPre=near(v('cPre'),pre);
+  S.cmOk=cellsOk&&kAcc&&kRec&&kPre;S.cm4={cellsOk,kAcc,kRec,kPre,acc,rec,pre};save();markDone();
+  $('b42').textContent=S.cmOk?'geschafft':'offen';$('b42').classList.toggle('won',S.cmOk);
+  if(!cellsOk){fb('cmFb','bad','Die Matrix stimmt noch nicht. Zählt die Kacheln noch einmal. Die vier Felder müssen zusammen '+T4.TE.length+' ergeben.');return}
+  const L=[];if(!kAcc)L.push('Trefferquote');if(!kRec)L.push('Erkennungsrate');if(!kPre)L.push('Alarm-Zuverlässigkeit');
+  if(L.length)fb('cmFb','neutral','Die Matrix stimmt! Noch nicht richtig berechnet: <b>'+L.join(', ')+'</b>.');
+  else fb('cmFb','ok',`Alles richtig! Trefferquote ${de(acc)} %, Erkennungsrate ${de(rec)} %, Alarm-Zuverlässigkeit ${de(pre)} %. Von ${c.tp+c.fn} echten Wartungsfällen werden ${c.tp} erkannt.`);
+};
+
+/* ---------- STATION 5 ---------- */
+function orderWidget(poolId,seqId,items,key,onChange){
+  S[key]=S[key]||[];
+  function render(){
+    const pool=$(poolId),seq=$(seqId);pool.innerHTML='';seq.innerHTML='';
+    items.filter(it=>!S[key].includes(it.k)).forEach(it=>{const c=document.createElement('span');c.className='chip';c.textContent=it.t;c.onclick=()=>{S[key].push(it.k);save();render();onChange&&onChange()};pool.appendChild(c)});
+    S[key].forEach((k,i)=>{const it=items.find(x=>x.k===k);const c=document.createElement('span');c.className='chip';c.innerHTML=`<span class="num">${i+1}</span>${it.t}`;c.onclick=()=>{S[key].splice(i,1);save();render();onChange&&onChange()};seq.appendChild(c)});
+    if(!S[key].length)seq.innerHTML='<span class="hint">Hier erscheint eure Reihenfolge.</span>';
+  }
+  render();return render;
+}
+const CHAIN=[{k:'k3',t:'A/D-Wandlung im Messmodul'},{k:'k5',t:'Meldung an SPS und Anzeige im HMI-Bedienpanel'},{k:'k1',t:'Beschleunigungssensor und PT100 am Lagerschild'},
+  {k:'k4',t:'Edge-Gateway im Schaltschrank: KI-Modell berechnet „Wartung ja/nein“'},{k:'k6',t:'Wartungsauftrag an die Instandhaltung'},{k:'k2',t:'Messverstärker / Messumformer (z. B. 4–20 mA)'}];
+orderWidget('chainPool','chainSeq',CHAIN,'chain');
+$('chainCheck').onclick=()=>{
+  const sol=['k1','k2','k3','k4','k5','k6'];
+  if(S.chain.length<6){fb('chainFb','bad','Ordnet zuerst alle sechs Bausteine ein.');return}
+  const right=S.chain.filter((k,i)=>k===sol[i]).length;
+  S.chainOk=right===6;save();markDone();
+  $('b51').textContent=S.chainOk?'geschafft':'offen';$('b51').classList.toggle('won',S.chainOk);
+  if(S.chainOk)fb('chainFb','ok','Richtig! Das KI-Modell ist nur <b>ein</b> Glied in der Kette. Fällt ein Sensor aus oder liefert der Messumformer falsche Werte, rechnet auch die beste KI mit falschen Daten (→ Station ①).');
+  else fb('chainFb','bad',`${right} von 6 Bausteinen stehen an der richtigen Stelle. Denkt an den Weg des Signals: vom physikalischen Messwert über das elektrische Signal zur Zahl, dann zur Entscheidung und zum Menschen.`);
+};
+
+/* Betrieb: 12 Wochen, 40 Motoren/Woche; ab Woche 7 Sommer */
+const HALL_OFF=[0,0,0,1,0,1,4,8,11,13,12,10];
+const WEEKS=HALL_OFF.map((o,i)=>genMotors(5000+i,40,o,'W'+(i+1)+'-',1));
+const WINTER=WEEKS.slice(0,6).flat(),SUMMER=WEEKS.slice(6).flat();
+const MODEL0=trainModel(MOTORS,LR.mittel,40);
+const opsStats=M=>WEEKS.map(D=>counts(M,D));
+const OPS0=opsStats(MODEL0);
+function drawOps(n){
+  const L=48,R=600,T=26,B=210,maxY=Math.max(20,...OPS0.map(s=>s.fp)),bw=(R-L)/12;
+  const y=v=>B-v/maxY*(B-T),yh=h=>B-(h-15)/25*(B-T);
+  let g='';
+  for(let v=0;v<=maxY;v+=5)g+=`<line x1="${L}" x2="${R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end">${v}</text>`;
+  g+=`<text transform="translate(12 ${(T+B)/2}) rotate(-90)" text-anchor="middle">Anzahl pro Woche</text>`;
+  for(let h=20;h<=40;h+=10)g+=`<text x="${R+6}" y="${yh(h)+4}">${h} °C</text>`;
+  g+=`<rect x="${L+6*bw}" y="${T}" width="${6*bw}" height="${B-T}" fill="var(--warn-soft)" opacity=".6"/><text x="${L+9*bw}" y="${T-8}" text-anchor="middle">Sommer (Wochen 7–12)</text>`;
+  const pts=[];
+  for(let i=0;i<12;i++){const x=L+i*bw;
+    g+=`<text x="${x+bw/2}" y="${B+16}" text-anchor="middle">Wo ${i+1}</text>`;
+    if(i<n){const s=OPS0[i];
+      g+=`<rect x="${x+bw*0.15}" y="${y(s.fp)}" width="${bw*0.33}" height="${B-y(s.fp)}" fill="var(--cls1)"><title>Woche ${i+1}: ${s.fp} Fehlalarme</title></rect>`;
+      g+=`<rect x="${x+bw*0.52}" y="${y(s.fn)}" width="${bw*0.33}" height="${B-y(s.fn)}" fill="var(--bad)"><title>Woche ${i+1}: ${s.fn} übersehen</title></rect>`;
+      pts.push(`${x+bw/2},${yh(20+HALL_OFF[i])}`)}}
+  if(pts.length>1)g+=`<polyline points="${pts.join(' ')}" fill="none" stroke="var(--ink)" stroke-width="2" stroke-dasharray="4 3"/>`;
+  g+=`<text x="${(L+R)/2}" y="${B+36}" text-anchor="middle">Betriebswoche</text>`;
+  $('ops').innerHTML=g;
+}
+$('runOps').onclick=()=>{let n=0;const t=setInterval(()=>{n++;drawOps(n);if(n>=12){clearInterval(t);S.opsShown=true;save()}},250)};
+function sum(st,a,b){return st.slice(a,b).reduce((s,x)=>({fp:s.fp+x.fp,fn:s.fn+x.fn,ok:s.ok+x.tp+x.tn,n:s.n+x.tp+x.tn+x.fp+x.fn}),{fp:0,fn:0,ok:0,n:0})}
+function fixRow(name,M){const st=opsStats(M),su=sum(st,6,12),wi=sum(st,0,6);return{name,fp:su.fp,fn:su.fn,fnW:wi.fn,fpW:wi.fp,all:(su.ok+wi.ok)/(su.n+wi.n)}}
+const FIX={orig:fixRow('Ursprüngliches Modell',MODEL0),
+  A:fixRow('A: nachtrainiert mit Sommerdaten',trainModel(MOTORS.concat(SUMMER),LR.mittel,40)),
+  B:fixRow('B: mit Übertemperatur (Lager − Halle)',trainModel(MOTORS,LR.mittel,40,featB))};
+function renderFix(){
+  const rows=['orig'].concat(S.fixA?['A']:[]).concat(S.fixB?['B']:[]).map(k=>{const r=FIX[k];return `<tr><td>${r.name}</td><td>${r.fpW} / <b>${r.fp}</b></td><td>${r.fnW} / <b>${r.fn}</b></td><td>${pct(r.all)}</td></tr>`}).join('');
+  $('fixTable').querySelector('tbody').innerHTML=rows;
+}
+renderFix();
+$('fixA').onclick=()=>{S.fixA=true;save();renderFix();markDone()};
+$('fixB').onclick=()=>{S.fixB=true;save();renderFix();markDone()};
+$('backTo').value=S.backTo||'';$('backTo').onchange=e=>{S.backTo=e.target.value;save()};
+
+/* ---------- SYNTHESE ---------- */
+const STEPS=[{k:'struktur',t:'Auswahl der KI-Struktur'},{k:'daten',t:'Bereitstellung der Daten'},{k:'training',t:'Training'},{k:'test',t:'Evaluation / Test'},{k:'einsatz',t:'Einsatz'}];
+const shuffledSteps=[STEPS[2],STEPS[4],STEPS[0],STEPS[3],STEPS[1]];
+orderWidget('cycPool','cycSeq',shuffledSteps,'cyc');
+$('cycCheck').onclick=()=>{
+  if(S.cyc.length<5){fb('cycFb','bad','Ordnet zuerst alle fünf Schritte ein.');return}
+  const s=S.cyc.join(','),ok=s==='struktur,daten,training,test,einsatz'||s==='daten,struktur,training,test,einsatz';
+  S.cycOk=ok;save();markDone();
+  $('bz1').textContent=ok?'geschafft':'offen';$('bz1').classList.toggle('won',ok);
+  if(ok){fb('cycFb','ok','Richtig! Ob zuerst die Struktur gewählt oder zuerst die Daten bereitgestellt werden, hängt vom Projekt ab. Beides greift ineinander: Die Struktur muss zu den Daten passen (Tabelle → Trennlinie/Entscheidungsbaum, Bilder → neuronales Netz).');drawCycle()}
+  else fb('cycFb','bad','Noch nicht richtig. Denkt an eure Werkstatt: Was musstet ihr haben, bevor ihr trainieren konntet? Und wann durfte das Modell an die Anlage?');
+};
+const BACKS=[{k:'tp',t:'Anpassung der Trainingsparameter',sol:'training'},{k:'ds',t:'Anpassung der Datensätze',sol:'daten'},{k:'st',t:'Anpassung der Struktur',sol:'struktur'}];
+S.back=S.back||{};
+$('backTable').querySelector('tbody').innerHTML=BACKS.map(b=>{const v=S.back[b.k]||{};return `<tr><td><b>${b.t}</b><div class="mini" id="bf_${b.k}"></div></td>
+  <td><select data-b="${b.k}"><option value="">– wählen –</option>${STEPS.map(s=>`<option value="${s.k}" ${v.to===s.k?'selected':''}>${s.t}</option>`).join('')}</select></td>
+  <td><textarea data-bt="${b.k}" style="min-height:60px">${v.txt||''}</textarea></td></tr>`}).join('');
+document.querySelectorAll('[data-b]').forEach(s=>s.onchange=()=>{S.back[s.dataset.b]={...(S.back[s.dataset.b]||{}),to:s.value};save()});
+document.querySelectorAll('[data-bt]').forEach(t=>t.oninput=()=>{S.back[t.dataset.bt]={...(S.back[t.dataset.bt]||{}),txt:t.value};save()});
+$('backCheck').onclick=()=>{
+  let ok=0;BACKS.forEach(b=>{const r=(S.back[b.k]||{}).to===b.sol;if(r)ok++;$('bf_'+b.k).innerHTML=r?'<span class="v-good">✓ Ziel richtig</span>':'<span class="v-bad">✗ Ziel prüfen</span>'});
+  const txtOk=BACKS.every(b=>((S.back[b.k]||{}).txt||'').trim().length>=15);
+  S.backOk=ok===3;save();markDone();
+  $('bz2').textContent=S.backOk?'geschafft':'offen';$('bz2').classList.toggle('won',S.backOk);
+  fb('backFb',S.backOk?'ok':'bad',`${ok} von 3 Zielen richtig.`+(S.backOk&&!txtOk?' Ergänzt noch zu jedem Pfeil eine Situation aus der Werkstatt.':''));
+  if(S.backOk&&txtOk)$('ehZ2').classList.add('show');
+  if(S.cycOk)drawCycle();
+};
+function cycleSVG(){
+  const order=S.cycOk?S.cyc:STEPS.map(s=>s.k);
+  const col={struktur:'#6b3fb3',daten:'#1f7a5c',training:'#9c5a3c',test:'#c7701c',einsatz:'#2f7fd1'};
+  const lines={struktur:['KI-Struktur','auswählen'],daten:['Daten','bereitstellen'],training:['Training'],test:['Evaluation /','Test'],einsatz:['Einsatz']};
+  const W=160,G=20,Y=150,H=64,x=i=>10+i*(W+G);
+  let g=`<defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker><marker id="ah2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--cls1)"/></marker></defs>`;
+  order.forEach((k,i)=>{const L=lines[k],y0=Y+H/2+5-(L.length-1)*9;
+    g+=`<rect x="${x(i)}" y="${Y}" width="${W}" height="${H}" rx="8" fill="${col[k]}"/>`;
+    L.forEach((t,j)=>g+=`<text x="${x(i)+W/2}" y="${y0+j*18}" text-anchor="middle" style="fill:#fff;font-size:15px;font-weight:600">${t}</text>`);
+    if(i<4)g+=`<line x1="${x(i)+W}" y1="${Y+H/2}" x2="${x(i+1)-2}" y2="${Y+H/2}" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah)"/>`});
+  const tc=x(order.indexOf('test'))+W/2;
+  [{to:'training',lab:'Anpassung der Trainingsparameter',dx:-45,yy:122},{to:'daten',lab:'Anpassung der Datensätze',dx:0,yy:86},{to:'struktur',lab:'Anpassung der Struktur',dx:45,yy:50}].forEach(a=>{
+    const fx=tc+a.dx,tx=x(order.indexOf(a.to))+W/2;
+    g+=`<path d="M${fx},${Y} V${a.yy} H${tx} V${Y-3}" fill="none" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah)"/><text x="${tx+8}" y="${a.yy-6}">${a.lab}</text>`});
+  g+=`<text x="${tc+45}" y="${30}" text-anchor="middle" style="font-size:12px">Qualitätsanforderungen nicht erfüllt?</text>`;
+  const ex=x(order.indexOf('einsatz'))+W/2,dx=x(order.indexOf('daten'))+W/2;
+  g+=`<path d="M${ex},${Y+H} V${Y+H+22} H${dx} V${Y+H+3}" fill="none" stroke="var(--cls1)" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#ah2)"/><text x="${(ex+dx)/2}" y="${Y+H+40}" text-anchor="middle">Datendrift im Betrieb → neue Daten</text>`;
+  return `<svg viewBox="0 0 900 262" width="100%" role="img" aria-label="KI-Zyklus mit Rückpfeilen">${g}</svg>`;
+}
+function drawCycle(){$('cycleCard').style.display='block';$('cycleSvg').outerHTML='<div id="cycleSvg">'+cycleSVG()+'</div>';$('lzCycle').innerHTML=cycleSVG()}
+if(S.cycOk)drawCycle();
+const TRANS=[{k:'daten',t:'Bereitstellung der Daten'},{k:'struktur',t:'Auswahl der KI-Struktur'},{k:'training',t:'Training'},{k:'test',t:'Evaluation / Test'},{k:'einsatz',t:'Einsatz'}];
+S.trans=S.trans||{};
+$('transTable').querySelector('tbody').innerHTML=TRANS.map(s=>`<tr><td style="width:24%"><b>${s.t}</b></td><td><textarea data-tr="${s.k}" style="min-height:56px">${S.trans[s.k]||''}</textarea></td></tr>`).join('');
+const updTrans=()=>{$('transReveal').disabled=TRANS.some(s=>(S.trans[s.k]||'').trim().length<10)};
+document.querySelectorAll('[data-tr]').forEach(t=>t.oninput=()=>{S.trans[t.dataset.tr]=t.value;updTrans();save()});updTrans();
+$('transReveal').onclick=()=>{$('ehZ3').classList.add('show');$('transReveal').style.display='none'};
+
+/* =========================================================
+   Laufzettel
+   ========================================================= */
+function renderLZ(){
+  const t=S.txt||{},L=[],T=x=>(x&&x.trim())||'—';
+  L.push('KI-WERKSTATT PREDICTIVE MAINTENANCE – LAUFZETTEL');
+  L.push('Team: '+(S.team||'—')+'    Datum: '+new Date().toLocaleDateString('de-DE'));
+  L.push('');
+  L.push('MISSION');
+  L.push('M1 Gewählte Messgrößen: '+((S.sens||[]).map(k=>SENSORS.find(s=>s.k===k).t).join(', ')||'—'));
+  L.push('   Begründung: '+T(t.m1text));
+  L.push('');
+  L.push('STATION ① DATENDETEKTIVE');
+  L.push('1.1 Eingang/Ausgang richtig zugeordnet: '+(S.ioOk?'ja':'nein / nicht geprüft'));
+  L.push('1.2 Fehler gefunden: '+(S.errScore?`${S.errScore.hits} von 8, ${S.errScore.fp} falsch markiert`:'nicht geprüft'));
+  L.push('1.3 Fehlerarten richtig: '+(S.classScore!=null?S.classScore+' von 8':'nicht geprüft')+(S.massScore?` · Maßnahmen: ${S.massScore.good} gut, ${S.massScore.ok} vertretbar, ${S.massScore.bad} ungünstig`:''));
+  ERR.forEach((e,i)=>{const c=(S.cls||{})[i]||{};L.push(`    ${ROWS[e.r].id} / ${COLS.find(x=>x.k===e.k).t}: ${ARTEN[c.a||0]} → ${MASS[c.m||0]}`)});
+  L.push('    Begründung: '+T(t.t13));
+  L.push('1.4 Schätzung Anteil Datenaufbereitung: '+(S.est??'—')+' %');
+  L.push('');
+  L.push('STATION ② SEI SELBST DIE KI');
+  L.push('2.1 Beste Trefferquote: '+(S.best?pct(S.best)+' – '+ruleText(S.bestRule):'—'));
+  L.push('2.2 Ohne übersehenen Wartungsfall: '+(S.r22?ruleText(S.r22)+` → ${S.r22.fp} Fehlalarme`:'nicht erreicht'));
+  L.push('    Empfehlung: '+T(t.t22));
+  L.push('2.3 Was ein Computer tun müsste: '+T(t.t23));
+  L.push('');
+  L.push('STATION ③ DIE MASCHINE LERNT');
+  L.push('3.1 Beobachtung: '+T(t.t31));
+  L.push('3.2 Epoche: '+T(t.t32));
+  L.push('3.3 Stopppunkt: '+(S.stop!=null?'Epoche '+S.stop+(S.stopOk?' (geprüft)':''):'—')+' · Begründung: '+T(t.t33));
+  L.push('3.4 Lernrate: '+T(t.t34));
+  L.push('3.5 Schräge Trennlinie: '+T(t.t35));
+  L.push('');
+  L.push('STATION ④ PRÜFSTAND');
+  L.push('4.1 Aufteilung: '+(S.test4?`${S.test4.split} % Training · Modell A Test ${pct(S.test4.aTe)} · Auswendiglerner Training ${pct(S.test4.bTr)} / Test ${pct(S.test4.bTe)}`:'—'));
+  L.push('    Begründung: '+T(t.t41));
+  L.push('4.2 Confusion Matrix: '+(S.cm4?`Matrix ${S.cm4.cellsOk?'richtig':'falsch'} · Accuracy ${S.cm4.kAcc?'✓':'✗'} · Recall ${S.cm4.kRec?'✓':'✗'} · Precision ${S.cm4.kPre?'✓':'✗'}`:'—'));
+  L.push('4.3 Accuracy-Falle: '+T(t.t43));
+  L.push('');
+  L.push('STATION ⑤ EINSATZ');
+  L.push('5.1 Signalkette: '+(S.chainOk?'richtig':'nicht gelöst'));
+  L.push('5.2 Edge oder Cloud: '+T(t.t52));
+  L.push('5.3 Drift: '+T(t.t53));
+  L.push('5.4 Rücksprung zu: '+(S.backTo?STEPS.find(s=>s.k===S.backTo).t:'—')+' · Empfehlung: '+T(t.t54));
+  L.push('');
+  L.push('SYNTHESE: KI-ZYKLUS');
+  L.push('Z1 Reihenfolge: '+((S.cyc||[]).map(k=>STEPS.find(s=>s.k===k).t).join(' → ')||'—')+(S.cycOk?' (richtig)':''));
+  BACKS.forEach(b=>{const v=(S.back||{})[b.k]||{};L.push(`Z2 ${b.t} → ${v.to?STEPS.find(s=>s.k===v.to).t:'—'}: ${T(v.txt)}`)});
+  L.push('Z3 Transfer Kamera-Prüfung:');
+  TRANS.forEach(s=>L.push(`    ${s.t}: ${T((S.trans||{})[s.k])}`));
+  $('lz').textContent=L.join('\n');
+}
+$('printBtn').onclick=()=>window.print();
+$('dlBtn').onclick=()=>{const b=new Blob([$('lz').textContent],{type:'text/plain;charset=utf-8'});const a=document.createElement('a');
+  a.href=URL.createObjectURL(b);a.download='Laufzettel_KI-Werkstatt_'+(S.team||'Team').replace(/[^\wäöüÄÖÜß-]+/g,'_')+'.txt';a.click()};
+$('resetBtn').onclick=()=>{const b=$('resetBtn');if(!b.dataset.arm){b.dataset.arm=1;b.textContent='Wirklich alles löschen? Nochmal klicken';setTimeout(()=>{delete b.dataset.arm;b.textContent='Alles zurücksetzen'},4000);return}
+  try{localStorage.removeItem(KEY)}catch(e){}location.reload()};
+
+/* Start: gespeicherten Stand wiederherstellen (erst nach allen Definitionen) */
+try{if(S.errChecked)showErrFb()}catch(e){console.error(e)}
+try{renderLZ()}catch(e){console.error(e)}
+markDone();go(S.page||'s-mission');
+</script>
+</body>
+</html>
