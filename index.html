@@ -41,8 +41,8 @@ const EINHEITEN = [
     text: "KI-Werkstatt Predictive Maintenance: Daten prüfen, selbst KI sein, ein Modell trainieren, testen und in Betrieb nehmen.",
     dauer: "ca. 5–6 Unterrichtsstunden", ordner: "b1-ki-zyklus" },
   { nr: "B 2", titel: "Objekterkennung",
-    text: "Eigenes YOLO-Modell mit Label Studio und Google Colab trainieren.",
-    dauer: "folgt", ordner: "" },
+    text: "KI-Werkstatt Bauteilprüfung per Kamera: Bilder auswählen, annotieren, Datensatz aufteilen, Trainingsverlauf deuten.",
+    dauer: "ca. 6 Unterrichtsstunden", ordner: "b2-objekterkennung" },
 ];
 document.getElementById('units').innerHTML = EINHEITEN.map(e => {
   const inner = `<span class="nr">${e.nr}</span><h2>${e.titel}</h2><p>${e.text}</p><span class="meta">${e.dauer}</span>`;
