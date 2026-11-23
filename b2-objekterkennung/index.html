@@ -196,6 +196,22 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .calc44 label{font-size:.9rem;margin-top:6px}
 .calc44 textarea{min-height:52px}
 #phases select{width:100%;min-width:130px}
+@media (max-width:600px){.calc{grid-template-columns:minmax(0,1fr);gap:4px 0}.calc label{margin-top:6px}}
+select{max-width:100%}
+.calcw{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0 2px;padding:8px 10px;border:1px dashed var(--line);border-radius:8px;background:var(--bg);font-size:.9rem}
+.calcw label{display:flex;align-items:center;gap:8px;flex:1 1 260px}
+.calcw input{flex:1;min-width:0;font-family:ui-monospace,Menlo,Consolas,monospace}
+.calcw .res{font-family:ui-monospace,Menlo,Consolas,monospace;min-width:6em}
+table.cm{border-collapse:collapse;margin:8px 0;font-size:.9rem}
+table.cm th,table.cm td{border:1px solid var(--line);padding:8px 10px;text-align:center}
+table.cm th{background:var(--bg);font-weight:600}
+table.cm th.corner{font-weight:400;color:var(--muted);font-size:.8rem}
+table.cm td{position:relative;min-width:110px}
+table.cm .cmlab{display:block;font-size:.72rem;color:var(--muted);margin-bottom:3px}
+table.cm input{width:90px;text-align:center}
+table.cm3 td{font-size:1.05rem;min-width:90px}
+table.cm3 td.diag{background:var(--ok-soft);font-weight:700}
+table.cm3 td.na{color:var(--muted)}
 .scen3{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 @media (max-width:700px){.scen3{grid-template-columns:1fr}}
 .scen3 .sc{border:1px solid var(--line);border-radius:10px;padding:8px;background:var(--bg)}
@@ -631,8 +647,218 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 
   <button class="btn" data-next="s-iou">Weiter zu Station ⑤</button>
 </section>
-<section class="station" id="s-iou"></section>
-<section class="station" id="s-matrix"></section>
+<section class="station" id="s-iou">
+  <h1>⑤ Prüfstand I: Passt die Box?</h1>
+  <p class="lead">Das Modell ist trainiert. Jetzt wird geprüft, wie gut seine Boxen auf den Validierungsbildern sitzen. Dafür braucht man eine Regel, ab wann eine vorhergesagte Box als <b>Treffer</b> zählt. Zwei Menschen ziehen nie exakt denselben Rahmen, das Modell auch nicht. Deshalb wird nicht mit „richtig/falsch“ gemessen, sondern mit dem <b>Grad der Überlappung</b>.</p>
+
+  <div class="card info">
+    <b>IoU (Intersection over Union, deutsch: Schnittmenge durch Vereinigungsmenge)</b>
+    <ul class="mini" style="margin:.3em 0 0 1.1em;padding:0">
+      <li>Es gibt zwei Boxen: die <b>echte Box</b> (von Hand gelabelt) und die <b>vorhergesagte Box</b> des Modells.</li>
+      <li><b>IoU = Überschneidungsfläche ÷ Vereinigungsfläche</b>, ein Wert zwischen 0 und 1. 1 = perfekte Deckung, 0 = keine Überlappung.</li>
+      <li>Faustregel: Ab <b>IoU ≥ 0,5</b> zählt eine Erkennung als Treffer. Daher kommt die 50 im Namen der Kennzahl <span class="mono">mAP50</span>, die Sie im Colab-Projekt sehen.</li>
+      <li>In Station ② hieß diese Größe „Passgenauigkeit“.</li>
+    </ul>
+  </div>
+
+  <div class="card task">
+    <h3><span class="tag must">Pflicht</span><span class="tag">Auftrag 5.1</span>IoU erleben</h3>
+    <p>Grün ist die echte Box, gelb gestrichelt die Vorhersage. Verschieben und verändern Sie die Vorhersage mit den Schiebereglern und beobachten Sie die Flächen.</p>
+    <div class="row" style="align-items:flex-start">
+      <div style="flex:0 1 320px"><div id="iouPlay"></div></div>
+      <div>
+        <div class="slider"><label for="io_dx"><span>Verschiebung waagerecht</span><b id="io_dxv">0 px</b></label><input type="range" id="io_dx" min="-90" max="90" step="1" value="0"></div>
+        <div class="slider"><label for="io_dy"><span>Verschiebung senkrecht</span><b id="io_dyv">0 px</b></label><input type="range" id="io_dy" min="-90" max="90" step="1" value="0"></div>
+        <div class="slider"><label for="io_sc"><span>Größe (Breite und Höhe)</span><b id="io_scv">100 %</b></label><input type="range" id="io_sc" min="50" max="200" step="1" value="100"></div>
+        <div class="kpis" id="iouKpis"></div>
+      </div>
+    </div>
+    <div class="scen" style="margin-top:8px">
+      <div class="sc"><b>a)</b> Stellen Sie eine Vorhersage ein, die <b>gerade noch</b> als Treffer zählt (IoU zwischen 0,50 und 0,55). Die aktuelle Einstellung wird geprüft.</div>
+      <div class="sc"><b>b)</b> Eine Vorhersage ist <b>doppelt so breit und doppelt so hoch</b> wie das Objekt und liegt genau mittig darüber. Zählt sie als Treffer? Überlegen Sie zuerst, dann probieren Sie es aus.
+        <select data-sel="q51"><option value="">– wählen –</option><option value="j1">Ja, IoU = 1, das Objekt ist ja komplett drin</option><option value="n25">Nein, IoU = 0,25</option><option value="j50">Ja, IoU = 0,5</option><option value="n0">Nein, IoU = 0</option></select></div>
+    </div>
+    <button class="btn" id="c51">Prüfen</button>
+    <div class="fb" id="f51"></div>
+  </div>
+
+  <div class="card task">
+    <h3><span class="tag must">Pflicht</span><span class="tag">Auftrag 5.2</span>IoU berechnen</h3>
+    <p>Die echte Box einer Schraube liegt bei <b>x: 0–80 px, y: 0–60 px</b>. Das Modell sagt eine Box bei <b>x: 20–100 px, y: 0–60 px</b> voraus.</p>
+    <div class="calc">
+      <label for="n52a">a) Überschneidungsfläche in px²</label><input type="text" inputmode="decimal" id="n52a" data-num="c52a">
+      <label for="n52b">b) Vereinigungsfläche in px²</label><input type="text" inputmode="decimal" id="n52b" data-num="c52b">
+      <label for="n52c">c) IoU (zwei Nachkommastellen)</label><input type="text" inputmode="decimal" id="n52c" data-num="c52c">
+      <label for="n52d">d) Zählt die Vorhersage als Treffer?</label><select id="n52d" data-sel="c52d"><option value="">– wählen –</option><option value="ja">ja</option><option value="nein">nein</option></select>
+    </div>
+    <div class="calcw" data-calc="k52"></div>
+    <button class="btn ghost" data-help="h52a" data-lab="💡 Hilfe 1: Denkanstoß">💡 Hilfe 1: Denkanstoß ▾</button>
+    <button class="btn ghost" data-help="h52b" data-lab="💡 Hilfe 2: Skizze">💡 Hilfe 2: Skizze ▾</button>
+    <div class="eh" id="h52a"><b>Hilfe 1 – Denkanstoß</b><ul>
+      <li>Zeichnen Sie beide Boxen auf ein Blatt. Wo liegen sie übereinander?</li>
+      <li>Die Vereinigungsfläche ist <b>nicht</b> einfach Fläche 1 + Fläche 2: Die Überschneidung würde sonst doppelt gezählt.</li>
+      <li>Vereinigung = Fläche 1 + Fläche 2 − Überschneidung</li></ul></div>
+    <div class="eh" id="h52b"><b>Hilfe 2 – Skizze</b><div id="sk52"></div></div>
+    <button class="btn" id="c52">Prüfen</button>
+    <div class="fb" id="f52"></div>
+  </div>
+
+  <div class="card task">
+    <h3><span class="tag must">Pflicht</span><span class="tag">Auftrag 5.3</span>Treffer oder Fehler?</h3>
+    <p>So hat das trainierte Modell <b>deckel_03</b> aus dem Validierungssatz erkannt: Durchgezogen sind die echten Boxen (Labels), gelb gestrichelt die Vorhersagen P1–P7 mit Klasse und <b>Konfidenz</b> (wie sicher sich das Modell ist, 0 bis 1). Ordnen Sie jeder Vorhersage den passenden Typ zu. Ein Typ kann mehrfach oder gar nicht vorkommen.</p>
+    <div class="row" style="align-items:flex-start">
+      <div style="flex:0 1 380px"><div id="img53"></div>
+        <label class="hint" style="display:block;margin-top:6px"><input type="checkbox" id="lab53" checked> echte Boxen (Labels) anzeigen</label></div>
+      <div>
+        <div style="overflow-x:auto"><table class="plain" id="tab53"></table></div>
+        <div class="sc" style="margin-top:10px;border:1px solid var(--line);border-radius:10px;padding:8px;background:var(--bg)">Ein gelabeltes Objekt hat <b>keine</b> Vorhersage bekommen. Welches wurde übersehen?
+          <select data-sel="q53m" style="width:100%;margin-top:6px"><option value="">– Position –</option><option value="ol">Schraube oben links</option><option value="r">Schraube rechts</option><option value="ul">Schraube unten links</option><option value="or">leere Bohrung oben rechts</option><option value="ur">Schraube unten rechts</option><option value="l">leere Bohrung links</option></select></div>
+      </div>
+    </div>
+    <button class="btn" id="c53">Prüfen</button>
+    <div class="fb" id="f53"></div>
+  </div>
+
+  <div class="card task">
+    <h3><span class="tag must">Pflicht</span><span class="tag">Auftrag 5.4</span>Strenger prüfen?</h3>
+    <p>Ein Kollege schlägt vor, eine Vorhersage erst ab <b>IoU ≥ 0,9</b> als Treffer zu zählen, „damit nur wirklich gute Boxen zählen“. Was würde sich an der Auswertung ändern, und ist das für die Schraubenprüfung sinnvoll? Begründen Sie.</p>
+    <textarea data-save="t54" data-eh="eh54" placeholder="Bei IoU ≥ 0,9 … Für die Schraubenprüfung …"></textarea>
+    <button class="btn ghost" data-reveal="eh54" disabled>Erwartungshorizont zeigen</button>
+    <span class="hint">(erst ab 40 Zeichen eigener Antwort)</span>
+    <div class="eh" id="eh54"></div>
+  </div>
+
+  <div class="card task star">
+    <h3><span class="tag star">⭐ Zusatz</span><span class="tag">Auftrag 5.5</span>Schräg daneben</h3>
+    <p>Die echte Box liegt bei x: 0–100, y: 0–100. Die Vorhersage ist um die halbe Boxbreite nach rechts <b>und</b> um die halbe Höhe nach unten verschoben: x: 50–150, y: 50–150. Schätzen Sie erst, dann rechnen Sie: Wie groß ist die IoU?</p>
+    <div class="calc"><label for="n55">IoU (zwei Nachkommastellen)</label><input type="text" inputmode="decimal" id="n55" data-num="c55"></div>
+    <div class="calcw" data-calc="k55"></div>
+    <button class="btn" id="c55">Prüfen</button>
+    <div class="fb" id="f55"></div>
+  </div>
+
+  <button class="btn" data-next="s-matrix">Weiter zu Station ⑥</button>
+</section>
+<section class="station" id="s-matrix">
+  <h1>⑥ Prüfstand II: Schwelle und Matrix</h1>
+  <p class="lead">Ab einem bestimmten Punkt muss man sagen können, wie gut das Prüfsystem insgesamt arbeitet. Dafür zählt man aus, wie oft das System richtig und wie oft es falsch liegt, und fasst das in einer <b>Konfusionsmatrix</b> (Verwechslungstabelle) und in Kennzahlen zusammen.</p>
+
+  <div class="card task">
+    <h3><span class="tag must">Pflicht</span><span class="tag">Auftrag 6.1</span>Konfusionsmatrix aufstellen und rechnen</h3>
+    <p>Das Prüfsystem hat an einem Tag <b>2.000 Lagerdeckel</b> geprüft. <b>40</b> davon hatten tatsächlich eine fehlende Schraube (n. i. O.).</p>
+    <ul class="mini" style="margin:.2em 0 .6em 1.2em;padding:0"><li>36 der fehlerhaften Deckel wurden korrekt als n. i. O. erkannt.</li><li>60 einwandfreie Deckel wurden fälschlich als n. i. O. gemeldet.</li></ul>
+    <p class="mini"><b>Vorsicht:</b> Je nach Darstellung sind die Achsen vertauscht. Hier gilt wie im Colab-Projekt: <b>Zeilen = Vorhersage</b>, <b>Spalten = Realität</b>. „Positiv“ bedeutet: Das System meldet einen Fehler.</p>
+    <div style="overflow-x:auto"><table class="cm" id="cm61">
+      <tr><th class="corner">Vorhersage ↓ · Realität →</th><th>tatsächlich n. i. O.</th><th>tatsächlich i. O.</th></tr>
+      <tr><th>gemeldet n. i. O.</th><td><span class="cmlab">TP</span><input type="text" inputmode="numeric" data-num="m11" aria-label="TP"></td><td><span class="cmlab">FP</span><input type="text" inputmode="numeric" data-num="m12" aria-label="FP"></td></tr>
+      <tr><th>gemeldet i. O.</th><td><span class="cmlab">FN</span><input type="text" inputmode="numeric" data-num="m21" aria-label="FN"></td><td><span class="cmlab">TN</span><input type="text" inputmode="numeric" data-num="m22" aria-label="TN"></td></tr>
+    </table></div>
+    <div class="calc" style="margin-top:10px">
+      <label for="n61a">Accuracy in %</label><input type="text" inputmode="decimal" id="n61a" data-num="acc">
+      <label for="n61p">Precision in %</label><input type="text" inputmode="decimal" id="n61p" data-num="pre">
+      <label for="n61r">Recall in %</label><input type="text" inputmode="decimal" id="n61r" data-num="rec">
+    </div>
+    <div class="calcw" data-calc="k61"></div>
+    <button class="btn ghost" data-help="h61a" data-lab="💡 Hilfe 1: Eselsbrücke">💡 Hilfe 1: Eselsbrücke ▾</button>
+    <button class="btn ghost" data-help="h61b" data-lab="💡 Hilfe 2: Formeln">💡 Hilfe 2: Formeln ▾</button>
+    <div class="eh" id="h61a"><b>Hilfe 1 – Eselsbrücke</b><ul>
+      <li><b>Accuracy</b> (Genauigkeit): Wie oft liegt das System insgesamt richtig?</li>
+      <li><b>Precision</b> (Präzision): Wenn das System Alarm schlägt, stimmt der Alarm?</li>
+      <li><b>Recall</b> (Trefferquote): Von allen echten Fehlern, wie viele findet das System?</li>
+      <li>Tipp: Erst die vier Felder füllen. Die Zeilen und Spalten müssen zusammen 2.000 ergeben.</li></ul></div>
+    <div class="eh" id="h61b"><b>Hilfe 2 – Formeln</b><table class="plain" style="margin-top:6px"><tr><td>Accuracy</td><td class="mono">(TP + TN) ÷ alle</td></tr><tr><td>Precision</td><td class="mono">TP ÷ (TP + FP)</td></tr><tr><td>Recall</td><td class="mono">TP ÷ (TP + FN)</td></tr></table><p class="mini">Ergebnis mal 100 ergibt Prozent.</p></div>
+    <button class="btn" id="c61">Prüfen</button>
+    <div class="fb" id="f61"></div>
+    <div id="trap61" style="display:none">
+      <h3 style="margin-top:16px">Die Accuracy-Falle</h3>
+      <p>Ein Kollege baut ein „Prüfsystem“, das <b>jeden</b> Deckel als i. O. meldet, ganz ohne Kamera. Berechnen Sie für dieselben 2.000 Deckel:</p>
+      <div class="calc">
+        <label for="n61ta">Accuracy des Kollegen-Systems in %</label><input type="text" inputmode="decimal" id="n61ta" data-num="tacc">
+        <label for="n61tr">Recall des Kollegen-Systems in %</label><input type="text" inputmode="decimal" id="n61tr" data-num="trec">
+        <label for="n61tk">Welche Kennzahl entlarvt das nutzlose System?</label><select id="n61tk" data-sel="tkey"><option value="">– wählen –</option><option value="acc">Accuracy</option><option value="rec">Recall</option><option value="none">keine, beide Systeme sind gleich gut</option></select>
+      </div>
+      <button class="btn" id="c61t">Prüfen</button>
+      <div class="fb" id="f61t"></div>
+    </div>
+  </div>
+
+  <div class="card task">
+    <h3><span class="tag must">Pflicht</span><span class="tag">Auftrag 6.2</span>Die Konfidenzschwelle einstellen</h3>
+    <p>Das Modell gibt zu jeder Box eine <b>Konfidenz</b> aus. Gemeldet werden nur Boxen <b>über einer Schwelle</b>. Im Diagramm sehen Sie alle Boxen der Klasse <b>bohrung_leer</b>, die das Modell auf den Validierungsbildern vorgeschlagen hat. Im Validierungssatz gibt es <b>20 echte leere Bohrungen</b>.</p>
+    <div class="plotwrap" id="dot62"></div>
+    <div class="callout"><b>Konfidenzschwelle</b>
+      <div class="slider" style="margin-bottom:0"><label for="thr62"><span>Gemeldet wird, was rechts von der Linie liegt.</span><b id="thr62v">0,25</b></label><input type="range" id="thr62" min="0.05" max="0.95" step="0.01" value="0.25"></div></div>
+    <div class="kpis" id="kp62"></div>
+    <div class="scen" style="margin-top:8px">
+      <div class="sc"><b>a)</b> Stellen Sie die Schwelle auf <b>0,50</b>. Berechnen Sie mit den Zahlen oben:
+        <div class="calc" style="margin:6px 0 0"><label for="n62p">Precision in %</label><input type="text" inputmode="decimal" id="n62p" data-num="p62"><label for="n62r">Recall in %</label><input type="text" inputmode="decimal" id="n62r" data-num="r62"></div></div>
+      <div class="sc"><b>b)</b> Was passiert, wenn Sie die Schwelle <b>senken</b>?
+        <select data-sel="q62b"><option value="">– wählen –</option><option value="ru_pd">Recall steigt, Precision sinkt</option><option value="bu">beide steigen</option><option value="rd_pu">Recall sinkt, Precision steigt</option><option value="bd">beide sinken</option></select></div>
+      <div class="sc"><b>c)</b> Wie viele leere Bohrungen bleiben übersehen, auch wenn Sie die Schwelle ganz nach links schieben? <input type="text" inputmode="numeric" data-num="n62c" style="width:80px;margin-left:6px" aria-label="Anzahl"><br>Warum?
+        <select data-sel="q62c"><option value="">– wählen –</option><option value="img">Die Bilder sind zu dunkel.</option><option value="cls">Das Modell hat sie nie als bohrung_leer vorgeschlagen, z. B. als schraube verwechselt.</option><option value="thr">Die Schwelle kann nicht unter 0,05 gestellt werden.</option><option value="lab">Die Bohrungen sind falsch gelabelt.</option></select></div>
+    </div>
+    <div class="calcw" data-calc="k62"></div>
+    <button class="btn" id="c62">Prüfen</button>
+    <div class="fb" id="f62"></div>
+  </div>
+
+  <div class="card task">
+    <h3><span class="tag must">Pflicht</span><span class="tag">Auftrag 6.3</span>Die Konfusionsmatrix von YOLO lesen</h3>
+    <p>So gibt YOLO die Konfusionsmatrix nach dem Prüflauf aus (Schwelle 0,25). Bei der Objekterkennung gibt es eine zusätzliche Zeile und Spalte <b>background</b> (Hintergrund, also „kein Objekt“).</p>
+    <div style="overflow-x:auto"><table class="cm cm3" id="cm63"></table></div>
+    <p class="hint">Lesehilfe: Lesen Sie <b>spaltenweise</b>. Eine Spalte zeigt, was aus allen echten Objekten einer Klasse geworden ist.</p>
+    <div class="calc">
+      <label for="n63a">Wie viele leere Bohrungen hat das Modell <b>übersehen</b> (gar nicht erkannt)?</label><input type="text" inputmode="numeric" id="n63a" data-num="m63a">
+      <label for="n63b">Wie viele leere Bohrungen wurden als <b>schraube verwechselt</b>?</label><input type="text" inputmode="numeric" id="n63b" data-num="m63b">
+      <label for="n63c">Wie viele <b>Fehlalarme</b> (bohrung_leer gemeldet, wo nichts ist) gab es?</label><input type="text" inputmode="numeric" id="n63c" data-num="m63c">
+      <label for="n63r">Recall für bohrung_leer in %</label><input type="text" inputmode="decimal" id="n63r" data-num="m63r">
+      <label for="n63p">Precision für bohrung_leer in %</label><input type="text" inputmode="decimal" id="n63p" data-num="m63p">
+    </div>
+    <div class="calcw" data-calc="k63"></div>
+    <button class="btn ghost" data-help="h63" data-lab="💡 Hilfe: Wo steht was?">💡 Hilfe: Wo steht was? ▾</button>
+    <div class="eh" id="h63"><b>Hilfe</b><ul>
+      <li>Zeile <b>background</b> = Das Modell hat dort „nichts“ gesehen → <b>übersehen</b>.</li>
+      <li>Spalte <b>background</b> = In Wirklichkeit ist dort nichts → <b>Fehlalarm</b>.</li>
+      <li>Recall bohrung_leer: richtig erkannte ÷ alle echten leeren Bohrungen (Spaltensumme).</li>
+      <li>Precision bohrung_leer: richtig erkannte ÷ alle Meldungen bohrung_leer (Zeilensumme).</li></ul></div>
+    <button class="btn" id="c63">Prüfen</button>
+    <div class="fb" id="f63"></div>
+  </div>
+
+  <div class="card task">
+    <h3><span class="tag must">Pflicht</span><span class="tag">Auftrag 6.4</span>Die drei wichtigsten Kurven im Colab-Projekt</h3>
+    <p>Nach dem Training zeigt YOLO zehn Diagramme. Für den Anfang genügen <b>drei</b>. Ordnen Sie jeder Kurve zu, was sie zeigt und wie sie sich bei einem guten Training entwickeln sollte.</p>
+    <div class="scen3" id="curves64"></div>
+    <div class="scen" id="tab64" style="margin-top:10px"></div>
+    <p class="hint">Die übrigen Diagramme (cls_loss, dfl_loss, precision, recall, mAP50-95) zeigen Ähnliches aus anderen Blickwinkeln. Wer die drei Kurven oben deuten kann, versteht das Training.</p>
+    <button class="btn" id="c64">Prüfen</button>
+    <div class="fb" id="f64"></div>
+  </div>
+
+  <div class="card task">
+    <h3><span class="tag must">Pflicht</span><span class="tag">Auftrag 6.5</span>Ihre Empfehlung für die Linie</h3>
+    <p>Die Qualitätsleitung fragt, welche Konfidenzschwelle an der Linie eingestellt werden soll. Geben Sie eine Schwelle an und begründen Sie mit den Kosten der beiden Fehlerarten. Beziehen Sie sich auf Ihre Werte aus 6.2.</p>
+    <p class="mini"><b>Zur Orientierung:</b> Ein übersehener Deckel mit leerer Bohrung kann zu Ölaustritt beim Kunden und zu einer Reklamation führen. Ein Fehlalarm kostet einen Werker ca. 10 Sekunden Nachprüfung.</p>
+    <textarea data-save="t65" data-eh="eh65" placeholder="Empfohlene Schwelle: … Begründung: …"></textarea>
+    <button class="btn ghost" data-reveal="eh65" disabled>Erwartungshorizont zeigen</button>
+    <span class="hint">(erst ab 40 Zeichen eigener Antwort)</span>
+    <div class="eh" id="eh65"></div>
+  </div>
+
+  <div class="card task star">
+    <h3><span class="tag star">⭐ Zusatz</span><span class="tag">Auftrag 6.6</span>Was steckt hinter mAP50?</h3>
+    <p>YOLO berechnet für jede Klasse einen Wert <b>AP</b> (Average Precision), in den Precision und Recall bei allen Schwellen eingehen, jeweils mit IoU ≥ 0,5. <b>mAP50</b> ist der <b>Mittelwert</b> über alle Klassen. Im Prüflauf ergab sich: AP schraube = 0,95 und AP bohrung_leer = 0,71.</p>
+    <div class="calc">
+      <label for="n66">mAP50 (zwei Nachkommastellen)</label><input type="text" inputmode="decimal" id="n66" data-num="c66">
+      <label for="n66b">Was verdeckt der Mittelwert hier?</label><select id="n66b" data-sel="q66"><option value="">– wählen –</option><option value="weak">dass gerade die wichtige Klasse bohrung_leer deutlich schwächer ist</option><option value="time">wie lange das Training gedauert hat</option><option value="nothing">nichts, der Mittelwert sagt alles</option></select>
+    </div>
+    <div class="calcw" data-calc="k66"></div>
+    <button class="btn" id="c66">Prüfen</button>
+    <div class="fb" id="f66"></div>
+  </div>
+
+  <button class="btn" data-next="s-synth">Weiter zur Synthese</button>
+</section>
 <section class="station" id="s-synth"></section>
 </main>
 <footer>KI-Kon · Rudolf-Diesel-Fachschule Nürnberg · Einheit B 2, Version <span id="verLbl"></span>. Ihr Stand wird zusätzlich in diesem Browser zwischengespeichert. Verlassen Sie sich darauf aber nicht, sondern nutzen Sie „Zwischenstand speichern“.</footer>
@@ -664,9 +890,9 @@ const STATIONS=[
     plan:'Bilder auf train und val verteilen, Fehlerfall „fast gleiche Bilder in beiden Teilen“ erkennen, Klausur-Analogie. ⭐ val-Objekte je Klasse berechnen.'},
   {id:'s-train',nav:'④ Die Maschine lernt',title:'④ Die Maschine lernt',ph:['struktur','training'],
     plan:'Loss als Abstand zwischen vorhergesagter und gelabelter Box erleben, train- und val-Kurven lesen, Stopppunkt setzen, Overfitting („Schere“) erkennen. ⭐ Modellgröße n vs. s.'},
-  {id:'s-iou',nav:'⑤ Passt die Box?',title:'⑤ Prüfstand I: Passt die Box?',ph:['evaluation'],soon:true,
+  {id:'s-iou',nav:'⑤ Passt die Box?',title:'⑤ Prüfstand I: Passt die Box?',ph:['evaluation'],
     plan:'IoU (Überlappung zweier Boxen) per Schieberegler erleben, Regel IoU ≥ 0,5, Vorhersagen einem Fehlertyp zuordnen (Treffer, falsche Klasse, Fehlalarm, übersehen, ungenau/doppelt).'},
-  {id:'s-matrix',nav:'⑥ Schwelle & Matrix',title:'⑥ Prüfstand II: Schwelle & Matrix',ph:['evaluation','einsatz'],soon:true,
+  {id:'s-matrix',nav:'⑥ Schwelle & Matrix',title:'⑥ Prüfstand II: Schwelle und Matrix',ph:['evaluation','einsatz'],
     plan:'Konfidenzschwelle verschieben → Precision/Recall live, Confusion Matrix mit Zeile/Spalte background selbst aufbauen. ⭐ mAP50 als Mittelwert.'},
   {id:'s-synth',nav:'Synthese',title:'Synthese: KI-Zyklus',ph:['daten','struktur','training','evaluation','einsatz'],soon:true,
     plan:'Stationen dem Zyklus zuordnen, Rückpfeile setzen, Transfer: „Was tun Sie im Colab-Projekt an welcher Stelle?“'},
@@ -748,6 +974,8 @@ function go(id){
   renderMap(id);window.scrollTo(0,0);
   if(id==='s-label')LS.draw();
   if(id==='s-train'){draw41();drawMain();drawScen();draw44();if(S.chk.s45)show45()}
+  if(id==='s-iou'){draw51();draw53()}
+  if(id==='s-matrix'){draw62();drawCurves()}
 }
 STATIONS.filter(s=>s.soon).forEach(s=>{
   $(s.id).innerHTML=`<h1>${s.title}</h1><div class="card soonbox"><b>Diese Station folgt im Ausbau.</b><p class="mini">Geplant: ${s.plan}</p></div>`;
@@ -757,6 +985,8 @@ function markDone(){
   const done={'s-mission':!!(c.m1&&c.m2&&(S.txt.m3||'').trim().length>=40),
     's-split':!!(c.s31&&c.split&&c.vc&&c.pct&&(S.txt.t34||'').trim().length>=40),
     's-train':!!(c.c41&&c.c42&&c.c43&&t44ok()),
+    's-iou':!!(c.c51&&c.c52&&c.c53&&(S.txt.t54||'').trim().length>=40),
+    's-matrix':!!(c.c61&&c.c61t&&c.c62&&c.c63&&c.c64&&(S.txt.t65||'').trim().length>=40),
     's-casting':!!(c.cast&&c.gaps&&c.cnt&&rulesOk()&&(S.txt.t11||'').trim().length>=40),
     's-label':!!(r.deckel_02?.pass&&r.deckel_03?.pass&&c.z&&c.zc&&c.rv&&c.sc&&c.ord&&(S.txt.t25||'').trim().length>=40)};
   document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('done',!!done[b.dataset.go]));
@@ -798,6 +1028,18 @@ const EH={
     <li><b>Beobachtung:</b> Bei so wenigen Bildern verstößt ein großer Teil der Zufallsaufteilungen gegen eine Regel. Oft liegen zu wenige oder zu viele Fehlerbilder im Validierungssatz, oder eine Aufnahmeserie wird getrennt. Rechnerisch landen in mehr als der Hälfte der Fälle weniger als zwei Fehlerbilder im Validierungssatz.</li>
     <li><b>Folgerung:</b> Nach einer Zufallsaufteilung immer nachzählen, welche Klassen wie oft in train und val liegen (im Colab-Projekt: Klassenverteilung, A8).</li>
     <li>Bei kleinen Datensätzen gezielt aufteilen: seltene Klassen auf beide Teile verteilen, Aufnahmeserien zusammenhalten. Je mehr Bilder, desto besser gleicht der Zufall das aus.</li></ul>`,
+  eh54:`<b>Erwartungshorizont 5.4</b><ul>
+    <li><b>Folge:</b> Viele Vorhersagen, die das Objekt richtig gefunden haben, zählen nicht mehr als Treffer. Sie gelten dann als „ungenau“ bzw. das Objekt als übersehen. Precision, Recall und mAP sinken stark, obwohl das Modell nicht schlechter geworden ist.</li>
+    <li><b>Labels sind selbst ungenau:</b> Auch zwei Menschen rahmen nie exakt gleich (vgl. Passgenauigkeit in 2.1). Eine Schwelle von 0,9 verlangt mehr Genauigkeit, als die Labels hergeben.</li>
+    <li><b>Für die Schraubenprüfung:</b> Entscheidend ist, <i>ob</i> an einer Position eine Schraube oder eine leere Bohrung ist. Dafür reicht eine Box, die ungefähr sitzt. 0,5 ist hier sinnvoll.</li>
+    <li>Strenger wäre nötig, wenn die genaue Lage zählt (z. B. Greifpunkt für einen Roboter). Dafür gibt es die Kennzahl <span class="mono">mAP50-95</span>: Sie mittelt über strenge Schwellen von 0,5 bis 0,95 und ist deshalb immer kleiner als mAP50.</li></ul>
+    <p class="mini"><b>Selbstcheck:</b> Haben Sie die Folge für die Kennzahlen <i>und</i> eine begründete Bewertung für die Anwendung genannt?</p>`,
+  eh65:`<b>Erwartungshorizont 6.5</b><ul>
+    <li><b>Abwägung:</b> Ein übersehener Fehler (FN) ist hier viel teurer als ein Fehlalarm (FP): Ölaustritt, Reklamation, Imageschaden gegenüber 10 s Nachprüfung.</li>
+    <li><b>Folgerung:</b> Recall ist wichtiger als Precision. Die Schwelle eher <b>niedrig</b> wählen, z. B. 0,10–0,25 (Werte aus 6.2: bei 0,12 Recall 90 %, Precision ca. 69 %; bei 0,25 Recall 80 %, Precision ca. 76 %).</li>
+    <li><b>Grenze:</b> Bei zu niedriger Schwelle steigen die Fehlalarme so stark, dass die Werker die Meldungen nicht mehr ernst nehmen. Jede Meldung muss dann von Hand nachgeprüft werden.</li>
+    <li><b>Hinweis:</b> Selbst bei der niedrigsten Schwelle bleiben 2 leere Bohrungen übersehen (verwechselt mit schraube). Das löst keine Schwelle, sondern nur bessere Daten: mehr Fehlerbilder (Rücksprung zur Phase Daten).</li></ul>
+    <p class="mini"><b>Selbstcheck:</b> Haben Sie eine konkrete Schwelle genannt, beide Fehlerarten mit ihren Folgen verglichen und Zahlen aus 6.2 verwendet?</p>`,
   eh44:`<b>Erwartungshorizont 4.4</b><ul>
     <li><b>1. Verlauf:</b> Von A bis B fallen beide Kurven, das Modell lernt. Ab B fällt train/box_loss weiter, val/box_loss steigt dagegen wieder an. Bei C liegen die Kurven weit auseinander (Schere).</li>
     <li><b>2. Punkt B:</b> Hier ist val/box_loss am kleinsten (um Epoche 45). Das Modell erkennt <b>unbekannte</b> Bilder hier am besten. B ist der sinnvolle Stopppunkt.</li>
@@ -1135,7 +1377,7 @@ function lineChart(el,{series,xMax,yMax=2.2,h=230,stop=null,stopLab='Stopp',band
   hit.addEventListener('pointermove',move);hit.addEventListener('pointerdown',move);hit.addEventListener('pointerleave',()=>tip.style.display='none');
 }
 
-let rsT;window.addEventListener('resize',()=>{clearTimeout(rsT);rsT=setTimeout(()=>{if(S.page==='s-train'){draw41();drawMain();drawScen();draw44();if(S.chk.s45)show45()}},200)});
+let rsT;window.addEventListener('resize',()=>{clearTimeout(rsT);rsT=setTimeout(()=>{if(S.page==='s-train'){draw41();drawMain();drawScen();draw44();if(S.chk.s45)show45()}if(S.page==='s-matrix'){draw62();drawCurves()}},200)});
 /* 4.1 Loss sichtbar machen */
 const L41=(()=>{const r=mulberry32(77);return REF.deckel_02.map(b=>{const w=b.x1-b.x0,h=b.y1-b.y0;return{b,dx:(r()-.5)*120,dy:(r()-.5)*120,sw:.4+r()*1.6,sh:.4+r()*1.6}})})();
 function predBoxes(e){const f=Math.exp(-e/9);return L41.map(o=>{const b=o.b,cx=(b.x0+b.x1)/2+o.dx*f,cy=(b.y0+b.y1)/2+o.dy*f,w=(b.x1-b.x0)*(1+(o.sw-1)*f),h=(b.y1-b.y0)*(1+(o.sh-1)*f);return{x0:cx-w/2,y0:cy-h/2,x1:cx+w/2,y1:cy+h/2}})}
@@ -1206,6 +1448,173 @@ function show45(){
     <tr><td class="mono">yolo11s</td><td>${de(s.v,2)}</td><td>${s.e}</td><td>${de(fS(100),2)}</td><td>3,2 min</td></tr></table></div>`;
 }
 $('c45').onclick=()=>{if(!S.sel.p45){toast('Bitte legen Sie zuerst Ihre <b>Vorhersage</b> fest.');return}S.chk.s45=true;show45();changed()};
+
+/* =========================================================
+   Gemeinsame Werkzeuge für ⑤ und ⑥: Rechner, aufklappbare Hilfen, Zahleneingabe
+   ========================================================= */
+const numv=k=>parseFloat(String(S.num[k]??'').replace(/\s/g,'').replace(',','.'));
+const near=(k,want,tol)=>Math.abs(numv(k)-want)<=tol;
+function calcEval(v){const s=String(v).replace(/,/g,'.').replace(/×/g,'*').replace(/÷/g,'/').replace(/:/g,'/');
+  if(!s.trim())return'';if(!/^[\d+\-*/().\s]*$/.test(s))return'⚠ nur Zahlen und + − * / ( )';
+  try{const x=Function('"use strict";return('+s+')')();return isFinite(x)?'= '+x.toLocaleString('de-DE',{maximumFractionDigits:4}):'⚠ nicht berechenbar'}catch(e){return'…'}}
+document.querySelectorAll('[data-calc]').forEach(el=>{el.innerHTML=`<label>🧮 Rechner <input type="text" inputmode="decimal" placeholder="z. B. 36/(36+60)*100" aria-label="Rechner"></label><b class="res"></b>`;
+  const i=el.querySelector('input'),r=el.querySelector('.res');i.oninput=()=>{r.textContent=calcEval(i.value)}});
+const helpOpen2={};
+document.querySelectorAll('[data-help]').forEach(b=>b.onclick=()=>{const k=b.dataset.help;helpOpen2[k]=!helpOpen2[k];if(helpOpen2[k]&&!S.eh[k]){S.eh[k]=true;changed()}applyHelp2()});
+function applyHelp2(){document.querySelectorAll('[data-help]').forEach(b=>{const k=b.dataset.help,o=!!helpOpen2[k];$(k).classList.toggle('show',o);b.textContent=b.dataset.lab+(o?' ▴ zuklappen':' ▾');b.setAttribute('aria-expanded',o)})}
+const usedHelp=ids=>ids.filter(k=>S.eh[k]).length?'Genutzte Hilfen: '+ids.filter(k=>S.eh[k]).map(k=>document.querySelector(`[data-help="${k}"]`).dataset.lab.replace('💡 ','')).join(', '):'Genutzte Hilfen: keine';
+const it=(ok,t)=>`<li>${ok?'✓':'✗'} ${t}</li>`;
+
+/* =========================================================
+   STATION 5 – IoU
+   ========================================================= */
+const GT51={x0:70,y0:60,x1:150,y1:140};
+function pred51(){const dx=+$('io_dx').value,dy=+$('io_dy').value,sc=+$('io_sc').value/100,cx=110+dx,cy=100+dy,h=40*sc;return{x0:cx-h,y0:cy-h,x1:cx+h,y1:cy+h}}
+function draw51(){
+  const p=pred51(),g=GT51,ix0=Math.max(p.x0,g.x0),iy0=Math.max(p.y0,g.y0),ix1=Math.min(p.x1,g.x1),iy1=Math.min(p.y1,g.y1);
+  const I=Math.max(0,ix1-ix0)*Math.max(0,iy1-iy0),A=(g.x1-g.x0)*(g.y1-g.y0),B=(p.x1-p.x0)*(p.y1-p.y0),U=A+B-I,v=I/U;
+  $('io_dxv').textContent=$('io_dx').value+' px';$('io_dyv').textContent=$('io_dy').value+' px';$('io_scv').textContent=$('io_sc').value+' %';
+  let s=`<svg viewBox="-20 -20 260 260" style="width:100%;display:block;background:var(--bg);border:1px solid var(--line);border-radius:10px" role="img" aria-label="IoU-Spielfeld">`;
+  for(let x=-20;x<=240;x+=20)s+=`<line x1="${x}" x2="${x}" y1="-20" y2="240" class="grid" stroke="var(--line)"/>`;
+  for(let y=-20;y<=240;y+=20)s+=`<line y1="${y}" y2="${y}" x1="-20" x2="240" stroke="var(--line)"/>`;
+  s+=`<rect x="${Math.min(g.x0,p.x0)}" y="${Math.min(g.y0,p.y0)}" width="0" height="0"/>`;
+  s+=`<rect x="${p.x0}" y="${p.y0}" width="${p.x1-p.x0}" height="${p.y1-p.y0}" fill="rgba(255,212,59,.18)" stroke="#d4a800" stroke-width="2.5" stroke-dasharray="6 4"/>`;
+  s+=`<rect x="${g.x0}" y="${g.y0}" width="${g.x1-g.x0}" height="${g.y1-g.y0}" fill="rgba(27,158,75,.15)" stroke="var(--c0)" stroke-width="2.5"/>`;
+  if(I>0)s+=`<rect x="${ix0}" y="${iy0}" width="${ix1-ix0}" height="${iy1-iy0}" fill="var(--accent)" opacity=".45"/>`;
+  s+=`</svg><p class="hint" style="text-align:center">grün: echte Box · gelb: Vorhersage · blau: Überschneidung</p>`;
+  $('iouPlay').innerHTML=s;
+  $('iouKpis').innerHTML=`<div class="kpi"><b>${de(I)} px²</b><span>Überschneidung</span></div><div class="kpi"><b>${de(U)} px²</b><span>Vereinigung</span></div>
+    <div class="kpi" style="border-color:${v>=0.5?'var(--ok)':'var(--bad)'}"><b>${de(v,2)}</b><span>IoU → ${v>=0.5?'Treffer':'kein Treffer'}</span></div>`;
+  return v;
+}
+['io_dx','io_dy','io_sc'].forEach(id=>$(id).oninput=()=>{S.num[id]=$(id).value;draw51();persist()});
+function check51(){const v=draw51(),a=v>=0.5&&v<=0.55,b=S.sel.q51==='n25';if(a)S.chk.c51a=true;const A2=a||S.chk.c51a;S.chk.c51=A2&&b;
+  let h=`<ul>${it(A2,`a) aktuelle IoU ${de(v,2)}`+(A2?'':' – gesucht ist ein Wert zwischen 0,50 und 0,55')) }${it(b,'b)')}</ul>`;
+  if(S.chk.c51)h=`<b>Richtig.</b> Schon eine kleine Verschiebung kostet viel IoU. Und eine Box, die das Objekt ganz umschließt, ist trotzdem kein Treffer, wenn sie viel zu groß ist: Bei doppelter Breite und Höhe ist die Fläche 4-mal so groß, also IoU = 1 ÷ 4 = 0,25.`;
+  else if(!b&&S.sel.q51==='j1')h+='<p class="mini">Tipp: Die Vereinigung ist die große Box. Wie groß ist sie im Verhältnis zur echten Box? Probieren Sie Größe 200 % aus.</p>';
+  fb('f51',S.chk.c51?'ok':'bad',h)}
+$('c51').onclick=()=>{check51();changed()};
+$('sk52').innerHTML=`<svg viewBox="-10 -14 130 92" style="width:100%;max-width:420px;display:block" role="img" aria-label="Skizze zu 5.2">
+  <rect x="0" y="0" width="80" height="60" fill="rgba(27,158,75,.15)" stroke="var(--c0)" stroke-width="1.5"/>
+  <rect x="20" y="0" width="80" height="60" fill="rgba(255,212,59,.18)" stroke="#d4a800" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <rect x="20" y="0" width="60" height="60" fill="var(--accent)" opacity=".35"/>
+  <text x="0" y="-4" style="font-size:6px;fill:var(--muted)">0</text><text x="17" y="-4" style="font-size:6px;fill:var(--muted)">20</text><text x="75" y="-4" style="font-size:6px;fill:var(--muted)">80</text><text x="95" y="-4" style="font-size:6px;fill:var(--muted)">100</text>
+  <text x="-9" y="62" style="font-size:6px;fill:var(--muted)">60</text>
+  <text x="2" y="70" style="font-size:6px;fill:var(--c0)">echte Box 80 × 60</text><text x="60" y="76" style="font-size:6px;fill:#b08a00">Vorhersage 80 × 60</text>
+  <text x="34" y="33" style="font-size:6.5px;fill:var(--ink);font-weight:700">Überschneidung ? × 60</text></svg>`;
+function check52(){const a=near('c52a',3600,0.5),b=near('c52b',6000,0.5),c=near('c52c',0.6,0.011),d=S.sel.c52d==='ja';S.chk.c52=a&&b&&c&&d;
+  fb('f52',S.chk.c52?'ok':'bad',S.chk.c52?'<b>Richtig.</b> Überschneidung: x von 20 bis 80 = 60 px breit, 60 px hoch → 3.600 px². Vereinigung: 4.800 + 4.800 − 3.600 = 6.000 px². IoU = 3.600 ÷ 6.000 = 0,60 ≥ 0,5 → <b>Treffer</b>.':
+    `<ul>${it(a,'a) Überschneidung')}${it(b,'b) Vereinigung')}${it(c,'c) IoU')}${it(d,'d) Treffer?')}</ul>`+(!b&&near('c52b',9600,0.5)?'<p class="mini">Tipp: Die Überschneidung wurde doppelt gezählt. Vereinigung = Fläche 1 + Fläche 2 − Überschneidung.</p>':''))}
+$('c52').onclick=()=>{check52();changed()};
+
+/* 5.3 Fehlertypen auf deckel_03 */
+const R53=REF.deckel_03;
+const POS53=['ol','or','l','r','ul','ur'];
+const P53=[
+  {k:'P1',c:0,conf:.88,b:{x0:297,y0:458,x1:341,y1:500},ok:'tp',why:'liegt passgenau auf der Schraube unten rechts, Klasse stimmt.'},
+  {k:'P2',c:1,conf:.34,b:{x0:212,y0:300,x1:254,y1:340},ok:'fp',why:'An dieser Stelle ist gar kein Objekt, nur glatte Deckelfläche (Reflexion).'},
+  {k:'P3',c:0,conf:.91,b:{x0:114,y0:140,x1:166,y1:195},ok:'tp',why:'liegt passgenau auf der Schraube oben links.'},
+  {k:'P4',c:0,conf:.55,b:{x0:37,y0:297,x1:81,y1:341},ok:'cls',why:'sitzt genau auf der leeren Bohrung links, aber mit der Klasse schraube.'},
+  {k:'P5',c:0,conf:.41,b:{x0:301,y0:462,x1:346,y1:505},ok:'dup',why:'Die Schraube unten rechts wurde schon von P1 gefunden. Eine zweite Box auf demselben Objekt zählt als Fehler (doppelt).'},
+  {k:'P6',c:0,conf:.62,b:{x0:410,y0:310,x1:460,y1:350},ok:'loose',why:'gehört zur Schraube rechts, ist aber stark verschoben: IoU unter 0,5.'},
+  {k:'P7',c:1,conf:.78,b:{x0:301,y0:147,x1:342,y1:189},ok:'tp',why:'liegt passgenau auf der leeren Bohrung oben rechts, Klasse stimmt.'},
+];
+const T53=[['','– Typ –'],['dup','doppelt'],['tp','Treffer'],['fp','Fehlalarm'],['loose','ungenau (IoU < 0,5)'],['cls','falsche Klasse']];
+const bestIoU=b=>Math.max(...R53.map(r=>iou(b,r)));
+function draw53(){const im=IMGS.deckel_03,show=$('lab53').checked;
+  let g=show?R53.map(r=>boxSVG(r,CLS[r.c].hex,'',{sw:2})).join(''):'';
+  g+=P53.map(p=>boxSVG(p.b,'#ffd43b','',{dash:true,sw:2.5})+`<text x="${p.b.x0}" y="${p.b.y1+15}" fill="#ffd43b" style="font:700 14px system-ui">${p.k}</text>`).join('');
+  $('img53').innerHTML=`<div class="annot ro"><img src="${im.src}" alt="deckel_03.jpg"><svg viewBox="0 0 ${im.w} ${im.h}">${g}</svg></div>`}
+$('lab53').onchange=draw53;
+$('tab53').innerHTML='<tr><th>Box</th><th>Klasse</th><th>Konfidenz</th><th>IoU zur nächsten echten Box</th><th>Typ</th></tr>'+P53.map(p=>`<tr id="r53_${p.k}"><td><b>${p.k}</b></td><td class="mono">${CLS[p.c].n}</td><td>${de(p.conf,2)}</td><td>${de(bestIoU(p.b),2)}</td><td><select data-sel="t53_${p.k}" aria-label="Typ ${p.k}">${T53.map(o=>`<option value="${o[0]}">${o[1]}</option>`).join('')}</select></td></tr>`).join('');
+bindSel($('tab53'));
+function check53(){let n=0;P53.forEach(p=>{const ok=S.sel['t53_'+p.k]===p.ok;n+=ok;$('r53_'+p.k).style.background=ok?'var(--ok-soft)':'var(--bad-soft)'});
+  const m=S.sel.q53m==='ul';S.chk.c53=n===P53.length&&m;
+  let h=`${n} von ${P53.length} Vorhersagen richtig zugeordnet · übersehenes Objekt ${m?'✓':'✗'}`;
+  if(n<P53.length)h+='<p class="mini">Tipp: Schalten Sie die echten Boxen ein und aus. Prüfen Sie für jede Vorhersage: Liegt dort ein echtes Objekt? Stimmt die Klasse? Ist IoU ≥ 0,5? Wurde das Objekt schon von einer anderen Box gefunden?</p>';
+  if(S.chk.c53)h='<b>Alles richtig.</b><ul>'+P53.map(p=>`<li><b>${p.k}</b> (${T53.find(t=>t[0]===p.ok)[1]}): ${p.why}</li>`).join('')+'<li><b>Übersehen:</b> Die Schraube unten links hat keine Vorhersage bekommen.</li></ul><p class="mini">Genau diese Fehlertypen tragen Sie im Colab-Projekt bei der Fehleranalyse (Aufgabe 3) mit Bild-Nr. ein. Zählt man alles aus, ergibt sich die Konfusionsmatrix in Station ⑥.</p>';
+  fb('f53',S.chk.c53?'ok':'bad',h)}
+$('c53').onclick=()=>{check53();changed()};
+function check55(){S.chk.c55=near('c55',0.14,0.011);
+  fb('f55',S.chk.c55?'ok':'bad',S.chk.c55?'<b>Richtig: IoU ≈ 0,14.</b> Überschneidung 50 × 50 = 2.500, Vereinigung 10.000 + 10.000 − 2.500 = 17.500, IoU = 2.500 ÷ 17.500 ≈ 0,14. Obwohl die Box „nur halb daneben“ liegt, ist sie weit von einem Treffer entfernt: Verschiebungen in zwei Richtungen multiplizieren sich.':
+  'Noch nicht. Tipp: Die Überschneidung ist in beiden Richtungen nur 50 px breit.')}
+$('c55').onclick=()=>{check55();changed()};
+
+/* =========================================================
+   STATION 6 – Konfusionsmatrix, Schwelle, Kurven
+   ========================================================= */
+function check61(){const m={m11:36,m12:60,m21:4,m22:1900};let nm=0;Object.entries(m).forEach(([k,v])=>{const ok=numv(k)===v;nm+=ok;document.querySelector(`[data-num="${k}"]`).parentElement.style.background=ok?'var(--ok-soft)':'var(--bad-soft)'});
+  const a=near('acc',96.8,0.15),p=near('pre',37.5,0.15),r=near('rec',90,0.15);S.chk.c61=nm===4&&a&&p&&r;
+  let h=`Matrix: ${nm} von 4 Feldern richtig<ul>${it(a,'Accuracy')}${it(p,'Precision')}${it(r,'Recall')}</ul>`;
+  if(nm<4)h+='<p class="mini">Tipp: FN = fehlerhafte Deckel, die <i>nicht</i> erkannt wurden (40 − 36). TN = alle übrigen. Zur Kontrolle: Alle vier Felder zusammen = 2.000.</p>';
+  if(S.chk.c61)h='<b>Richtig.</b> TP 36, FP 60, FN 4, TN 1.900. Accuracy = (36 + 1.900) ÷ 2.000 = <b>96,8 %</b> · Precision = 36 ÷ 96 = <b>37,5 %</b> · Recall = 36 ÷ 40 = <b>90 %</b>.<br>Die Accuracy sieht hervorragend aus. Aber nur gut jeder dritte Alarm stimmt, und 4 fehlerhafte Deckel gehen zum Kunden. Wie trügerisch die Accuracy ist, zeigt der nächste Teil.';
+  fb('f61',S.chk.c61?'ok':'bad',h);$('trap61').style.display=S.chk.c61?'':'none'}
+$('c61').onclick=()=>{check61();changed()};
+function check61t(){const a=near('tacc',98,0.15),r=near('trec',0,0.15),k=S.sel.tkey==='rec';S.chk.c61t=a&&r&&k;
+  fb('f61t',S.chk.c61t?'ok':'bad',S.chk.c61t?'<b>Richtig.</b> Das Kollegen-„System“ hat eine Accuracy von <b>98 %</b>, also mehr als Ihr echtes System, findet aber <b>keinen einzigen</b> Fehler (Recall 0 %). Wenn Fehler selten sind, sagt die Accuracy fast nichts. Für die Schraubenprüfung zählt vor allem der <b>Recall</b>.':
+  `<ul>${it(a,'Accuracy')}${it(r,'Recall')}${it(k,'Kennzahl')}</ul><p class="mini">Tipp: Das System meldet nie n. i. O. Also TP = 0 und FP = 0.</p>`)}
+$('c61t').onclick=()=>{check61t();changed()};
+
+/* 6.2 Schwelle: Boxen der Klasse bohrung_leer im Validierungssatz (passt zu 6.3 bei Schwelle 0,25) */
+const D62={tp:[.93,.91,.90,.88,.86,.84,.81,.79,.76,.72,.68,.63,.57,.49,.41,.33,.18,.12],fp:[.71,.52,.44,.31,.27,.22,.20,.15,.10,.07],never:2,total:20};
+const cnt62=t=>{const TP=D62.tp.filter(c=>c>=t).length,FP=D62.fp.filter(c=>c>=t).length;return{TP,FP,FN:D62.total-TP}};
+function draw62(){const t=+$('thr62').value;$('thr62v').textContent=de(t,2);const C=cnt62(t);
+  const el=$('dot62'),W=Math.max(300,Math.min(900,Math.round(el.clientWidth||640))),sm=W<520,ml=sm?92:150,mr=20,pw=W-ml-mr,H=150,X=c=>ml+c*pw,rows=[{y:45,l:sm?'echte leere|Bohrung':'echte leere Bohrung',d:D62.tp,col:'var(--tr)'},{y:100,l:sm?'Fehlalarm|(kein Objekt)':'Fehlalarm (kein Objekt)',d:D62.fp,col:'var(--va)'}];
+  let g='';for(let c=0;c<=1.001;c+=sm?0.2:0.1)g+=`<line x1="${X(c)}" x2="${X(c)}" y1="20" y2="${H-25}" class="grid"/><text class="ax" x="${X(c)}" y="${H-10}" text-anchor="middle">${de(c,1)}</text>`;
+  g+=`<text class="ax" x="${ml+pw/2}" y="${H+12}" text-anchor="middle">Konfidenz</text>`;
+  g+=`<rect x="${X(t)}" y="20" width="${X(1)-X(t)}" height="${H-45}" fill="var(--accent-soft)" opacity=".55"/>`;
+  rows.forEach(r=>{const parts=r.l.split('|');g+=parts.map((s,i)=>`<text x="${ml-8}" y="${r.y+4+(i-(parts.length-1)/2)*13}" text-anchor="end" style="fill:var(--ink);font-size:11px">${s}</text>`).join('');
+    r.d.forEach((c,i)=>{const on=c>=t;g+=`<circle cx="${X(c)}" cy="${r.y+((i%2)?6:-6)}" r="6" fill="${on?r.col:'none'}" stroke="${r.col}" stroke-width="2" opacity="${on?1:.55}"><title>Konfidenz ${de(c,2)}</title></circle>`})});
+  g+=`<text x="${ml-8}" y="${45+(sm?30:18)}" text-anchor="end" style="fill:var(--muted);font-size:10px">+ 2 nie vorgeschl.</text>`;
+  g+=`<line x1="${X(t)}" x2="${X(t)}" y1="14" y2="${H-25}" stroke="var(--ink)" stroke-width="2"/><text x="${X(t)+4}" y="13" style="fill:var(--ink);font-size:11px;font-weight:700">Schwelle ${de(t,2)}</text>`;
+  el.classList.add('chart');el.innerHTML=`<div class="lgd"><span><i style="border-color:var(--tr)"></i>gefüllt = gemeldet</span><span>leer = unter der Schwelle, nicht gemeldet</span></div><svg viewBox="0 0 ${W} ${H+16}" role="img" aria-label="Konfidenzen der Boxen bohrung_leer">${g}</svg>`;
+  const show=S.chk.c62a;
+  $('kp62').innerHTML=`<div class="kpi"><b>${C.TP}</b><span>TP: richtig gemeldet</span></div><div class="kpi"><b>${C.FP}</b><span>FP: Fehlalarme</span></div><div class="kpi"><b>${C.FN}</b><span>FN: übersehen</span></div>`+
+    (show?`<div class="kpi"><b>${C.TP+C.FP?de(C.TP/(C.TP+C.FP)*100,1):'–'} %</b><span>Precision</span></div><div class="kpi"><b>${de(C.TP/D62.total*100,1)} %</b><span>Recall</span></div>`:'<div class="kpi"><b>?</b><span>Precision und Recall erscheinen hier, sobald a) gelöst ist.</span></div>');
+}
+$('thr62').oninput=()=>{S.num.thr62=$('thr62').value;draw62();persist()};
+function check62(){const p=near('p62',86.7,0.15),r=near('r62',65,0.15),b=S.sel.q62b==='ru_pd',c=numv('n62c')===2,c2=S.sel.q62c==='cls';
+  if(p&&r)S.chk.c62a=true;S.chk.c62=p&&r&&b&&c&&c2;draw62();
+  let h=`<ul>${it(p,'a) Precision')}${it(r,'a) Recall')}${it(b,'b)')}${it(c&&c2,'c)')}</ul>`;
+  if(!(p&&r))h+='<p class="mini">Tipp: Bei 0,50 gilt TP = 13, FP = 2, FN = 7. Precision = TP ÷ (TP + FP), Recall = TP ÷ (TP + FN).</p>';
+  if(S.chk.c62)h='<b>Richtig.</b> Bei Schwelle 0,50: Precision = 13 ÷ 15 = <b>86,7 %</b>, Recall = 13 ÷ 20 = <b>65 %</b>. Senkt man die Schwelle, meldet das Modell mehr: Es findet mehr echte leere Bohrungen (Recall ↑), aber auch mehr Fehlalarme (Precision ↓). Die Schwelle ist eine <b>Entscheidung für den Einsatz</b>, keine Eigenschaft des Modells. Zwei Bohrungen bleiben immer übersehen: Das Modell hat sie als schraube erkannt (siehe 6.3). Das lässt sich nur über bessere Daten lösen. Im Colab-Projekt heißt die Schwelle <span class="mono">KONF</span>.';
+  fb('f62',S.chk.c62?'ok':'bad',h)}
+$('c62').onclick=()=>{check62();changed()};
+
+/* 6.3 YOLO-Matrix (Zeilen = Predicted, Spalten = True) */
+const M63={cls:['schraube','bohrung_leer','background'],m:[[104,2,5],[1,16,4],[5,2,null]]};
+$('cm63').innerHTML=`<tr><th class="corner">Predicted ↓ · True →</th>${M63.cls.map(c=>`<th class="mono">${c}</th>`).join('')}</tr>`+
+  M63.m.map((r,i)=>`<tr><th class="mono">${M63.cls[i]}</th>${r.map((v,j)=>`<td class="${v===null?'na':i===j?'diag':''}">${v===null?'–':v}</td>`).join('')}</tr>`).join('');
+function check63(){const a=numv('m63a')===2,b=numv('m63b')===2,c=numv('m63c')===4,r=near('m63r',80,0.15),p=near('m63p',76.2,0.15);S.chk.c63=a&&b&&c&&r&&p;
+  let h=`<ul>${it(a,'übersehen')}${it(b,'verwechselt')}${it(c,'Fehlalarme')}${it(r,'Recall')}${it(p,'Precision')}</ul>`;
+  if(S.chk.c63)h='<b>Richtig.</b> Spalte bohrung_leer: 20 echte leere Bohrungen → 16 richtig, 2 als schraube verwechselt, 2 übersehen (Zeile background). Recall = 16 ÷ 20 = <b>80 %</b>. Zeile bohrung_leer: 21 Meldungen → 16 richtig, 1 war eine Schraube, 4 Fehlalarme (Spalte background). Precision = 16 ÷ 21 = <b>76,2 %</b>.<br>Das Feld background/background bleibt leer: „Hintergrund richtig als Hintergrund erkannt“ lässt sich bei der Objekterkennung nicht zählen. Deshalb gibt es hier <b>kein TN und keine Accuracy</b>, sondern Precision und Recall.';
+  fb('f63',S.chk.c63?'ok':'bad',h)}
+$('c63').onclick=()=>{check63();changed()};
+
+/* 6.4 Die drei wichtigsten Kurven */
+const fMap=e=>0.85*(1-Math.exp(-e/10))-0.00006*pos(e-44)**2;
+const MAP=curve(100,fMap,81,.02);
+const K64=[
+  {k:'k1',n:'train/box_loss',w:'box',i:'train',d:'down'},
+  {k:'k2',n:'val/box_loss',w:'box',i:'val',d:'down'},
+  {k:'k3',n:'metrics/mAP50(B)',w:'map',i:'val',d:'up'}];
+const W64=[['','– Was zeigt sie? –'],['cls','Fehler bei der Wahl der Klasse'],['map','Gesamtqualität: Treffer mit IoU ≥ 0,5 und richtiger Klasse, gemittelt über die Klassen'],['box','Abweichung der vorhergesagten Boxen von den gelabelten Boxen'],['time','Rechenzeit pro Epoche']];
+const I64=[['','– auf welchen Bildern? –'],['val','Validierungsbilder'],['train','Trainingsbilder']];
+const D64=[['','– gute Richtung –'],['up','steigt'],['down','sinkt'],['flat','bleibt gleich']];
+function drawCurves(){$('curves64').innerHTML=`<div class="sc"><b class="mini">train/box_loss und val/box_loss</b><div id="c64a"></div></div><div class="sc"><b class="mini">metrics/mAP50(B)</b><div id="c64b"></div></div>`;
+  lineChart($('c64a'),{series:[{name:'train/box_loss',short:'train',data:MAIN.tr,col:'--tr'},{name:'val/box_loss',short:'val',data:MAIN.va,col:'--va',dash:true}],xMax:100,h:200});
+  lineChart($('c64b'),{series:[{name:'mAP50(B)',short:'mAP50',data:MAP,col:'--ms'}],xMax:100,yMax:1,h:200,yLab:'mAP50'})}
+const opts64=l=>l.map(o=>`<option value="${o[0]}">${o[1]}</option>`).join('');
+$('tab64').innerHTML=K64.map(r=>`<div class="sc" id="r64_${r.k}"><b class="mono">${r.n}</b><select data-sel="${r.k}w" aria-label="Was zeigt ${r.n}">${opts64(W64)}</select><div class="row" style="gap:8px"><select data-sel="${r.k}i" aria-label="Bilder ${r.n}" style="flex:1 1 160px">${opts64(I64)}</select><select data-sel="${r.k}d" aria-label="Richtung ${r.n}" style="flex:1 1 140px">${opts64(D64)}</select></div></div>`).join('');
+bindSel($('tab64'));
+function check64(){let n=0;K64.forEach(r=>{const ok=S.sel[r.k+'w']===r.w&&S.sel[r.k+'i']===r.i&&S.sel[r.k+'d']===r.d;n+=ok;$('r64_'+r.k).style.background=ok?'var(--ok-soft)':'var(--bad-soft)'});
+  S.chk.c64=n===3;
+  fb('f64',S.chk.c64?'ok':'bad',S.chk.c64?'<b>Richtig.</b> Die beiden Loss-Kurven zeigen, wie gut die Boxen sitzen: auf den Trainingsbildern (lernt das Modell?) und auf den Validierungsbildern (funktioniert es auch bei Unbekanntem?). mAP50 fasst die Prüfung zusammen: Anteil der Treffer mit IoU ≥ 0,5 und richtiger Klasse, gemittelt über die Klassen, von 0 bis 1. Achten Sie im Diagramm darauf: mAP50 ist ungefähr dort am höchsten, wo val/box_loss am tiefsten ist. Danach beginnt das Overfitting (Station ④).':
+  `${n} von 3 Zeilen vollständig richtig.`)}
+$('c64').onclick=()=>{check64();changed()};
+function check66(){const a=near('c66',0.83,0.011),b=S.sel.q66==='weak';S.chk.c66=a&&b;
+  fb('f66',S.chk.c66?'ok':'bad',S.chk.c66?'<b>Richtig.</b> mAP50 = (0,95 + 0,71) ÷ 2 = <b>0,83</b>. Das klingt gut, verdeckt aber, dass gerade die Klasse, auf die es an der Linie ankommt, deutlich schwächer ist. Schauen Sie deshalb im Colab-Projekt immer auch auf die Werte <b>je Klasse</b>.':`<ul>${it(a,'mAP50')}${it(b,'Was verdeckt der Mittelwert?')}</ul>`)}
+$('c66').onclick=()=>{check66();changed()};
 
 /* =========================================================
    STATION 2 – Annotationswerkzeug (nach dem Vorbild Label Studio)
@@ -1623,6 +2032,33 @@ $('btnHeft').onclick=async()=>{
   b+=blk('4.4','Overfitting erklären','Am Beispielgraph mit den Punkten A, B, C: 1. Verlauf, 2. Punkt B, 3. Folge an der Linie, 4. Gegenmaßnahme.',
     A(['1. Verlauf','2. Punkt B','3. An der Linie','4. Gegenmaßnahme'].map((l,i)=>`${l}: ${T(T44[i])||'—'}`).join('\n')),'',EH.eh44.replace(/^<b>[^<]*<\/b>/,''));
   b+=blk('4.5 ⭐','Ein größeres Modell?','Vorhersage yolo11n → yolo11s, Ergebnis bewerten.',A(`Vorhersage: ${({better:'deutlich besser',same:'kaum Unterschied',worse:'schlechter'})[S.sel.p45]||'—'}\n`+T('t45')),'',EH.eh45.replace(/^<b>[^<]*<\/b>/,''));
+  {const selT=(list,k)=>{const o=list.find(x=>x[0]===S.sel[k]);return o&&o[0]?o[1]:'—'};const st=k=>S.chk[k]?'richtig':S.chk[k]===false?'nicht richtig':'nicht geprüft';const nv=k=>S.num[k]??'—';
+  b+=`<h2>Station ⑤ Prüfstand I: Passt die Box?</h2>`;
+  b+=blk('5.1','IoU erleben','a) Vorhersage einstellen, die gerade noch Treffer ist (IoU 0,50–0,55). b) Box doppelt so breit und hoch, mittig: Treffer?',
+    A(`a) eingestellt: Verschiebung ${nv('io_dx')} / ${nv('io_dy')} px, Größe ${S.num.io_sc??100} % · b) ${($('[data-sel=q51] option[value="'+(S.sel.q51||'')+'"]')||{}).textContent||'—'}`),R(chk('c51'),st('c51')),
+    '<p>a) z. B. Verschiebung ca. 25 px in eine Richtung oder Größe ca. 140 %. b) Nein: Fläche 4-mal so groß, IoU = 1 ÷ 4 = 0,25. Eine viel zu große Box ist kein Treffer, auch wenn sie das Objekt enthält.</p>');
+  b+=blk('5.2','IoU berechnen','Echte Box x 0–80, y 0–60; Vorhersage x 20–100, y 0–60.',A(`a) ${nv('c52a')} px² · b) ${nv('c52b')} px² · c) IoU ${nv('c52c')} · d) Treffer: ${S.sel.c52d||'—'}\n${usedHelp(['h52a','h52b'])}`),R(chk('c52'),st('c52')),
+    '<table><tr><th>Teilaufgabe</th><th>Rechnung</th><th>Ergebnis</th></tr><tr><td>a) Überschneidung</td><td>(80 − 20) · 60</td><td>3.600 px²</td></tr><tr><td>b) Vereinigung</td><td>4.800 + 4.800 − 3.600</td><td>6.000 px²</td></tr><tr><td>c) IoU</td><td>3.600 ÷ 6.000</td><td>0,60</td></tr><tr><td>d) Treffer?</td><td>0,60 ≥ 0,5</td><td>ja</td></tr></table>');
+  b+=blk('5.3','Treffer oder Fehler?','Vorhersagen P1–P7 auf deckel_03 einem Typ zuordnen, übersehenes Objekt finden.',A(P53.map(p=>`${p.k}: ${selT(T53,'t53_'+p.k)}`).join('\n')+`\nübersehen: ${($('[data-sel=q53m] option[value="'+(S.sel.q53m||'')+'"]')||{}).textContent||'—'}`),R(chk('c53'),st('c53')),
+    '<ul>'+P53.map(p=>`<li><b>${p.k}</b> (${T53.find(x=>x[0]===p.ok)[1]}): ${p.why}</li>`).join('')+'<li><b>Übersehen:</b> Schraube unten links</li></ul>');
+  b+=blk('5.4','Strenger prüfen?','Folgen einer Treffer-Schwelle IoU ≥ 0,9 und Bewertung für die Schraubenprüfung.',A(T('t54')),'',EH.eh54.replace(/^<b>[^<]*<\/b>/,''));
+  b+=blk('5.5 ⭐','Schräg daneben','Echte Box 0–100 × 0–100, Vorhersage 50–150 × 50–150: IoU?',A(nv('c55')),R(chk('c55'),st('c55')),'<p>Überschneidung 50 · 50 = 2.500, Vereinigung 10.000 + 10.000 − 2.500 = 17.500, IoU = 0,14.</p>');
+  b+=`<h2>Station ⑥ Prüfstand II: Schwelle und Matrix</h2>`;
+  b+=blk('6.1','Konfusionsmatrix aufstellen und rechnen','2.000 Deckel, 40 n. i. O., 36 erkannt, 60 Fehlalarme. Matrix (Zeilen = Vorhersage, Spalten = Realität), Accuracy, Precision, Recall. Accuracy-Falle.',
+    A(`TP ${nv('m11')} · FP ${nv('m12')} · FN ${nv('m21')} · TN ${nv('m22')}\nAccuracy ${nv('acc')} % · Precision ${nv('pre')} % · Recall ${nv('rec')} %\nAccuracy-Falle: Accuracy ${nv('tacc')} % · Recall ${nv('trec')} % · Kennzahl: ${({acc:'Accuracy',rec:'Recall',none:'keine'})[S.sel.tkey]||'—'}\n${usedHelp(['h61a','h61b'])}`),
+    R(chk('c61')&&chk('c61t')?true:(S.chk.c61===undefined?null:false),`Matrix und Kennzahlen: ${st('c61')} · Accuracy-Falle: ${st('c61t')}`),
+    '<table><tr><th></th><th>tatsächlich n. i. O.</th><th>tatsächlich i. O.</th></tr><tr><th>gemeldet n. i. O.</th><td>TP 36</td><td>FP 60</td></tr><tr><th>gemeldet i. O.</th><td>FN 4</td><td>TN 1.900</td></tr></table><table><tr><th>Kennzahl</th><th>Formel</th><th>Rechnung</th><th>Ergebnis</th></tr><tr><td>Accuracy</td><td>(TP + TN) ÷ alle</td><td>1.936 ÷ 2.000</td><td>96,8 %</td></tr><tr><td>Precision</td><td>TP ÷ (TP + FP)</td><td>36 ÷ 96</td><td>37,5 %</td></tr><tr><td>Recall</td><td>TP ÷ (TP + FN)</td><td>36 ÷ 40</td><td>90 %</td></tr><tr><td>Accuracy „immer i. O.“</td><td>TN ÷ alle</td><td>1.960 ÷ 2.000</td><td>98 %</td></tr><tr><td>Recall „immer i. O.“</td><td>0 ÷ 40</td><td></td><td>0 %</td></tr></table><p>Bei seltenen Fehlern ist die Accuracy irreführend. Entscheidend ist der Recall.</p>');
+  b+=blk('6.2','Die Konfidenzschwelle einstellen','a) Precision und Recall bei Schwelle 0,50. b) Wirkung einer niedrigeren Schwelle. c) Übersehene Bohrungen bei niedrigster Schwelle und Grund.',
+    A(`a) Precision ${nv('p62')} % · Recall ${nv('r62')} %\nb) ${selT([['ru_pd','Recall steigt, Precision sinkt'],['bu','beide steigen'],['rd_pu','Recall sinkt, Precision steigt'],['bd','beide sinken']],'q62b')}\nc) ${nv('n62c')} · ${($('[data-sel=q62c] option[value="'+(S.sel.q62c||'')+'"]')||{}).textContent||'—'}`),R(chk('c62'),st('c62')),
+    '<table><tr><th>Schwelle</th><th>TP</th><th>FP</th><th>FN</th><th>Precision</th><th>Recall</th></tr><tr><td>0,50</td><td>13</td><td>2</td><td>7</td><td>86,7 %</td><td>65 %</td></tr><tr><td>0,25</td><td>16</td><td>5</td><td>4</td><td>76,2 %</td><td>80 %</td></tr><tr><td>0,12</td><td>18</td><td>8</td><td>2</td><td>69,2 %</td><td>90 %</td></tr></table><p>b) Schwelle senken: Recall steigt, Precision sinkt. c) 2 bleiben übersehen, weil das Modell sie als schraube verwechselt hat. Abhilfe nur über bessere Daten.</p>');
+  b+=blk('6.3','Die Konfusionsmatrix von YOLO lesen','Übersehene, verwechselte leere Bohrungen, Fehlalarme, Recall und Precision für bohrung_leer.',
+    A(`übersehen ${nv('m63a')} · verwechselt ${nv('m63b')} · Fehlalarme ${nv('m63c')} · Recall ${nv('m63r')} % · Precision ${nv('m63p')} %\n${usedHelp(['h63'])}`),R(chk('c63'),st('c63')),
+    '<p>Übersehen 2 (Zeile background, Spalte bohrung_leer) · verwechselt 2 (Zeile schraube) · Fehlalarme 4 (Spalte background) · Recall = 16 ÷ 20 = 80 % · Precision = 16 ÷ 21 = 76,2 %. Kein TN-Feld: „Hintergrund als Hintergrund“ ist nicht zählbar, deshalb keine Accuracy.</p>');
+  b+=blk('6.4','Die drei wichtigsten Kurven','train/box_loss, val/box_loss, mAP50(B): Bedeutung, Bilder, gute Richtung.',A(K64.map(r=>`${r.n}: ${selT(W64,r.k+'w')} · ${selT(I64,r.k+'i')} · ${selT(D64,r.k+'d')}`).join('\n')),R(chk('c64'),st('c64')),
+    '<table><tr><th>Kurve</th><th>zeigt</th><th>Bilder</th><th>gute Richtung</th></tr><tr><td>train/box_loss</td><td>Abweichung der Boxen von den Labels</td><td>Training</td><td>sinkt</td></tr><tr><td>val/box_loss</td><td>dieselbe Abweichung</td><td>Validierung</td><td>sinkt (steigt sie wieder: Overfitting)</td></tr><tr><td>mAP50(B)</td><td>Treffer mit IoU ≥ 0,5 und richtiger Klasse, gemittelt über Klassen</td><td>Validierung</td><td>steigt</td></tr></table>');
+  b+=blk('6.5','Ihre Empfehlung für die Linie','Konfidenzschwelle für die Linie mit Begründung über die Kosten der Fehlerarten.',A(T('t65')),'',EH.eh65.replace(/^<b>[^<]*<\/b>/,''));
+  b+=blk('6.6 ⭐','Was steckt hinter mAP50?','mAP50 aus AP schraube 0,95 und AP bohrung_leer 0,71; was verdeckt der Mittelwert?',A(`mAP50 ${nv('c66')} · ${({weak:'schwache Klasse bohrung_leer',time:'Trainingsdauer',nothing:'nichts'})[S.sel.q66]||'—'}`),R(chk('c66'),st('c66')),
+    '<p>(0,95 + 0,71) ÷ 2 = 0,83. Der Mittelwert verdeckt, dass gerade die wichtige Klasse bohrung_leer schwächer ist. Immer die Werte je Klasse prüfen.</p>');}
   STATIONS.filter(s=>s.soon).forEach(s=>{b+=`<h2>${s.title}</h2><p class="none">Diese Station folgt im Ausbau der Werkstatt.</p>`});
   const doc=`<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Lernheft B 2 – ${esc(S.team)}</title><style>
   :root{--ink:#1c2230;--muted:#5b6475}
@@ -1654,9 +2090,11 @@ function renderAll(){
   applyTexts();applyEH();applyInputs();applyM1();applyRV();applyOrd();applyCast();applyGaps();applyRules();applySplit();applyRnd();$('ep41').value=S.num.ep41||0;$('stop42').value=S.num.stop42||0;$('res45').style.display='none';SC4.forEach(s=>$('why_'+s.k).style.display='none');PH.forEach(p=>$('row_'+p.k).style.background='');$('eh44btn').disabled=!t44ok();$('pctBox').style.display='none';
   CAST.forEach(c=>{$('cc_'+c.k).classList.remove('ok','part','no');$('why_'+c.k).classList.remove('show')});
   ORD.forEach(o=>$('or_'+o.k).style.background='');
-  applyHelp();
+  applyHelp();applyHelp2();
+  ['io_dx','io_dy'].forEach(k=>$(k).value=S.num[k]||0);$('io_sc').value=S.num.io_sc||100;$('thr62').value=S.num.thr62||0.25;$('trap61').style.display='none';
+  P53.forEach(p=>$('r53_'+p.k).style.background='');K64.forEach(r=>$('r64_'+r.k).style.background='');document.querySelectorAll('#cm61 td').forEach(td=>td.style.background='');
   staticImg($('m2Img'),'deckel_03');
-  ['m1Fb','m2Fb','zFb','zcFb','rvFb','scFb','lsFb','ordFb','castFb','gapFb','cntFb','cnFb','s31Fb','splitFb','vcFb','pctFb','f41','f42','f43'].forEach(fbHide);
+  ['m1Fb','m2Fb','zFb','zcFb','rvFb','scFb','lsFb','ordFb','castFb','gapFb','cntFb','cnFb','s31Fb','splitFb','vcFb','pctFb','f41','f42','f43','f51','f52','f53','f55','f61','f61t','f62','f63','f64','f66'].forEach(fbHide);
   ['zp0','zp1','zp2','zp3','zp4'].forEach(id=>$(id).classList.remove('ok','no'));
   $('zCalc').style.display='none';
   if(S.chk.m1!==undefined)checkM1();
@@ -1677,6 +2115,8 @@ function renderAll(){
   if(S.chk.c42!==undefined)check42();
   if(S.chk.c43!==undefined)check43();
   if(S.chk.s45)show45();
+  if(S.chk.c51!==undefined)check51();if(S.chk.c52!==undefined)check52();if(S.chk.c53!==undefined)check53();if(S.chk.c55!==undefined)check55();
+  if(S.chk.c61!==undefined)check61();if(S.chk.c61t!==undefined)check61t();if(S.chk.c62!==undefined)check62();if(S.chk.c63!==undefined)check63();if(S.chk.c64!==undefined)check64();if(S.chk.c66!==undefined)check66();
   if(S.chk.ord!==undefined)checkOrd();
   LS.cur='deckel_02';LS.sel=-1;LS.showRef=false;if(S.annRes[LS.cur])LS.showFb();
   effort();renderSaveState();markDone();go(S.page||'s-mission');
