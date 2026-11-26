@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UE 1 · Spielregeln & Stellenanzeige · Starterpaket Techniker</title>
+<style>
+:root{--ink:#1d2733;--muted:#5b6775;--blue:#1F3A5F;--blue2:#2f5d8f;--line:#d5dbe2;--bg:#f5f7fa;--card:#fff;
+--g:#cdebd3;--gd:#1e7a36;--y:#fff1b8;--yd:#8a6a00;--r:#f6c9c9;--rd:#a42323;--ok:#e6f4ea;--bad:#fdecec}
+*{box-sizing:border-box}
+body{margin:0;font-family:Calibri,Carlito,"Segoe UI",Arial,sans-serif;font-size:17px;line-height:1.5;color:var(--ink);background:var(--bg)}
+header{position:sticky;top:0;z-index:20;background:var(--blue);color:#fff;padding:.5rem 1rem;display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+header .t{font-weight:700;margin-right:auto}
+header a.home{color:#fff;text-decoration:none;font-size:1.3rem;font-weight:700;padding:0 .4rem;border:1px solid rgba(255,255,255,.5);border-radius:6px}
+header .t small{display:block;font-weight:400;opacity:.85;font-size:.8rem}
+header button{background:#fff;color:var(--blue);border:0;border-radius:6px;padding:.35rem .7rem;font:inherit;font-size:.85rem;cursor:pointer}
+header .team{font-size:.85rem;opacity:.95}
+main{max-width:980px;margin:0 auto;padding:1rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:1rem 1.2rem;margin:0 0 1rem}
+h1{font-size:1.5rem;color:var(--blue);margin:.2rem 0 .4rem}
+h2{font-size:1.25rem;color:var(--blue);margin:.2rem 0 .6rem}
+h3{font-size:1.05rem;margin:1rem 0 .4rem}
+.muted{color:var(--muted)}
+.map{display:flex;gap:.4rem;flex-wrap:wrap;margin:.4rem 0}
+.map div{flex:1 1 140px;border:1px solid var(--line);border-radius:8px;padding:.4rem .55rem;font-size:.82rem;background:#fff;color:var(--muted)}
+.map div b{display:block;color:var(--ink)}
+.map .now{border:2px solid var(--blue);background:#eaf1f9;color:var(--ink)}
+.map .now::after{content:"Sie sind hier";display:table;margin-top:.2rem;font-size:.72rem;background:var(--blue);color:#fff;border-radius:4px;padding:0 .35rem}
+nav.st{display:flex;gap:.35rem;flex-wrap:wrap;margin:.6rem 0 1rem}
+nav.st button{flex:1 1 150px;text-align:left;border:1px solid var(--line);background:#fff;border-radius:8px;padding:.45rem .6rem;font:inherit;font-size:.88rem;cursor:pointer}
+nav.st button.act{border:2px solid var(--blue);background:#eaf1f9}
+nav.st button .dot{display:inline-block;width:.7rem;height:.7rem;border-radius:50%;background:#c9d0d8;margin-right:.35rem;vertical-align:middle}
+nav.st button.done .dot{background:var(--gd)}
+nav.st button.lock{opacity:.5}
+.gate{display:inline-block;font-size:.72rem;background:#333;color:#fff;border-radius:4px;padding:0 .35rem;margin-left:.3rem}
+.badge{display:inline-block;font-size:.75rem;border-radius:4px;padding:.05rem .45rem;margin-right:.35rem;font-weight:700}
+.pf{background:var(--blue);color:#fff}.zu{background:#7a5ea8;color:#fff}
+.sec{display:none}.sec.act{display:block}
+.btn{background:var(--blue);color:#fff;border:0;border-radius:6px;padding:.45rem .9rem;font:inherit;cursor:pointer;margin:.3rem .3rem .3rem 0}
+.btn.sec2{background:#fff;color:var(--blue);border:1px solid var(--blue)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.fb{border-radius:8px;padding:.5rem .7rem;margin:.5rem 0;font-size:.95rem}
+.fb.ok{background:var(--ok);border:1px solid #9fd1ad}.fb.bad{background:var(--bad);border:1px solid #efb0b0}.fb.info{background:#eef3f9;border:1px solid #c5d5e8}
+textarea,input[type=text],select{font:inherit;font-size:.95rem;border:1px solid #b9c3ce;border-radius:6px;padding:.4rem .5rem;width:100%;background:#fff}
+textarea{min-height:5.5rem}
+details.eh{margin:.4rem 0;border:1px dashed #9aa5b1;border-radius:8px;padding:.4rem .7rem;background:#fbfcfd}
+details.eh summary{cursor:pointer;font-weight:700;color:var(--blue)}
+details.eh.locked summary{color:#999;cursor:not-allowed}
+.cnt{font-size:.8rem;color:var(--muted)}
+/* Chat */
+.chat{display:flex;flex-direction:column;gap:.6rem}
+.msg{border-radius:10px;padding:.6rem .8rem;max-width:92%}
+.msg.u{background:#e7eef7;align-self:flex-end}.msg.k{background:#f1f1f1;align-self:flex-start}
+.msg .who{font-size:.75rem;font-weight:700;color:var(--muted);display:block}
+.seg{cursor:pointer;border-radius:3px;padding:0 .1rem;transition:background .15s}
+.seg:hover{background:#fff6c4;outline:1px dashed #c9a800}
+.seg.hit{background:var(--r);outline:1px solid var(--rd)}
+.seg.miss{background:#e3e3e3;text-decoration:line-through dotted}
+/* Fallkarten */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:.7rem}
+.fc{border:1px solid var(--line);border-radius:10px;padding:.7rem;background:#fff;display:flex;flex-direction:column}
+.fc .no{font-size:.75rem;font-weight:700;color:var(--muted)}
+.fc p{margin:.2rem 0 .5rem;flex:1}
+.amp{display:flex;gap:.3rem}
+.amp button{flex:1;border:1px solid #aaa;border-radius:6px;padding:.3rem;font:inherit;font-size:.85rem;cursor:pointer;background:#fff}
+.amp button.G.on{background:var(--g);border-color:var(--gd);font-weight:700}
+.amp button.Y.on{background:var(--y);border-color:var(--yd);font-weight:700}
+.amp button.R.on{background:var(--r);border-color:var(--rd);font-weight:700}
+.fc.right{box-shadow:0 0 0 2px #9fd1ad}.fc.wrong{box-shadow:0 0 0 2px #efb0b0}
+.fc .why{font-size:.88rem;margin-top:.4rem;display:none}.fc.checked .why{display:block}
+/* Reihenfolge */
+.pick{display:flex;flex-direction:column;gap:.35rem}
+.pick button{text-align:left;border:1px solid #b9c3ce;border-radius:8px;background:#fff;padding:.45rem .6rem;font:inherit;font-size:.95rem;cursor:pointer}
+.pick button.used{background:#eaf1f9;border-color:var(--blue)}
+.pick button .n{display:inline-block;min-width:1.4rem;font-weight:700;color:var(--blue)}
+.tree{display:flex;flex-direction:column;gap:.5rem;margin-top:.6rem}
+.tree .row{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;align-items:center;border:1px solid var(--line);border-radius:8px;padding:.5rem}
+/* Tabellen */
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{border:1px solid var(--line);padding:.35rem .45rem;vertical-align:top;text-align:left}
+th{background:#eef1f5}
+tr.mk{cursor:pointer}tr.mk:hover td{background:#fffbe3}
+tr.mk.on td{background:#fde3e3}
+tr.mk.good td{background:var(--ok)}tr.mk.badr td{background:var(--bad)}
+.scroll{overflow-x:auto}
+pre.copy{white-space:pre-wrap;background:#f7f7f7;border:1px solid var(--line);border-radius:8px;padding:.6rem;font-family:inherit;font-size:.9rem;margin:.3rem 0}
+.tabs{display:flex;gap:.3rem;flex-wrap:wrap;margin:.3rem 0 .6rem}
+.tabs button{border:1px solid var(--line);background:#fff;border-radius:6px;padding:.3rem .6rem;font:inherit;font-size:.88rem;cursor:pointer}
+.tabs button.act{background:var(--blue);color:#fff;border-color:var(--blue)}
+.sub{display:none}.sub.act{display:block}
+.mx input,.mx select{font-size:.88rem;padding:.25rem .3rem}
+.warn{color:var(--rd);font-size:.85rem}
+.chk label{display:block;margin:.25rem 0}
+.pack{display:flex;gap:.4rem;flex-wrap:wrap}
+.pack span{font-size:.82rem;border-radius:6px;padding:.2rem .5rem;border:1px solid var(--line);background:#fff}
+.pack span.ok{background:var(--ok);border-color:#9fd1ad}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:50}
+.modal.on{display:flex}
+.modal .box{background:#fff;border-radius:10px;padding:1rem 1.2rem;max-width:420px;width:90%}
+@media(max-width:600px){header{padding:.35rem .6rem;gap:.3rem}header .t{font-size:.9rem}header .t small,header .team{display:none}header button{font-size:.72rem;padding:.25rem .45rem}body{font-size:16px}.tree .row{grid-template-columns:1fr}main{padding:.6rem}.card{padding:.8rem}}
+</style>
+</head>
+<body>
+<header>
+  <a class="home" href="../" title="Zur Übersicht">←</a>
+  <div class="t">UE 1 · Spielregeln &amp; Stellenanzeige<small>KI-Kon · Starterpaket Techniker</small></div>
+  <span class="team" id="teamShow">Team: –</span>
+  <button id="bSave">Zwischenstand speichern</button>
+  <button id="bLoad">Zwischenstand laden</button>
+  <button id="bBook">Lernheft herunterladen</button>
+  <input type="file" id="fileIn" accept=".json,application/json" hidden>
+</header>
+
+<main>
+<section class="card">
+  <h1>Starterpaket Techniker – KI für Bewerbung &amp; Berufsstart</h1>
+  <div class="map" id="map"></div>
+  <div class="muted" style="font-size:.9rem">Ihr Starterpaket aus dieser Einheit:</div>
+  <div class="pack" id="pack"></div>
+</section>
+
+<section class="card" id="start">
+  <h2>Start</h2>
+  <p>Sie arbeiten im Team zu zweit. <b>Pilot</b> bedient das Gerät, <b>Navigator</b> liest mit, prüft und hält die Ergebnisse fest. Wechseln Sie die Rollen nach jeder Station.</p>
+  <label>Teamname (Pflicht, <b>keine Klarnamen</b>, z. B. „Team Getriebe“)<input type="text" id="team" maxlength="40"></label>
+  <p class="muted" style="font-size:.9rem">Sichern Sie Ihren Stand regelmäßig mit „Zwischenstand speichern“ (z. B. in OneDrive). In der nächsten Stunde laden Sie die Datei wieder.</p>
+</section>
+
+<nav class="st" id="nav"></nav>
+
+<!-- Station 1 -->
+<section class="card sec" id="s1">
+  <h2>① Einstieg: Was ist hier schiefgelaufen?</h2>
+  <p>Alex möchte sich bewerben und nutzt dafür ein freies KI-Konto. Lesen Sie den Chatverlauf.</p>
+  <p><span class="badge pf">Pflicht</span>Klicken Sie alle Stellen an, die problematisch sind. Es gibt <b>5 Problemstellen</b>. <span class="muted" id="s1cnt"></span></p>
+  <div class="chat" id="chat"></div>
+  <div id="s1fb"></div>
+  <h3><span class="badge zu">Zusatz</span>Schreiben Sie Alex' Nachricht neu, datensparsam und ohne Zeugnis und Zeichnung.</h3>
+  <textarea data-k="s1.zusatz" placeholder="Ihre Version der Nachricht …"></textarea>
+  <div class="cnt" data-cnt="s1.zusatz"></div>
+  <details class="eh locked" data-e="s1.zusatz"><summary>Erwartungshorizont (ab 40 Zeichen)</summary>
+  <p>Beispiel: „Ich bewerbe mich als Techniker in der Arbeitsvorbereitung. Hier ist die Stellenanzeige: […]. Meine Erfahrung (anonymisiert): Industriemechaniker, 4 Jahre Getriebemontage, 2 Jahre Instandhaltung, Technikerprojekt Montagevorrichtung. Schreibe einen Entwurf für ein Anschreiben. Erfinde keine Erfahrungen und verzichte auf Floskeln.“</p>
+  <p>Entscheidend: keine Namen, Adresse, Geburtsdatum, Telefon. Kein Zeugnis, keine Zeichnung. Klare Anweisung, nichts zu erfinden.</p></details>
+</section>
+
+<!-- Station 2 -->
+<section class="card sec" id="s2">
+  <h2>② Fallkarten: Darf das in mein freies KI-Konto?</h2>
+  <p><span class="badge pf">Pflicht</span>Ordnen Sie jede Karte einer Ampelfarbe zu. Besprechen Sie im Team die Begründung und prüfen Sie dann.</p>
+  <p class="muted" style="font-size:.9rem"><b>Grün</b> = unbedenklich · <b>Gelb</b> = nur unter Bedingungen · <b>Rot</b> = nicht eingeben</p>
+  <div class="cards" id="cards"></div>
+  <button class="btn" id="s2check">Prüfen</button>
+  <div id="s2fb"></div>
+  <h3><span class="badge zu">Zusatz</span>Fallkarte 8 ist gelb. Unter welchen Bedingungen würden Sie das Prüfprotokoll eingeben?</h3>
+  <textarea data-k="s2.zusatz" placeholder="Ihre Begründung …"></textarea>
+  <div class="cnt" data-cnt="s2.zusatz"></div>
+  <details class="eh locked" data-e="s2.zusatz"><summary>Erwartungshorizont (ab 40 Zeichen)</summary>
+  <p>Nur wenn (1) die Daten wirklich anonym sind, also keine Kunden-, Teile- oder Personennamen und keine Werte, die eindeutig auf ein Produkt schließen lassen, (2) die KI-Regel des Betriebs das erlaubt und (3) ein vom Betrieb freigegebenes Werkzeug genutzt wird. Im Zweifel: allgemein fragen („Wie berechne ich die Standardabweichung?“) statt echte Daten einzugeben.</p></details>
+</section>
+
+<!-- Station 3 -->
+<section class="card sec" id="s3">
+  <h2>③ Entscheidungsbaum &amp; Kontoeinstellungen <span class="gate">Gate 1</span></h2>
+  <p><span class="badge pf">Pflicht</span>Bringen Sie die drei Prüffragen in eine sinnvolle Reihenfolge. Klicken Sie dazu nacheinander an, was zuerst geprüft wird.</p>
+  <div class="pick" id="pick"></div>
+  <button class="btn sec2" id="s3reset">Reihenfolge zurücksetzen</button>
+  <p style="margin-top:.8rem">Was tun Sie, wenn die Antwort auf eine Prüffrage <b>JA</b> lautet? Ordnen Sie zu.</p>
+  <div class="tree" id="tree"></div>
+  <button class="btn" id="s3check">Prüfen</button>
+  <div id="s3fb"></div>
+  <h3>Ihr KI-Konto prüfen (einzeln)</h3>
+  <label>Welches Werkzeug nutzen Sie?
+  <select data-k="s3.tool"><option value="">– bitte wählen –</option><option>ChatGPT</option><option>Claude</option><option>Gemini</option><option>Copilot</option><option>Le Chat (Mistral)</option><option>anderes</option></select></label>
+  <div class="chk" style="margin-top:.4rem">
+    <label><input type="checkbox" data-k="s3.c0"> Ich habe in den Einstellungen gefunden, ob meine Chats zum Training bzw. zur Verbesserung des Modells genutzt werden (meist unter „Datenschutz“ oder „Datenkontrollen“).</label>
+    <label><input type="checkbox" data-k="s3.c1"> Ich habe mich bewusst für eine Einstellung entschieden.</label>
+    <label><input type="checkbox" data-k="s3.c2"> Ich weiß, ob mein Werkzeug einen temporären Chat ohne Verlauf anbietet.</label>
+  </div>
+  <div class="fb info"><b>Achtung, Daumen hoch/runter:</b> Wenn Sie eine Antwort bewerten, schicken Sie damit den <b>gesamten Chat</b> an den Anbieter. Bei mehreren großen Anbietern (z. B. ChatGPT, Claude) kann dieser Chat dann zum Training genutzt werden, <b>auch wenn Sie das Training in den Einstellungen abgeschaltet haben</b>. Er wird teils mehrere Jahre gespeichert, und bei manchen Anbietern lesen auch Menschen mit. Stand 11/2026, die Regeln ändern sich häufig.</div>
+  <div class="chk"><label><input type="checkbox" data-k="s3.c3"> Ich gebe kein Feedback (Daumen) bei Chats, die persönliche oder betriebliche Daten enthalten.</label></div>
+  <div id="g1"></div>
+</section>
+
+<!-- Station 4 -->
+<section class="card sec" id="s4">
+  <h2>④ Musterfall: Stellenanzeige analysieren</h2>
+  <div class="tabs" id="s4tabs">
+    <button data-t="a" class="act">a) Material</button><button data-t="b">b) Muss oder Kann?</button><button data-t="c">c) KI-Ausgabe prüfen</button><button data-t="d">d) Ihre KI im Test</button>
+  </div>
+  <div class="sub act" data-s="a">
+    <p>Sie arbeiten mit einer <b>fiktiven</b> Stellenanzeige und dem <b>anonymisierten</b> Profil von Person A. Kopieren Sie die Texte bei Bedarf in Ihr KI-Werkzeug.</p>
+    <h3>Stellenanzeige</h3>
+    <pre class="copy" id="txtAnzeige"></pre><button class="btn sec2" data-copy="txtAnzeige">Anzeige kopieren</button>
+    <h3>Profil Person A (anonymisiert)</h3>
+    <pre class="copy" id="txtProfil"></pre><button class="btn sec2" data-copy="txtProfil">Profil kopieren</button>
+    <h3>Prompt-Karte</h3>
+    <pre class="copy" id="txtPrompt"></pre><button class="btn sec2" data-copy="txtPrompt">Prompt kopieren</button>
+  </div>
+  <div class="sub" data-s="b">
+    <p><span class="badge pf">Pflicht</span>Ordnen Sie jede Anforderung aus „Ihr Profil“ ein. Achten Sie auf Signalwörter in der Anzeige.</p>
+    <div class="scroll"><table id="mkTab"></table></div>
+    <button class="btn" id="s4bcheck">Prüfen</button><div id="s4bfb"></div>
+  </div>
+  <div class="sub" data-s="c">
+    <p>So sah die Antwort einer KI auf die Prompt-Karte aus. <span class="badge pf">Pflicht</span><b>Klicken Sie die 5 Zeilen an, die fehlerhaft sind</b>, und wählen Sie jeweils die Fehlerart.</p>
+    <div class="scroll"><table id="outTab"></table></div>
+    <button class="btn" id="s4ccheck">Prüfen</button><div id="s4cfb"></div>
+  </div>
+  <div class="sub" data-s="d">
+    <p><span class="badge pf">Pflicht</span>Geben Sie Anzeige, Profil und Prompt-Karte in Ihr eigenes KI-Werkzeug ein. Prüfen Sie die Antwort genauso wie in c).</p>
+    <label>Genutztes Werkzeug <input type="text" data-k="s4.tool" placeholder="z. B. ChatGPT"></label>
+    <p>Welche Fehler hat Ihre KI gemacht? Was war besser oder schlechter als in der Beispielausgabe? Vergleichen Sie mit einem Nachbarteam, das ein anderes Werkzeug nutzt.</p>
+    <textarea data-k="s4.own" placeholder="Unsere KI hat …"></textarea>
+    <div class="cnt" data-cnt="s4.own"></div>
+    <details class="eh locked" data-e="s4.own"><summary>Erwartungshorizont (ab 40 Zeichen)</summary>
+    <p>Erwartet werden konkrete Fehler mit Fehlerart, z. B. „SAP als Muss eingestuft (Muss/Kann)“ oder „Englisch als erfüllt bewertet (Schönfärben)“. Falls keine Fehler: Begründung, wie Sie das geprüft haben (jede Aussage mit dem Profil abgeglichen).</p>
+    <p><b>Werkzeugvergleich:</b> Verschiedene Werkzeuge und sogar zwei Durchläufe im selben Werkzeug liefern unterschiedliche Ergebnisse. Sprachmodelle erzeugen wahrscheinliche Texte, keine festen Antworten. Deshalb ist die Prüfung durch Sie nie optional.</p></details>
+  </div>
+</section>
+
+<!-- Station 5 -->
+<section class="card sec" id="s5">
+  <h2>⑤ Ihr Produkt: eigene Abgleich-Matrix <span class="gate">Gate 2</span></h2>
+  <p>Jetzt arbeiten Sie <b>einzeln</b>: Suchen Sie eine echte, öffentliche Stellenanzeige, die zu Ihnen passt. Lassen Sie die KI mit der Prompt-Karte und Ihrem <b>anonymisierten</b> Profil eine Matrix erstellen. Übernehmen Sie das <b>geprüfte und korrigierte</b> Ergebnis hier.</p>
+  <label>Quelle der Stellenanzeige (Portal oder Link)<input type="text" data-k="s5.src"></label>
+  <h3><span class="badge pf">Pflicht</span>Abgleich-Matrix (mind. 5 vollständige Zeilen)</h3>
+  <div class="scroll"><table class="mx" id="mx"></table></div>
+  <button class="btn sec2" id="addRow">+ Zeile</button>
+  <div id="anon"></div>
+  <h3>Qualitätscheck</h3>
+  <div class="chk" id="qc"></div>
+  <h3><span class="badge zu">Zusatz</span>Drei Fragen, die Sie dem Arbeitgeber im Gespräch stellen</h3>
+  <textarea data-k="s5.fragen" placeholder="1. …&#10;2. …&#10;3. …"></textarea>
+  <div class="cnt" data-cnt="s5.fragen"></div>
+  <details class="eh locked" data-e="s5.fragen"><summary>Erwartungshorizont (ab 40 Zeichen)</summary>
+  <p>Gute Fragen zeigen Interesse und liefern Ihnen Informationen, z. B.: „Wie sieht die Einarbeitung in den ersten drei Monaten aus?“ · „Wie verteilt sich die Arbeitszeit zwischen Büro und Fertigung?“ · „Welche Weiterbildung ist für [Ihre Lücke] vorgesehen?“ · „Welche digitalen Werkzeuge werden gerade eingeführt? Gibt es Regeln für KI-Werkzeuge?“</p>
+  <p>Weniger gut: Fragen, die Anzeige oder Website schon beantworten, oder als erste Frage ausschließlich Urlaub und Gehalt.</p></details>
+  <div id="g2"></div>
+  <div class="card" id="fin" style="display:none;background:#eaf1f9;margin-top:1rem">
+    <h3 style="margin-top:0">Geschafft: UE 1 abgeschlossen</h3>
+    <p>1. Laden Sie Ihr <b>Lernheft</b> herunter (Antworten und Erwartungshorizont) und speichern Sie es in OneDrive.<br>
+    2. Vergleichen Sie Ihre Ergebnisse mit dem vollständigen <b>Erwartungshorizont</b>.</p>
+    <button class="btn" id="bBook2">Lernheft herunterladen</button>
+    <a class="btn sec2" style="text-decoration:none;display:inline-block" href="erwartungshorizont_ue1.pdf" download>Erwartungshorizont (PDF)</a>
+    <p class="muted" style="font-size:.9rem">Ausblick UE 2: Mit Ihren zwei stärksten Treffern aus der Matrix schreiben Sie ein Anschreiben und prüfen den Arbeitgeber.</p>
+  </div>
+</section>
+</main>
+
+<div class="modal" id="modal"><div class="box"><p id="modalTxt"></p><button class="btn" onclick="document.getElementById('modal').classList.remove('on')">OK</button></div></div>
+
+<script>
+"use strict";
+const UNIT = "S1-UE1", VERSION = 1;
+
+/* ---------- Inhalte ---------- */
+const REIHE = [
+  ["UE 1","Spielregeln & Stellenanzeige"],["UE 2","Anschreiben & Arbeitgeber-Check"],["UE 3","Gesprächssimulator I"],
+  ["UE 4","Gesprächssimulator II"],["UE 5","Prompt-Bibliothek & Einarbeitung"],["UE 6","Eigener Assistent & Verantwortung"]];
+
+const STATIONS = [["s1","① Einstieg"],["s2","② Fallkarten"],["s3","③ Entscheidungsbaum"],["s4","④ Musterfall"],["s5","⑤ Eigene Matrix"]];
+
+const CHAT = [
+ {who:"u", segs:[["n","Hi, hier mein Lebenslauf und mein letztes Arbeitszeugnis. "],["n","Schreib mir ein Anschreiben für die Stelle als Techniker in der Arbeitsvorbereitung bei der Muster Antriebstechnik GmbH."],["br"],
+   ["adr","[Lebenslauf: Alex Berger, Lindenweg 12, 90402 Nürnberg, geb. 14.03.1993, Tel. 0911 000000 …]"],["br"],
+   ["zeug","[Arbeitszeugnis: „… erledigte die ihm übertragenen Aufgaben stets zu unserer vollsten Zufriedenheit …“ – gez. K. Schmid, Werksleiter]"],["br"],
+   ["zeich","[Anhang: Zeichnung_Getriebegehaeuse_Neuprojekt.pdf – damit die sehen, was ich kann]"]]},
+ {who:"k", segs:[["n","Gerne! Hier ist Ihr Anschreiben:"],["br"],["n","Sehr geehrte Damen und Herren,"],["br"],
+   ["flos","mit großer Begeisterung habe ich Ihre Stellenanzeige gelesen. "],["sap","Als erfahrener SAP-Experte mit fundierter Erfahrung in der Arbeitsvorbereitung "],["flos","bin ich teamfähig, belastbar und hochmotiviert …"]]}
+];
+const PROB = {
+ adr:"Vollständige persönliche Daten: für ein Anschreiben nicht nötig. Sie landen beim Anbieter und werden ggf. gespeichert oder fürs Training genutzt (Datensparsamkeit).",
+ zeug:"Arbeitszeugnis: enthält Namen und Unterschrift Dritter und Angaben über den Arbeitgeber. Diese Personen wurden nicht gefragt.",
+ zeich:"Zeichnung des aktuellen Arbeitgebers: Betriebsgeheimnis. Möglicher Verstoß gegen die Verschwiegenheitspflicht aus dem Arbeitsvertrag.",
+ sap:"Erfundene Qualifikation: Die KI erzeugt plausible, nicht geprüfte Texte (Halluzination). Abgeschickt wäre das eine falsche Angabe in der Bewerbung.",
+ flos:"Floskeln: austauschbarer KI-Standardtext ohne konkrete Belege. Personaler erkennen so etwas sofort."
+};
+
+const CARDS = [
+ {t:"Sie haben auf einem Jobportal eine Stellenanzeige gefunden. Sie kopieren den Anzeigentext in den Chat und lassen die wichtigsten Anforderungen herausarbeiten.", a:["G"], why:"Öffentlich zugänglich, kein Personenbezug, kein Geheimnis."},
+ {t:"Sie möchten Ihren Lebenslauf verbessern lassen und kopieren ihn vollständig in den Chat – mit Name, Anschrift, Geburtsdatum, Telefonnummer und Foto.", a:["R","Y"], why:"Rechtlich Ihre eigene Entscheidung, aber unnötig: Die KI braucht Ihre Identität nicht, um Texte zu verbessern. Besser anonymisieren (Karte 3). Gelb ist vertretbar, wenn Sie die Risiken bewusst abwägen und die Datenschutz-Einstellungen geprüft haben."},
+ {t:"Sie beschreiben der KI Ihre Berufsstationen ohne Namen und Firmen: „Industriemechaniker, 6 Jahre Erfahrung, davon 4 in der Getriebemontage und 2 in der Instandhaltung.“", a:["G"], why:"Kein Rückschluss auf Ihre Person möglich. So arbeiten Sie in dieser Reihe."},
+ {t:"Sie fotografieren Ihr Arbeitszeugnis ab und laden es hoch, um die Formulierungen deuten zu lassen.", a:["R"], why:"Personenbezogene Daten von Ihnen und Dritten (Unterschrift, Namen), Angaben über den Arbeitgeber. Alternative: einzelne Formulierungen ohne Namen abtippen und deuten lassen."},
+ {t:"Sie sind sich bei einer Toleranzangabe unsicher und laden die technische Zeichnung Ihres aktuellen Arbeitgebers hoch, um nachzufragen.", a:["R"], why:"Betriebsgeheimnis. Alternative: die Frage allgemein stellen, ohne Zeichnung (→ Karte 6)."},
+ {t:"Sie fragen: „Welche Passung wähle ich für ein Rillenkugellager mit Umfangslast auf einer Welle?“", a:["G"], why:"Reines Fachwissen ohne Bezug zu Personen oder Firma. Ergebnis trotzdem mit dem Tabellenbuch prüfen."},
+ {t:"Ein Kunde hat eine lange Reklamationsmail geschickt. Sie kopieren sie in den Chat und lassen sie zusammenfassen.", a:["R"], why:"Kundendaten, Namen Dritter, vertrauliche Geschäftsbeziehung. Nur in einem vom Betrieb freigegebenen Werkzeug."},
+ {t:"Sie entfernen aus einem Prüfprotokoll Kunden- und Teilenamen und lassen sich die Auswertung (Mittelwert, Streuung) erklären.", a:["Y"], why:"Anonymisiert ist es kein offensichtliches Geheimnis mehr, aber Messwerte können Rückschlüsse zulassen. Entscheidend ist die KI-Regel des Betriebs: Erlaubt sie das? Mit welchem Werkzeug?"}
+];
+const AMP = {G:"Grün",Y:"Gelb",R:"Rot"};
+
+const QUESTIONS = [
+ {id:"p", t:"Kann man aus den Daten auf eine Person schließen (Sie selbst oder Dritte)?"},
+ {id:"b", t:"Gehören die Daten dem Betrieb oder einem Kunden (Zeichnungen, Preise, Kundendaten, interne Abläufe)?"},
+ {id:"r", t:"Gibt es eine Regel (Betrieb, Schule), die das Werkzeug oder die Nutzung einschränkt?"}];
+const QSHOW = ["r","p","b"];          // Anzeige Reihenfolge-Aufgabe (gemischt)
+const QTREE = ["b","r","p"];          // Anzeige Zuordnung (gemischt, verrät die Reihenfolge nicht)
+const AORDER = ["a3","a1","a4","a2"]; // Auswahl-Reihenfolge (kein Treffer auf gleicher Position)
+const ACTIONS = {
+ a1:"Personenbezug entfernen (anonymisieren) oder nicht eingeben",
+ a2:"Nur in einem vom Betrieb freigegebenen KI-Werkzeug, nie im privaten Konto",
+ a3:"Regel befolgen, im Zweifel nachfragen (Vorgesetzte, IT, Datenschutz, Betriebsrat)",
+ a4:"Einen temporären Chat nutzen, dann ist die Eingabe unbedenklich"};
+const YES = {p:"a1", b:"a2", r:"a3"};
+
+const ANZEIGE = `Muster Antriebstechnik GmbH
+Hersteller von Industriegetrieben, ca. 450 Mitarbeitende, Raum Nürnberg
+
+Techniker (m/w/d) Arbeitsvorbereitung
+
+Ihre Aufgaben
+– Erstellen und Pflegen von Arbeitsplänen und Stücklisten im ERP-System
+– Planung von Fertigungsabläufen und Vorrichtungen für Neuprodukte
+– Ansprechperson an der Schnittstelle zwischen Konstruktion, Fertigung, Qualitätssicherung und Einkauf
+– Mitarbeit in KVP-Projekten
+– Unterstützung bei der Einführung digitaler Werkzeuge in der Fertigung
+
+Ihr Profil
+– Abgeschlossene Weiterbildung zum staatlich geprüften Techniker Maschinenbau oder vergleichbare Qualifikation
+– Mehrjährige Berufserfahrung in der Fertigung oder Montage
+– Sicherer Umgang mit technischen Zeichnungen
+– Gute MS-Office-Kenntnisse
+– Wünschenswert: Kenntnisse in SAP PP
+– Wünschenswert: Erfahrung mit Lean-Methoden
+– Gute Englischkenntnisse
+– Hands-on-Mentalität, Kommunikationsstärke und Durchsetzungsvermögen
+
+Wir bieten
+– Ein dynamisches Team mit flachen Hierarchien
+– Gleitzeit und mobiles Arbeiten nach Absprache
+– Gezielte Weiterbildungsangebote`;
+
+const PROFIL = `Profil Person A (anonymisiert)
+
+Ausbildung: Industriemechaniker, Fachrichtung Instandhaltung (3,5 Jahre)
+Berufserfahrung: 6 Jahre
+– 4 Jahre Serienmontage von Stirnradgetrieben inkl. Endprüfung am Prüfstand
+– 2 Jahre Instandhaltung im Schichtbetrieb (Fehlersuche Hydraulik/Pneumatik)
+– 2 Jahre zusätzlich Betreuung von Auszubildenden in der Montage
+Weiterbildung: Staatlich geprüfter Techniker Maschinenbau (Vollzeit), Abschluss in Kürze
+Technikerprojekt: Konstruktion und Bau einer Montagevorrichtung, Teamleitung (4 Personen), Zeitplan und Projektdokumentation
+Kenntnisse:
+– Technische Zeichnungen sicher, inkl. ISO-Toleranzen und Passungen
+– CAD: Fusion (Fachschule), Inventor Grundkenntnisse
+– MS Office: Excel gut (Formeln, Diagramme), Word, PowerPoint
+– Englisch: Schulkenntnisse, liest technische Dokumentationen
+– Mehrere eingereichte KVP-Vorschläge, keine Lean-Schulung
+– Keine SAP-Kenntnisse
+Sonstiges: Führerschein Klasse B`;
+
+const PROMPT = `Du bist erfahrene Personalreferentin in einem Maschinenbauunternehmen.
+Analysiere die folgende Stellenanzeige für einen staatlich geprüften Techniker.
+
+1. Liste alle Anforderungen auf und teile sie ein in „Muss“ und „Kann“.
+2. Nenne Erwartungen, die zwischen den Zeilen stehen, und kennzeichne sie ausdrücklich als Vermutung.
+3. Gleiche die Anforderungen mit dem Profil unten ab: Tabelle mit den Spalten Anforderung | passende Erfahrung | Lücke.
+4. Erfinde keine Erfahrungen, die nicht im Profil stehen.
+
+Stellenanzeige:
+[hier einfügen]
+
+Profil (anonymisiert):
+[hier einfügen]`;
+
+const MK = [
+ {t:"Staatlich geprüfter Techniker Maschinenbau o. vergleichbar", a:["M"], why:"Muss. „oder vergleichbare Qualifikation“ öffnet die Tür leicht."},
+ {t:"Mehrjährige Berufserfahrung in Fertigung oder Montage", a:["M"], why:"Muss."},
+ {t:"Sicherer Umgang mit technischen Zeichnungen", a:["M"], why:"Muss."},
+ {t:"Gute MS-Office-Kenntnisse", a:["M"], why:"Muss."},
+ {t:"Hands-on-Mentalität, Kommunikationsstärke, Durchsetzungsvermögen", a:["M"], why:"Muss (weiche Anforderung). Wird im Gespräch geprüft, nicht im Lebenslauf."},
+ {t:"Gute Englischkenntnisse", a:["M","K","U"], why:"Steht ohne „wünschenswert“, ist also nicht eindeutig. Beste Lösung: „unklar“ und im Gespräch nachfragen. Muss und Kann sind mit Begründung vertretbar."},
+ {t:"Kenntnisse in SAP PP", a:["K"], why:"Kann. Ausdrücklich „wünschenswert“. Häufiger Fehler: wegen „ERP-System“ in den Aufgaben zum Muss gemacht."},
+ {t:"Erfahrung mit Lean-Methoden", a:["K"], why:"Kann. Ausdrücklich „wünschenswert“."}];
+const MKL = {M:"Muss",K:"Kann",U:"unklar"};
+
+const OUT = [
+ ["Staatl. gepr. Techniker Maschinenbau","Muss","Weiterbildung, Abschluss in Kürze","erfüllt",null],
+ ["Berufserfahrung Fertigung/Montage","Muss","4 J. Getriebemontage, 2 J. Instandhaltung","erfüllt",null],
+ ["Technische Zeichnungen","Muss","sicher, inkl. ISO-Toleranzen und Passungen","erfüllt",null],
+ ["SAP PP","Muss","keine Kenntnisse","Lücke – K.-o.-Kriterium","mk"],
+ ["Arbeitspläne/Stücklisten (Aufgabe)","Muss","6 Jahre Erfahrung in der Arbeitsvorbereitung","erfüllt","erf"],
+ ["Bereitschaft zur Schichtarbeit","Muss","2 J. Instandhaltung im Schichtbetrieb","erfüllt","verm"],
+ ["Gute Englischkenntnisse","Muss","Schulkenntnisse","erfüllt","schoen"],
+ ["Kommunikationsstärke","Muss","Person A ist teamfähig, belastbar und kommunikationsstark","erfüllt","flos"],
+ ["MS Office","Muss","Excel gut, Word, PowerPoint","erfüllt",null],
+ ["Vorrichtungen planen (Aufgabe)","–","Technikerprojekt: Montagevorrichtung konstruiert und gebaut","starker Treffer",null]];
+const FT = {erf:"Erfundene Erfahrung", verm:"Vermutung als Tatsache", mk:"Falsche Muss/Kann-Zuordnung", schoen:"Schönfärben von Lücken", flos:"Floskel statt Beleg"};
+const FTWHY = {
+ erf:"Im Profil steht keine Erfahrung in der Arbeitsvorbereitung. Stücklisten wurden nur genutzt, nicht erstellt.",
+ verm:"Schichtarbeit steht nicht in der Anzeige. Die KI hat eine Anforderung erfunden.",
+ mk:"SAP PP ist ausdrücklich „wünschenswert“, also Kann und kein K.-o.-Kriterium.",
+ schoen:"Schulkenntnisse sind nicht „gute Englischkenntnisse“. Das ist teilweise erfüllt bzw. eine Lücke.",
+ flos:"„teamfähig, belastbar“ ist kein Beleg. Besser: Azubi-Betreuung (2 J.), Teamleitung im Technikerprojekt."};
+
+const QC = [
+ "Die Stellenanzeige ist öffentlich zugänglich (Quelle notiert).",
+ "Im Chat und in der Matrix stehen keine Namen, Adressen, Firmennamen früherer Arbeitgeber oder Geburtsdaten.",
+ "Jede Anforderung der Anzeige ist in der Matrix enthalten und als Muss/Kann eingeordnet.",
+ "Jede „passende Erfahrung“ ist echt und konkret (Zeitraum, Tätigkeit, Projekt, Zahl).",
+ "Lücken sind ehrlich benannt und haben eine Strategie (Weiterbildung, Einarbeitung, Gesprächsargument).",
+ "Ich habe die KI-Ausgabe geprüft und mindestens eine Korrektur vorgenommen oder begründet, warum keine nötig war.",
+ "Meine stärksten zwei Treffer sind mit ★ markiert. Die kommen in UE 2 ins Anschreiben."];
+
+/* ---------- Zustand ---------- */
+function fresh(){ return {
+  team:"", station:"s1",
+  s1:{found:[], miss:0, zusatz:""},
+  s2:{ans:{}, checked:false, zusatz:""},
+  s3:{order:[], yes:{}, checked:false, tool:"", c0:false, c1:false, c2:false, c3:false},
+  s4:{tab:"a", mk:{}, mkChecked:false, marks:[], types:{}, outChecked:false, tool:"", own:""},
+  s5:{src:"", rows:[{},{},{},{},{}], qc:[], fragen:""}
+};}
+let S = fresh();
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function getK(k){ const [a,b] = k.split("."); return S[a][b]; }
+function setK(k,v){ const [a,b] = k.split("."); S[a][b] = v; }
+function info(t){ $("modalTxt").textContent = t; $("modal").classList.add("on"); }
+
+/* ---------- Auswertung ---------- */
+const s1done = () => ["adr","zeug","zeich","sap","flos"].every(p => S.s1.found.includes(p));
+const s2ok = i => CARDS[i].a.includes(S.s2.ans[i]);
+const s2done = () => S.s2.checked && CARDS.every((c,i) => s2ok(i));
+const s3tree = () => S.s3.order.join("") === "pbr" && Object.keys(YES).every(q => S.s3.yes[q] === YES[q]);
+const s3done = () => S.s3.checked && s3tree() && S.s3.tool && S.s3.c0 && S.s3.c1 && S.s3.c2 && S.s3.c3;
+const mkOk = i => MK[i].a.includes(S.s4.mk[i]);
+const s4b = () => S.s4.mkChecked && MK.every((m,i) => mkOk(i));
+const outOk = () => { const err = OUT.map((r,i)=>r[4]?i:null).filter(x=>x!==null);
+  return err.length === S.s4.marks.length && err.every(i => S.s4.marks.includes(i) && S.s4.types[i] === OUT[i][4]); };
+const s4c = () => S.s4.outChecked && outOk();
+const s4done = () => s4b() && s4c() && S.s4.own.trim().length >= 40;
+const rowFull = r => r && r.anf && r.mk && r.erf && r.st && (r.st === "erfüllt" || r.str);
+const fullRows = () => S.s5.rows.filter(rowFull).length;
+const s5done = () => fullRows() >= 5 && QC.every((q,i) => S.s5.qc[i]) && !!S.s5.src.trim();
+const DONE = {s1:s1done, s2:s2done, s3:s3done, s4:s4done, s5:s5done};
+
+/* ---------- Rahmen ---------- */
+function renderMap(){
+  $("map").innerHTML = REIHE.map((r,i) => `<div class="${i===0?"now":""}"><b>${r[0]}</b>${esc(r[1])}</div>`).join("");
+  const items = [["Entscheidungsbaum", s3done()],["Muss/Kann sicher", s4b()],["KI-Fehler erkennen", s4c()],["Eigene Abgleich-Matrix", s5done()]];
+  $("pack").innerHTML = items.map(([t,ok]) => `<span class="${ok?"ok":""}">${ok?"✔ ":"○ "}${t}</span>`).join("");
+}
+function renderNav(){
+  /* Buttons nur einmal erzeugen, danach nur Klassen ändern (sonst gehen Klicks beim Neuaufbau verloren) */
+  if (!$("nav").children.length)
+    $("nav").innerHTML = STATIONS.map(([id,t]) => `<button data-go="${id}"><span class="dot"></span>${t}</button>`).join("");
+  STATIONS.forEach(([id]) => {
+    const b = $("nav").querySelector(`[data-go="${id}"]`);
+    b.classList.toggle("act", S.station===id);
+    b.classList.toggle("done", DONE[id]());
+    b.classList.toggle("lock", (id==="s4"||id==="s5") && !s3done());
+    $(id).classList.toggle("act", S.station===id);
+  });
+  $("teamShow").textContent = "Team: " + (S.team || "–");
+}
+function refresh(){ renderMap(); renderNav(); }
+
+/* ---------- Station 1 ---------- */
+function renderChat(){
+  $("chat").innerHTML = CHAT.map((m,mi) => `<div class="msg ${m.who}"><span class="who">${m.who==="u"?"Alex":"KI"}</span>` +
+    m.segs.map((s,si) => s[0]==="br" ? "<br>" :
+      `<span class="seg ${S.s1.found.includes(s[0])?"hit":""}" data-p="${s[0]}" data-i="${mi}-${si}">${esc(s[1])}</span>`).join("") + "</div>").join("");
+  const n = S.s1.found.length;
+  $("s1cnt").textContent = `Gefunden: ${n} von 5`;
+  let h = S.s1.found.map(p => `<div class="fb bad"><b>Problem:</b> ${esc(PROB[p])}</div>`).join("");
+  if (s1done()) h += `<div class="fb ok"><b>Alle 5 gefunden.</b> Und das Grundproblem dahinter: Alex hätte das Ergebnis ungeprüft übernommen. Die Verantwortung für die Bewerbung bleibt beim Menschen. Die KI ist Werkzeug, nicht Autor.</div>`;
+  $("s1fb").innerHTML = h;
+}
+$("chat").addEventListener("click", e => {
+  const el = e.target.closest(".seg"); if (!el) return;
+  const p = el.dataset.p;
+  if (p === "n") { el.classList.add("miss"); S.s1.miss++; setTimeout(()=>el.classList.remove("miss"), 900); return; }
+  if (!S.s1.found.includes(p)) S.s1.found.push(p);
+  renderChat(); refresh();
+});
+
+/* ---------- Station 2 ---------- */
+function renderCards(){
+  $("cards").innerHTML = CARDS.map((c,i) => {
+    const a = S.s2.ans[i], cls = S.s2.checked && a ? (s2ok(i) ? "right checked" : "wrong checked") : "";
+    return `<div class="fc ${cls}"><span class="no">Fallkarte ${i+1}</span><p>${esc(c.t)}</p>
+      <div class="amp">${["G","Y","R"].map(x => `<button class="${x} ${a===x?"on":""}" data-c="${i}" data-a="${x}">${AMP[x]}</button>`).join("")}</div>
+      <div class="why">${S.s2.checked && a ? (s2ok(i)?"✔ ":"✘ Noch einmal überlegen. ") : ""}${s2ok(i) ? esc(c.why) : ""}</div></div>`;
+  }).join("");
+}
+$("cards").addEventListener("click", e => {
+  const b = e.target.closest("button[data-c]"); if (!b) return;
+  S.s2.ans[b.dataset.c] = b.dataset.a; S.s2.checked = false; renderCards(); $("s2fb").innerHTML = ""; refresh();
+});
+$("s2check").onclick = () => {
+  if (Object.keys(S.s2.ans).length < CARDS.length) { $("s2fb").innerHTML = `<div class="fb info">Bitte zuerst alle 8 Karten zuordnen.</div>`; return; }
+  S.s2.checked = true; renderCards();
+  const r = CARDS.filter((c,i)=>s2ok(i)).length;
+  $("s2fb").innerHTML = r === 8 ? `<div class="fb ok"><b>8 von 8 richtig.</b> Merke: Entscheidend ist nicht die Farbe, sondern das Argument.</div>`
+    : `<div class="fb bad">${r} von 8 richtig. Ändern Sie die rot umrandeten Karten und prüfen Sie erneut.</div>`;
+  refresh();
+};
+
+/* ---------- Station 3 ---------- */
+function renderTree(){
+  $("pick").innerHTML = QSHOW.map(id => {
+    const q = QUESTIONS.find(x=>x.id===id), pos = S.s3.order.indexOf(id);
+    return `<button data-q="${id}" class="${pos>=0?"used":""}"><span class="n">${pos>=0?pos+1+".":"–"}</span>${esc(q.t)}</button>`;
+  }).join("");
+  const opts = id => `<option value="">– Wenn JA … –</option>` + AORDER.map(k => `<option value="${k}" ${S.s3.yes[id]===k?"selected":""}>${esc(ACTIONS[k])}</option>`).join("");
+  $("tree").innerHTML = QTREE.map(id => QUESTIONS.find(x=>x.id===id)).map(q => `<div class="row"><div>${esc(q.t)}</div><select data-y="${q.id}">${opts(q.id)}</select></div>`).join("");
+  renderG1();
+}
+function renderG1(){
+  $("g1").innerHTML = s3done() ? `<div class="fb ok"><b>Gate 1 geschafft.</b> Ihre Spielregeln stehen. Weiter mit ④ Musterfall.</div>`
+    : `<div class="fb info">Gate 1: Entscheidungsbaum richtig geprüft, Werkzeug gewählt und alle vier Haken gesetzt.</div>`;
+}
+$("pick").addEventListener("click", e => {
+  const b = e.target.closest("button[data-q]"); if (!b) return;
+  const id = b.dataset.q;
+  if (!S.s3.order.includes(id) && S.s3.order.length < 3) S.s3.order.push(id);
+  S.s3.checked = false; $("s3fb").innerHTML = ""; renderTree(); refresh();
+});
+$("s3reset").onclick = () => { S.s3.order = []; S.s3.checked = false; $("s3fb").innerHTML = ""; renderTree(); refresh(); };
+$("tree").addEventListener("change", e => { const s = e.target.closest("select[data-y]"); if (!s) return;
+  S.s3.yes[s.dataset.y] = s.value; S.s3.checked = false; $("s3fb").innerHTML = ""; renderG1(); refresh(); });
+$("s3check").onclick = () => {
+  if (S.s3.order.length < 3 || Object.keys(YES).some(q => !S.s3.yes[q])) { $("s3fb").innerHTML = `<div class="fb info">Bitte Reihenfolge festlegen und alle drei „Wenn JA“ zuordnen.</div>`; return; }
+  S.s3.checked = true;
+  const ordOk = S.s3.order.join("") === "pbr", yesOk = Object.keys(YES).every(q => S.s3.yes[q] === YES[q]);
+  let h = "";
+  h += ordOk ? `<div class="fb ok">✔ Reihenfolge: Erst „Wem gehören die Daten?“ (Person, dann Betrieb), dann „Was darf ich damit?“ (Regel).</div>`
+             : `<div class="fb bad">✘ Reihenfolge: Beginnen Sie mit der Frage, die am häufigsten sofort stoppt: der Personenbezug.</div>`;
+  h += yesOk ? `<div class="fb ok">✔ Zuordnung stimmt. Merksatz: Erst fragen „Wem gehören die Daten?“, dann „Was darf ich damit?“, erst danach „Was kann die KI damit?“.</div>`
+             : `<div class="fb bad">✘ Mindestens eine „Wenn JA“-Zuordnung passt nicht. Überlegen Sie: Was ist bei Firmendaten erlaubt, was bei Personendaten?</div>`;
+  if (Object.values(S.s3.yes).includes("a4")) h += `<div class="fb bad">✘ Ein temporärer Chat erscheint nicht im Verlauf, aber die Daten gehen trotzdem an den Anbieter und werden dort eine Zeit lang gespeichert. Er löst weder das Problem des Personenbezugs noch das des Betriebsgeheimnisses.</div>`;
+  $("s3fb").innerHTML = h; renderG1(); refresh();
+};
+
+/* ---------- Station 4 ---------- */
+$("txtAnzeige").textContent = ANZEIGE; $("txtProfil").textContent = PROFIL; $("txtPrompt").textContent = PROMPT;
+document.addEventListener("click", e => {
+  const b = e.target.closest("button[data-copy]"); if (!b) return;
+  const t = $(b.dataset.copy).textContent;
+  (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(
+    () => { b.dataset.l = b.dataset.l || b.textContent; b.textContent = "✔ kopiert"; setTimeout(()=>b.textContent = b.dataset.l, 1500); },
+    () => info("Kopieren nicht möglich. Bitte Text markieren und mit Cmd+C bzw. Strg+C kopieren."));
+});
+function showTab(t){ S.s4.tab = t;
+  document.querySelectorAll("#s4tabs button").forEach(b => b.classList.toggle("act", b.dataset.t===t));
+  document.querySelectorAll("#s4 .sub").forEach(d => d.classList.toggle("act", d.dataset.s===t)); }
+$("s4tabs").addEventListener("click", e => { const b = e.target.closest("button[data-t]"); if (b) showTab(b.dataset.t); });
+
+function renderMK(){
+  $("mkTab").innerHTML = `<tr><th>Anforderung</th><th style="width:9rem">Einstufung</th>${S.s4.mkChecked?"<th>Rückmeldung</th>":""}</tr>` +
+    MK.map((m,i) => `<tr><td>${esc(m.t)}</td><td><select data-m="${i}"><option value="">–</option>${Object.entries(MKL).map(([k,v])=>`<option value="${k}" ${S.s4.mk[i]===k?"selected":""}>${v}</option>`).join("")}</select></td>${
+      S.s4.mkChecked ? `<td>${mkOk(i) ? "✔ " + esc(m.why) : "✘ Achten Sie auf Signalwörter."}</td>` : ""}</tr>`).join("");
+}
+$("mkTab").addEventListener("change", e => { const s = e.target.closest("select[data-m]"); if (!s) return;
+  S.s4.mk[s.dataset.m] = s.value; S.s4.mkChecked = false; $("s4bfb").innerHTML = ""; renderMK(); refresh(); });
+$("s4bcheck").onclick = () => {
+  if (MK.some((m,i) => !S.s4.mk[i])) { $("s4bfb").innerHTML = `<div class="fb info">Bitte alle Anforderungen einordnen.</div>`; return; }
+  S.s4.mkChecked = true; renderMK();
+  $("s4bfb").innerHTML = s4b() ? `<div class="fb ok"><b>Alles stimmig.</b> Signalwörter: „wünschenswert“, „idealerweise“, „von Vorteil“ = Kann.</div>`
+    : `<div class="fb bad">Noch nicht alles richtig. Korrigieren Sie die mit ✘ markierten Zeilen.</div>`; refresh();
+};
+
+function renderOut(){
+  const ch = S.s4.outChecked;
+  $("outTab").innerHTML = `<tr><th>Anforderung</th><th>Einstufung</th><th>Passende Erfahrung Person A</th><th>Bewertung</th><th style="width:12rem">Fehlerart</th></tr>` +
+    OUT.map((r,i) => {
+      const on = S.s4.marks.includes(i);
+      let cls = on ? "on" : "";
+      if (ch && on) cls = (r[4] && S.s4.types[i] === r[4]) ? "good" : "badr";
+      if (ch && !on && r[4]) cls = "badr";
+      const sel = on ? `<select data-ty="${i}"><option value="">– Fehlerart –</option>${Object.entries(FT).map(([k,v])=>`<option value="${k}" ${S.s4.types[i]===k?"selected":""}>${v}</option>`).join("")}</select>` : `<span class="muted">anklicken</span>`;
+      const fb = ch && r[4] && on && S.s4.types[i]===r[4] ? `<div style="font-size:.82rem;margin-top:.25rem">✔ ${esc(FTWHY[r[4]])}</div>` : "";
+      return `<tr class="mk ${cls}" data-r="${i}"><td>${esc(r[0])}</td><td>${esc(r[1])}</td><td>${esc(r[2])}</td><td>${esc(r[3])}</td><td>${sel}${fb}</td></tr>`;
+    }).join("");
+}
+$("outTab").addEventListener("click", e => {
+  if (e.target.closest("select")) return;
+  const tr = e.target.closest("tr[data-r]"); if (!tr) return;
+  const i = +tr.dataset.r, k = S.s4.marks.indexOf(i);
+  if (k >= 0) { S.s4.marks.splice(k,1); delete S.s4.types[i]; } else S.s4.marks.push(i);
+  S.s4.outChecked = false; $("s4cfb").innerHTML = ""; renderOut(); refresh();
+});
+$("outTab").addEventListener("change", e => { const s = e.target.closest("select[data-ty]"); if (!s) return;
+  S.s4.types[s.dataset.ty] = s.value; S.s4.outChecked = false; $("s4cfb").innerHTML = ""; renderOut(); refresh(); });
+$("s4ccheck").onclick = () => {
+  if (S.s4.marks.some(i => !S.s4.types[i])) { $("s4cfb").innerHTML = `<div class="fb info">Bitte für jede markierte Zeile eine Fehlerart wählen.</div>`; return; }
+  S.s4.outChecked = true; renderOut();
+  const errs = OUT.filter(r=>r[4]).length, hit = S.s4.marks.filter(i => OUT[i][4] && S.s4.types[i]===OUT[i][4]).length,
+        fp = S.s4.marks.filter(i => !OUT[i][4]).length;
+  $("s4cfb").innerHTML = outOk() ? `<div class="fb ok"><b>Alle 5 Fehler gefunden und richtig benannt.</b> Prüfregel: Jede Aussage muss sich einer Zeile im Profil und in der Anzeige zuordnen lassen.</div>`
+    : `<div class="fb bad">${hit} von ${errs} Fehlern richtig erkannt${fp ? `, ${fp} korrekte Zeile(n) fälschlich markiert` : ""}. Rot = noch nicht stimmig. Prüfen Sie jede Zeile gegen Profil und Anzeige.</div>`;
+  refresh();
+};
+
+/* ---------- Station 5 ---------- */
+const ANON = [/\b\d{5}\b/, /@/, /\b0\d{2,4}[\s\/-]?\d{4,}/, /geb\.|geboren/i, /\b(str\.|straße|weg \d|platz \d)/i, /\b\d{1,2}\.\d{1,2}\.(19|20)\d{2}\b/];
+function renderMX(){
+  const st = ["erfüllt","teilweise","Lücke"];
+  $("mx").innerHTML = `<tr><th>★</th><th>Anforderung</th><th style="width:6.5rem">Muss/Kann</th><th>Meine Erfahrung (konkret, anonym)</th><th style="width:7rem">Status</th><th>Strategie bei Lücke</th><th></th></tr>` +
+    S.s5.rows.map((r,i) => `<tr><td><input type="checkbox" data-x="${i}" data-f="star" ${r.star?"checked":""} title="stärkster Treffer"></td>
+      <td><input type="text" data-x="${i}" data-f="anf" value="${esc(r.anf)}"></td>
+      <td><select data-x="${i}" data-f="mk"><option value="">–</option>${["Muss","Kann","unklar"].map(v=>`<option ${r.mk===v?"selected":""}>${v}</option>`).join("")}</select></td>
+      <td><input type="text" data-x="${i}" data-f="erf" value="${esc(r.erf)}"></td>
+      <td><select data-x="${i}" data-f="st"><option value="">–</option>${st.map(v=>`<option ${r.st===v?"selected":""}>${v}</option>`).join("")}</select></td>
+      <td><input type="text" data-x="${i}" data-f="str" value="${esc(r.str)}"></td>
+      <td><button class="btn sec2" style="padding:.1rem .45rem" data-del="${i}" title="Zeile löschen">×</button></td></tr>`).join("");
+  checkAnon();
+}
+function checkAnon(){
+  const all = S.s5.rows.map(r => [r.anf,r.erf,r.str].join(" ")).join(" ") + " " + S.s5.src;
+  const hit = ANON.some(re => re.test(all.replace(/https?:\/\/\S+/g,"")));
+  $("anon").innerHTML = (hit ? `<p class="warn">⚠ Möglicher Personenbezug erkannt (z. B. Postleitzahl, Telefonnummer, Geburtsdatum, Adresse, E-Mail). Bitte prüfen und anonymisieren.</p>` : "") +
+    `<p class="cnt">Vollständige Zeilen: ${fullRows()} von mind. 5 (bei Status „teilweise“ oder „Lücke“ ist eine Strategie nötig).</p>`;
+}
+$("mx").addEventListener("input", e => { const el = e.target.closest("[data-x]"); if (!el) return;
+  const r = S.s5.rows[+el.dataset.x]; r[el.dataset.f] = el.type === "checkbox" ? el.checked : el.value;
+  checkAnon(); renderG2(); refresh(); });
+$("mx").addEventListener("click", e => { const b = e.target.closest("button[data-del]"); if (!b) return;
+  S.s5.rows.splice(+b.dataset.del,1); if (!S.s5.rows.length) S.s5.rows.push({}); renderMX(); renderG2(); refresh(); });
+$("addRow").onclick = () => { S.s5.rows.push({}); renderMX(); };
+function renderQC(){
+  $("qc").innerHTML = QC.map((q,i) => `<label><input type="checkbox" data-q5="${i}" ${S.s5.qc[i]?"checked":""}> ${esc(q)}</label>`).join("");
+}
+$("qc").addEventListener("change", e => { const c = e.target.closest("[data-q5]"); if (!c) return;
+  S.s5.qc[+c.dataset.q5] = c.checked; renderG2(); refresh(); });
+function renderG2(){
+  const ok = s5done();
+  $("g2").innerHTML = ok ? `<div class="fb ok"><b>Gate 2 geschafft.</b> Ihre Abgleich-Matrix ist fertig.</div>`
+    : `<div class="fb info">Gate 2: Quelle eingetragen, mind. 5 vollständige Zeilen, alle Punkte im Qualitätscheck abgehakt.</div>`;
+  $("fin").style.display = ok ? "block" : "none";
+}
+
+/* ---------- Freitexte & einfache Felder ---------- */
+function syncSimple(){
+  document.querySelectorAll("[data-k]").forEach(el => {
+    if (el.closest("#mx")) return;
+    const v = getK(el.dataset.k);
+    if (el.type === "checkbox") el.checked = !!v; else el.value = v ?? "";
+  });
+  updEH();
+}
+function updEH(){
+  document.querySelectorAll("[data-cnt]").forEach(el => { {
+    const n = String(getK(el.dataset.cnt) || "").trim().length;
+    el.textContent = n < 40 ? `${n} / 40 Zeichen bis zum Erwartungshorizont` : "Erwartungshorizont freigeschaltet: erst schreiben, dann vergleichen.";
+  }});
+  document.querySelectorAll("details.eh").forEach(d => {
+    const ok = String(getK(d.dataset.e) || "").trim().length >= 40;
+    d.classList.toggle("locked", !ok); if (!ok) d.open = false;
+  });
+}
+document.addEventListener("toggle", e => {
+  const d = e.target; if (d.matches && d.matches("details.eh.locked") && d.open) d.open = false;
+}, true);
+document.addEventListener("input", e => {
+  const el = e.target; if (!el.dataset || !el.dataset.k || el.closest("#mx")) return;
+  setK(el.dataset.k, el.type === "checkbox" ? el.checked : el.value);
+  updEH(); renderG1(); renderG2(); refresh();
+});
+document.addEventListener("change", e => {
+  const el = e.target; if (!el.dataset || !el.dataset.k || el.closest("#mx")) return;
+  setK(el.dataset.k, el.type === "checkbox" ? el.checked : el.value); renderG1(); refresh();
+});
+$("team").addEventListener("input", e => { S.team = e.target.value.trim(); refresh(); });
+
+$("nav").addEventListener("click", e => {
+  const b = e.target.closest("button[data-go]"); if (!b) return;
+  if (b.classList.contains("lock")) { info("Erst Gate 1 (③ Entscheidungsbaum) abschließen. Dann wissen Sie, was Sie in die KI eingeben dürfen."); return; }
+  S.station = b.dataset.go; refresh(); window.scrollTo({top: $("nav").offsetTop - 70, behavior: "smooth"});
+});
+
+/* ---------- Speichern / Laden ---------- */
+function download(name, content, type){
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([content], {type}));
+  a.download = name; document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+const today = () => new Date().toISOString().slice(0,10);
+const safe = s => s.replace(/[^\wäöüÄÖÜß-]+/g,"-").replace(/^-|-$/g,"");
+$("bSave").onclick = () => {
+  if (!S.team) { info("Bitte zuerst oben einen Teamnamen eintragen (ohne Klarnamen)."); $("team").focus(); return; }
+  download(`UE1_${safe(S.team)}_${today()}.json`, JSON.stringify({unit:UNIT, version:VERSION, saved:new Date().toISOString(), state:S}, null, 1), "application/json");
+};
+$("bLoad").onclick = () => $("fileIn").click();
+$("fileIn").onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    try {
+      const d = JSON.parse(rd.result);
+      if (d.unit !== UNIT) { info(`Diese Datei gehört zu einer anderen Einheit (${d.unit || "unbekannt"}). Bitte die Sicherung von UE 1 wählen.`); return; }
+      applyState(d.state);
+      info(`Stand von Team „${S.team}“ geladen.`);
+    } catch (err) { info("Die Datei konnte nicht gelesen werden. Ist es wirklich eine Sicherungsdatei dieser Einheit (.json)?"); }
+    e.target.value = "";
+  };
+  rd.readAsText(f);
+};
+function applyState(st){
+  const base = fresh();
+  for (const k of Object.keys(base)) {
+    if (st && st[k] !== undefined) base[k] = (typeof base[k] === "object" && !Array.isArray(base[k])) ? Object.assign(base[k], st[k]) : st[k];
+  }
+  if (!Array.isArray(base.s5.rows) || !base.s5.rows.length) base.s5.rows = [{}];
+  S = base; renderAll();
+}
+
+/* ---------- Lernheft ---------- */
+function ans(t){ t = String(t||"").trim(); return t ? `<div class="a">${esc(t).replace(/\n/g,"<br>")}</div>` : `<div class="a none">nicht bearbeitet</div>`; }
+function book(){
+  const st = ok => ok ? `<span class="ok">✔ erledigt</span>` : `<span class="no">○ nicht abgeschlossen</span>`;
+  let h = `<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><title>Lernheft UE 1 – ${esc(S.team)}</title><style>
+  body{font-family:Calibri,Carlito,Arial,sans-serif;max-width:820px;margin:1.5rem auto;padding:0 1rem;color:#1d2733;line-height:1.45}
+  h1{color:#1F3A5F;font-size:1.5rem}h2{color:#1F3A5F;font-size:1.15rem;border-bottom:1px solid #ccd;padding-bottom:.2rem;margin-top:1.6rem}
+  table{border-collapse:collapse;width:100%;font-size:.9rem;margin:.4rem 0}th,td{border:1px solid #c5ccd4;padding:.3rem .4rem;vertical-align:top;text-align:left}th{background:#eef1f5}
+  .a{background:#f3f6fa;border-left:3px solid #2f5d8f;padding:.35rem .6rem;margin:.3rem 0}.a.none{color:#999;font-style:italic}
+  .eh{background:#fff8e6;border:1px dashed #c9a800;padding:.35rem .6rem;margin:.3rem 0 .8rem}.eh b:first-child{color:#8a6a00}
+  .ok{color:#1e7a36;font-weight:700}.no{color:#a42323;font-weight:700}
+  @media print{.np{display:none}h2{page-break-after:avoid}}</style></head><body>
+  <button class="np" onclick="print()">Drucken / als PDF speichern</button>
+  <h1>Lernheft UE 1: Spielregeln &amp; Stellenanzeige</h1>
+  <p>KI-Kon · Starterpaket Techniker<br>Team: <b>${esc(S.team || "–")}</b> · erstellt am ${today()}</p>`;
+
+  h += `<h2>① Einstieg: Was ist schiefgelaufen? ${st(s1done())}</h2><p>Gefundene Problemstellen: ${S.s1.found.length} von 5</p>
+  <table><tr><th>Problemstelle</th><th>Gefunden?</th><th>Erwartungshorizont</th></tr>${Object.entries(PROB).map(([k,v])=>`<tr><td>${k==="adr"?"Persönliche Daten":k==="zeug"?"Arbeitszeugnis":k==="zeich"?"Zeichnung":k==="sap"?"SAP-Experte":"Floskeln"}</td><td>${S.s1.found.includes(k)?"✔":"–"}</td><td>${esc(v)}</td></tr>`).join("")}</table>
+  <p><b>Zusatz: Nachricht datensparsam neu</b></p>${ans(S.s1.zusatz)}
+  <div class="eh"><b>Erwartungshorizont:</b> Keine Namen, Adresse, Geburtsdatum, Telefon. Kein Zeugnis, keine Zeichnung. Anonymisierte Erfahrung plus klare Anweisung: „Erfinde keine Erfahrungen und verzichte auf Floskeln.“</div>`;
+
+  h += `<h2>② Fallkarten ${st(s2done())}</h2><table><tr><th>Nr</th><th>Fall</th><th>Ihre Ampel</th><th>Lösung</th><th>Begründung</th></tr>${
+    CARDS.map((c,i)=>`<tr><td>${i+1}</td><td>${esc(c.t)}</td><td>${AMP[S.s2.ans[i]]||"–"}</td><td>${c.a.map(x=>AMP[x]).join(" (")}${c.a.length>1?" vertretbar)":""}</td><td>${esc(c.why)}</td></tr>`).join("")}</table>
+  <p><b>Zusatz: Bedingungen für Fallkarte 8</b></p>${ans(S.s2.zusatz)}
+  <div class="eh"><b>Erwartungshorizont:</b> Nur wenn die Daten wirklich anonym sind, die KI-Regel des Betriebs es erlaubt und ein freigegebenes Werkzeug genutzt wird. Im Zweifel allgemein fragen statt echte Daten einzugeben.</div>`;
+
+  h += `<h2>③ Entscheidungsbaum &amp; Konto ${st(s3done())}</h2><table><tr><th>Ihre Reihenfolge</th><th>Ihr „Wenn JA“</th><th>Lösung</th></tr>${
+    QUESTIONS.map((q,i)=>{ const mine = S.s3.order[i] ? QUESTIONS.find(x=>x.id===S.s3.order[i]) : null;
+      return `<tr><td>${mine?`${i+1}. ${esc(mine.t)}`:"–"}</td><td>${mine&&S.s3.yes[mine.id]?esc(ACTIONS[S.s3.yes[mine.id]]):"–"}</td><td><b>${i+1}. ${esc(q.t)}</b><br>Wenn JA: ${esc(ACTIONS[YES[q.id]])}</td></tr>`;}).join("")}</table>
+  <p>Werkzeug: ${esc(S.s3.tool||"–")} · Trainingseinstellung gefunden: ${S.s3.c0?"ja":"nein"} · bewusst entschieden: ${S.s3.c1?"ja":"nein"} · temporärer Chat geklärt: ${S.s3.c2?"ja":"nein"} · kein Feedback bei sensiblen Chats: ${S.s3.c3?"ja":"nein"}</p>
+  <div class="eh"><b>Merksatz:</b> Erst fragen „Wem gehören die Daten?“, dann „Was darf ich damit?“, erst danach „Was kann die KI damit?“. Menüs und Bezeichnungen der Werkzeuge ändern sich häufig, also immer den aktuellen Stand prüfen.<br><b>Feedback (Daumen):</b> Damit geht der gesamte Chat an den Anbieter und kann bei mehreren Anbietern auch bei abgeschaltetem Training genutzt und lange gespeichert werden. Ein temporärer Chat ersetzt die drei Prüffragen nicht.</div>`;
+
+  h += `<h2>④ Musterfall ${st(s4done())}</h2><p><b>b) Muss oder Kann?</b></p><table><tr><th>Anforderung</th><th>Ihre Einstufung</th><th>Erwartungshorizont</th></tr>${
+    MK.map((m,i)=>`<tr><td>${esc(m.t)}</td><td>${MKL[S.s4.mk[i]]||"–"}</td><td>${esc(m.why)}</td></tr>`).join("")}</table>
+  <p><b>c) KI-Ausgabe prüfen</b></p><table><tr><th>Zeile der KI-Ausgabe</th><th>Von Ihnen markiert</th><th>Erwartungshorizont</th></tr>${
+    OUT.map((r,i)=>`<tr><td>${esc(r[0])}: ${esc(r[2])} → ${esc(r[3])}</td><td>${S.s4.marks.includes(i)?"✔ "+esc(FT[S.s4.types[i]]||""):"–"}</td><td>${r[4]?`<b>Fehler: ${FT[r[4]]}</b>. ${esc(FTWHY[r[4]])}`:"korrekt"}</td></tr>`).join("")}</table>
+  <p><b>d) Ihre KI im Test</b> (Werkzeug: ${esc(S.s4.tool||"–")})</p>${ans(S.s4.own)}
+  <div class="eh"><b>Erwartungshorizont:</b> Konkrete Fehler mit Fehlerart benennen. Verschiedene Werkzeuge und sogar zwei Durchläufe liefern unterschiedliche Ergebnisse, denn Sprachmodelle erzeugen wahrscheinliche Texte, keine festen Antworten. Die Prüfung durch Sie ist nie optional.</div>`;
+
+  const rows = S.s5.rows.filter(r => r.anf || r.erf);
+  h += `<h2>⑤ Eigene Abgleich-Matrix ${st(s5done())}</h2><p>Quelle: ${esc(S.s5.src||"–")}</p>
+  <table><tr><th>★</th><th>Anforderung</th><th>Muss/Kann</th><th>Meine Erfahrung</th><th>Status</th><th>Strategie</th></tr>${
+    rows.length ? rows.map(r=>`<tr><td>${r.star?"★":""}</td><td>${esc(r.anf)}</td><td>${esc(r.mk)}</td><td>${esc(r.erf)}</td><td>${esc(r.st)}</td><td>${esc(r.str)}</td></tr>`).join("") : `<tr><td colspan="6"><i>nicht bearbeitet</i></td></tr>`}</table>
+  <p><b>Qualitätscheck</b></p><ul>${QC.map((q,i)=>`<li>${S.s5.qc[i]?"☑":"☐"} ${esc(q)}</li>`).join("")}</ul>
+  <p><b>Zusatz: Fragen an den Arbeitgeber</b></p>${ans(S.s5.fragen)}
+  <div class="eh"><b>Erwartungshorizont:</b> z. B. „Wie sieht die Einarbeitung in den ersten drei Monaten aus?“ · „Wie verteilt sich die Arbeitszeit zwischen Büro und Fertigung?“ · „Welche Weiterbildung ist für [Ihre Lücke] vorgesehen?“ · „Gibt es Regeln für KI-Werkzeuge?“ Weniger gut: Fragen, die die Anzeige schon beantwortet, oder als Erstes nur Urlaub und Gehalt.</div>
+  </body></html>`;
+  return h;
+}
+function doBook(){
+  if (!S.team) { info("Bitte zuerst oben einen Teamnamen eintragen (ohne Klarnamen)."); $("team").focus(); return; }
+  download(`Lernheft_UE1_${safe(S.team)}_${today()}.html`, book(), "text/html");
+}
+$("bBook").onclick = doBook; $("bBook2").onclick = doBook;
+
+/* ---------- Start ---------- */
+function renderAll(){
+  $("team").value = S.team;
+  renderChat(); renderCards(); renderTree(); renderMK(); renderOut(); renderMX(); renderQC();
+  syncSimple(); showTab(S.s4.tab || "a"); renderG1(); renderG2(); refresh();
+  if (S.s2.checked) $("s2fb").innerHTML = "";
+}
+renderAll();
+/* Browserspeicher nur als Komfort, am Ende der Initialisierung und abgesichert */
+try {
+  const raw = localStorage.getItem("kikon-" + UNIT);
+  if (raw) { const d = JSON.parse(raw); if (d && d.unit === UNIT) applyState(d.state); }
+} catch (e) { /* Speicher nicht verfügbar – kein Problem */ }
+setInterval(() => { try { localStorage.setItem("kikon-" + UNIT, JSON.stringify({unit:UNIT, version:VERSION, state:S})); } catch (e) {} }, 5000);
+</script>
+</body>
+</html>

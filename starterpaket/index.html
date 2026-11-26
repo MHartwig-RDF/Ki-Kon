@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Starterpaket Techniker · KI für Bewerbung & Berufsstart</title>
+<style>
+:root{--ink:#1d2733;--muted:#5b6775;--blue:#1F3A5F;--line:#d5dbe2;--bg:#f5f7fa}
+*{box-sizing:border-box}
+body{margin:0;font-family:Calibri,Carlito,"Segoe UI",Arial,sans-serif;font-size:17px;line-height:1.5;color:var(--ink);background:var(--bg)}
+header{background:var(--blue);color:#fff;padding:1.2rem 1rem}
+header div{max-width:980px;margin:0 auto}
+header h1{margin:0;font-size:1.6rem}
+header p{margin:.2rem 0 0;opacity:.9}
+main{max-width:980px;margin:0 auto;padding:1rem}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:1rem 1.2rem;margin:0 0 1rem}
+h2{font-size:1.2rem;color:var(--blue);margin:.2rem 0 .6rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:.8rem}
+.tile{display:block;background:#fff;border:1px solid var(--line);border-radius:10px;padding:.9rem 1rem;text-decoration:none;color:var(--ink)}
+a.tile:hover{border-color:var(--blue);box-shadow:0 2px 8px rgba(31,58,95,.15)}
+.tile .ue{font-size:.8rem;font-weight:700;color:var(--muted)}
+.tile b{display:block;font-size:1.08rem;margin:.1rem 0 .3rem;color:var(--blue)}
+.tile span{font-size:.92rem}
+.tile .go{display:inline-block;margin-top:.5rem;font-size:.85rem;font-weight:700;color:#fff;background:var(--blue);border-radius:6px;padding:.2rem .6rem}
+.tile.soon{opacity:.55}
+.tile.soon .go{background:#9aa5b1}
+ul{margin:.3rem 0;padding-left:1.2rem}
+.rule{background:#fdecec;border:1px solid #efb0b0;border-radius:8px;padding:.6rem .8rem}
+</style>
+</head>
+<body>
+<header><div>
+  <h1>Starterpaket Techniker</h1>
+  <p>KI-Kon · KI für Bewerbung &amp; Berufsstart</p>
+</div></header>
+<main>
+<section class="card">
+  <p>In dieser Reihe nutzen Sie KI-Werkzeuge für Ihren Start als Techniker: von der Stellenanzeige über Anschreiben und Vorstellungsgespräch bis zu den ersten Monaten im Job. Am Ende haben Sie ein <b>Starterpaket</b> aus eigenen, sofort nutzbaren Dokumenten.</p>
+  <p class="rule"><b>Spielregel für alle Einheiten:</b> Keine Namen, Adressen, Zeugnisse oder Firmenunterlagen in ein KI-Werkzeug eingeben. Sie arbeiten anonymisiert.</p>
+</section>
+
+<h2>Einheiten</h2>
+<div class="grid" id="grid"></div>
+
+<section class="card" style="margin-top:1rem">
+  <h2>Das bringen Sie mit</h2>
+  <ul>
+    <li>Laptop oder Tablet (mindestens eins pro Zweierteam)</li>
+    <li>Eigenes, eingerichtetes KI-Konto (z. B. ChatGPT, Claude, Gemini, Copilot; kostenlos reicht)</li>
+    <li>Zugang zu Ihrem OneDrive (dort speichern Sie Sicherungsdateien und Lernhefte)</li>
+    <li>Ihren Lebenslauf (nur zum Nachschauen, nicht hochladen)</li>
+    <li>1–2 echte Stellenanzeigen, die Sie interessieren</li>
+  </ul>
+</section>
+</main>
+<script>
+/* Neue Einheit: Eintrag ergänzen und "ordner" setzen. Ohne "ordner" erscheint die Kachel als "folgt". */
+const EINHEITEN = [
+  {ue:"UE 1", titel:"Spielregeln & Stellenanzeige", text:"Was darf in die KI? Stellenanzeige analysieren, eigene Abgleich-Matrix.", ordner:"ue1"},
+  {ue:"UE 2", titel:"Anschreiben & Arbeitgeber-Check", text:"KI-Texte prüfen, eigenes Anschreiben, Unternehmenssteckbrief mit Quellen.", ordner:"ue2"},
+  {ue:"UE 3", titel:"Gesprächssimulator I", text:"Vorstellungsgespräch mit KI üben: Standardfragen."},
+  {ue:"UE 4", titel:"Gesprächssimulator II", text:"Fachfragen, Stressfragen, Gehaltsverhandlung."},
+  {ue:"UE 5", titel:"Prompt-Bibliothek & Einarbeitung", text:"KI für typische Technikeraufgaben im Job."},
+  {ue:"UE 6", titel:"Eigener Assistent & Verantwortung", text:"Eigenen KI-Assistenten bauen, Verantwortung als Führungskraft."}
+];
+document.getElementById("grid").innerHTML = EINHEITEN.map(e => e.ordner
+  ? `<a class="tile" href="${e.ordner}/"><span class="ue">${e.ue}</span><b>${e.titel}</b><span>${e.text}</span><br><span class="go">Öffnen →</span></a>`
+  : `<div class="tile soon"><span class="ue">${e.ue}</span><b>${e.titel}</b><span>${e.text}</span><br><span class="go">folgt</span></div>`).join("");
+</script>
+</body>
+</html>
