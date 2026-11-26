@@ -728,19 +728,10 @@ table.cm3 td.na{color:var(--muted)}
     <div class="eh" id="eh54"></div>
   </div>
 
-  <div class="card task star">
-    <h3><span class="tag star">⭐ Zusatz</span><span class="tag">Auftrag 5.5</span>Schräg daneben</h3>
-    <p>Die echte Box liegt bei x: 0–100, y: 0–100. Die Vorhersage ist um die halbe Boxbreite nach rechts <b>und</b> um die halbe Höhe nach unten verschoben: x: 50–150, y: 50–150. Schätzen Sie erst, dann rechnen Sie: Wie groß ist die IoU?</p>
-    <div class="calc"><label for="n55">IoU (zwei Nachkommastellen)</label><input type="text" inputmode="decimal" id="n55" data-num="c55"></div>
-    <div class="calcw" data-calc="k55"></div>
-    <button class="btn" id="c55">Prüfen</button>
-    <div class="fb" id="f55"></div>
-  </div>
-
   <button class="btn" data-next="s-matrix">Weiter zu Station ⑥</button>
 </section>
 <section class="station" id="s-matrix">
-  <h1>⑥ Prüfstand II: Schwelle und Matrix</h1>
+  <h1>⑥ Prüfstand II: Konfidenzschwelle und Matrix</h1>
   <p class="lead">Ab einem bestimmten Punkt muss man sagen können, wie gut das Prüfsystem insgesamt arbeitet. Dafür zählt man aus, wie oft das System richtig und wie oft es falsch liegt, und fasst das in einer <b>Konfusionsmatrix</b> (Verwechslungstabelle) und in Kennzahlen zusammen.</p>
 
   <div class="card task">
@@ -784,18 +775,18 @@ table.cm3 td.na{color:var(--muted)}
 
   <div class="card task">
     <h3><span class="tag must">Pflicht</span><span class="tag">Auftrag 6.2</span>Die Konfidenzschwelle einstellen</h3>
-    <p>Das Modell gibt zu jeder Box eine <b>Konfidenz</b> aus. Gemeldet werden nur Boxen <b>über einer Schwelle</b>. Im Diagramm sehen Sie alle Boxen der Klasse <b>bohrung_leer</b>, die das Modell auf den Validierungsbildern vorgeschlagen hat. Im Validierungssatz gibt es <b>20 echte leere Bohrungen</b>.</p>
+    <p>Das Modell gibt zu jeder Box eine <b>Konfidenz</b> aus. Gemeldet werden nur Boxen <b>über einer Konfidenzschwelle</b>. Im Diagramm sehen Sie alle Boxen der Klasse <b>bohrung_leer</b>, die das Modell auf den Validierungsbildern vorgeschlagen hat. Im Validierungssatz gibt es <b>20 echte leere Bohrungen</b>.</p>
     <div class="plotwrap" id="dot62"></div>
     <div class="callout"><b>Konfidenzschwelle</b>
       <div class="slider" style="margin-bottom:0"><label for="thr62"><span>Gemeldet wird, was rechts von der Linie liegt.</span><b id="thr62v">0,25</b></label><input type="range" id="thr62" min="0.05" max="0.95" step="0.01" value="0.25"></div></div>
     <div class="kpis" id="kp62"></div>
     <div class="scen" style="margin-top:8px">
-      <div class="sc"><b>a)</b> Stellen Sie die Schwelle auf <b>0,50</b>. Berechnen Sie mit den Zahlen oben:
+      <div class="sc"><b>a)</b> Stellen Sie die Konfidenzschwelle auf <b>0,50</b>. Berechnen Sie mit den Zahlen oben:
         <div class="calc" style="margin:6px 0 0"><label for="n62p">Precision in %</label><input type="text" inputmode="decimal" id="n62p" data-num="p62"><label for="n62r">Recall in %</label><input type="text" inputmode="decimal" id="n62r" data-num="r62"></div></div>
-      <div class="sc"><b>b)</b> Was passiert, wenn Sie die Schwelle <b>senken</b>?
+      <div class="sc"><b>b)</b> Was passiert, wenn Sie die Konfidenzschwelle <b>senken</b>?
         <select data-sel="q62b"><option value="">– wählen –</option><option value="ru_pd">Recall steigt, Precision sinkt</option><option value="bu">beide steigen</option><option value="rd_pu">Recall sinkt, Precision steigt</option><option value="bd">beide sinken</option></select></div>
-      <div class="sc"><b>c)</b> Wie viele leere Bohrungen bleiben übersehen, auch wenn Sie die Schwelle ganz nach links schieben? <input type="text" inputmode="numeric" data-num="n62c" style="width:80px;margin-left:6px" aria-label="Anzahl"><br>Warum?
-        <select data-sel="q62c"><option value="">– wählen –</option><option value="img">Die Bilder sind zu dunkel.</option><option value="cls">Das Modell hat sie nie als bohrung_leer vorgeschlagen, z. B. als schraube verwechselt.</option><option value="thr">Die Schwelle kann nicht unter 0,05 gestellt werden.</option><option value="lab">Die Bohrungen sind falsch gelabelt.</option></select></div>
+      <div class="sc"><b>c)</b> Wie viele leere Bohrungen bleiben übersehen, auch wenn Sie die Konfidenzschwelle ganz nach links schieben? <input type="text" inputmode="numeric" data-num="n62c" style="width:80px;margin-left:6px" aria-label="Anzahl"><br>Warum?
+        <select data-sel="q62c"><option value="">– wählen –</option><option value="img">Die Bilder sind zu dunkel.</option><option value="cls">Das Modell hat sie nie als bohrung_leer vorgeschlagen, z. B. als schraube verwechselt.</option><option value="thr">Die Konfidenzschwelle kann nicht unter 0,05 gestellt werden.</option><option value="lab">Die Bohrungen sind falsch gelabelt.</option></select></div>
     </div>
     <div class="calcw" data-calc="k62"></div>
     <button class="btn" id="c62">Prüfen</button>
@@ -804,7 +795,7 @@ table.cm3 td.na{color:var(--muted)}
 
   <div class="card task">
     <h3><span class="tag must">Pflicht</span><span class="tag">Auftrag 6.3</span>Die Konfusionsmatrix von YOLO lesen</h3>
-    <p>So gibt YOLO die Konfusionsmatrix nach dem Prüflauf aus (Schwelle 0,25). Bei der Objekterkennung gibt es eine zusätzliche Zeile und Spalte <b>background</b> (Hintergrund, also „kein Objekt“).</p>
+    <p>So gibt YOLO die Konfusionsmatrix nach dem Prüflauf aus (Konfidenzschwelle 0,25). Bei der Objekterkennung gibt es eine zusätzliche Zeile und Spalte <b>background</b> (Hintergrund, also „kein Objekt“).</p>
     <div style="overflow-x:auto"><table class="cm cm3" id="cm63"></table></div>
     <p class="hint">Lesehilfe: Lesen Sie <b>spaltenweise</b>. Eine Spalte zeigt, was aus allen echten Objekten einer Klasse geworden ist.</p>
     <div class="calc">
@@ -827,7 +818,7 @@ table.cm3 td.na{color:var(--muted)}
 
   <div class="card task">
     <h3><span class="tag must">Pflicht</span><span class="tag">Auftrag 6.4</span>Die drei wichtigsten Kurven im Colab-Projekt</h3>
-    <p>Nach dem Training zeigt YOLO zehn Diagramme. Für den Anfang genügen <b>drei</b>. Ordnen Sie jeder Kurve zu, was sie zeigt und wie sie sich bei einem guten Training entwickeln sollte.</p>
+    <p>Nach dem Training zeigt YOLO zehn Diagramme. Für den Anfang genügen <b>drei</b>. Ordnen Sie jeder Kurve zu, was sie zeigt und <b>wie sie sich bei einem guten Training entwickeln sollte</b>.</p>
     <div class="scen3" id="curves64"></div>
     <div class="scen" id="tab64" style="margin-top:10px"></div>
     <p class="hint">Die übrigen Diagramme (cls_loss, dfl_loss, precision, recall, mAP50-95) zeigen Ähnliches aus anderen Blickwinkeln. Wer die drei Kurven oben deuten kann, versteht das Training.</p>
@@ -837,9 +828,9 @@ table.cm3 td.na{color:var(--muted)}
 
   <div class="card task">
     <h3><span class="tag must">Pflicht</span><span class="tag">Auftrag 6.5</span>Ihre Empfehlung für die Linie</h3>
-    <p>Die Qualitätsleitung fragt, welche Konfidenzschwelle an der Linie eingestellt werden soll. Geben Sie eine Schwelle an und begründen Sie mit den Kosten der beiden Fehlerarten. Beziehen Sie sich auf Ihre Werte aus 6.2.</p>
+    <p>Die Qualitätsleitung fragt, welche Konfidenzschwelle an der Linie eingestellt werden soll. Geben Sie eine Konfidenzschwelle an und begründen Sie mit den Kosten der beiden Fehlerarten. Beziehen Sie sich auf Ihre Werte aus 6.2: Welche Kennzahl soll möglichst hoch sein, Recall oder Precision? Welche darf dafür sinken?</p>
     <p class="mini"><b>Zur Orientierung:</b> Ein übersehener Deckel mit leerer Bohrung kann zu Ölaustritt beim Kunden und zu einer Reklamation führen. Ein Fehlalarm kostet einen Werker ca. 10 Sekunden Nachprüfung.</p>
-    <textarea data-save="t65" data-eh="eh65" placeholder="Empfohlene Schwelle: … Begründung: …"></textarea>
+    <textarea data-save="t65" data-eh="eh65" placeholder="Empfohlene Konfidenzschwelle: … Begründung: …"></textarea>
     <button class="btn ghost" data-reveal="eh65" disabled>Erwartungshorizont zeigen</button>
     <span class="hint">(erst ab 40 Zeichen eigener Antwort)</span>
     <div class="eh" id="eh65"></div>
@@ -847,7 +838,7 @@ table.cm3 td.na{color:var(--muted)}
 
   <div class="card task star">
     <h3><span class="tag star">⭐ Zusatz</span><span class="tag">Auftrag 6.6</span>Was steckt hinter mAP50?</h3>
-    <p>YOLO berechnet für jede Klasse einen Wert <b>AP</b> (Average Precision), in den Precision und Recall bei allen Schwellen eingehen, jeweils mit IoU ≥ 0,5. <b>mAP50</b> ist der <b>Mittelwert</b> über alle Klassen. Im Prüflauf ergab sich: AP schraube = 0,95 und AP bohrung_leer = 0,71.</p>
+    <p>YOLO berechnet für jede Klasse einen Wert <b>AP</b> (Average Precision), in den Precision und Recall bei allen Konfidenzschwellen eingehen, jeweils mit IoU ≥ 0,5. <b>mAP50</b> ist der <b>Mittelwert</b> über alle Klassen. Im Prüflauf ergab sich: AP schraube = 0,95 und AP bohrung_leer = 0,71.</p>
     <div class="calc">
       <label for="n66">mAP50 (zwei Nachkommastellen)</label><input type="text" inputmode="decimal" id="n66" data-num="c66">
       <label for="n66b">Was verdeckt der Mittelwert hier?</label><select id="n66b" data-sel="q66"><option value="">– wählen –</option><option value="weak">dass gerade die wichtige Klasse bohrung_leer deutlich schwächer ist</option><option value="time">wie lange das Training gedauert hat</option><option value="nothing">nichts, der Mittelwert sagt alles</option></select>
@@ -892,7 +883,7 @@ const STATIONS=[
     plan:'Loss als Abstand zwischen vorhergesagter und gelabelter Box erleben, train- und val-Kurven lesen, Stopppunkt setzen, Overfitting („Schere“) erkennen. ⭐ Modellgröße n vs. s.'},
   {id:'s-iou',nav:'⑤ Passt die Box?',title:'⑤ Prüfstand I: Passt die Box?',ph:['evaluation'],
     plan:'IoU (Überlappung zweier Boxen) per Schieberegler erleben, Regel IoU ≥ 0,5, Vorhersagen einem Fehlertyp zuordnen (Treffer, falsche Klasse, Fehlalarm, übersehen, ungenau/doppelt).'},
-  {id:'s-matrix',nav:'⑥ Schwelle & Matrix',title:'⑥ Prüfstand II: Schwelle und Matrix',ph:['evaluation','einsatz'],
+  {id:'s-matrix',nav:'⑥ Konfidenz & Matrix',title:'⑥ Prüfstand II: Konfidenzschwelle und Matrix',ph:['evaluation','einsatz'],
     plan:'Konfidenzschwelle verschieben → Precision/Recall live, Confusion Matrix mit Zeile/Spalte background selbst aufbauen. ⭐ mAP50 als Mittelwert.'},
   {id:'s-synth',nav:'Synthese',title:'Synthese: KI-Zyklus',ph:['daten','struktur','training','evaluation','einsatz'],soon:true,
     plan:'Stationen dem Zyklus zuordnen, Rückpfeile setzen, Transfer: „Was tun Sie im Colab-Projekt an welcher Stelle?“'},
@@ -1030,16 +1021,16 @@ const EH={
     <li>Bei kleinen Datensätzen gezielt aufteilen: seltene Klassen auf beide Teile verteilen, Aufnahmeserien zusammenhalten. Je mehr Bilder, desto besser gleicht der Zufall das aus.</li></ul>`,
   eh54:`<b>Erwartungshorizont 5.4</b><ul>
     <li><b>Folge:</b> Viele Vorhersagen, die das Objekt richtig gefunden haben, zählen nicht mehr als Treffer. Sie gelten dann als „ungenau“ bzw. das Objekt als übersehen. Precision, Recall und mAP sinken stark, obwohl das Modell nicht schlechter geworden ist.</li>
-    <li><b>Labels sind selbst ungenau:</b> Auch zwei Menschen rahmen nie exakt gleich (vgl. Passgenauigkeit in 2.1). Eine Schwelle von 0,9 verlangt mehr Genauigkeit, als die Labels hergeben.</li>
+    <li><b>Labels sind selbst ungenau:</b> Auch zwei Menschen rahmen nie exakt gleich (vgl. Passgenauigkeit in 2.1). Eine IoU-Grenze von 0,9 verlangt mehr Genauigkeit, als die Labels hergeben.</li>
     <li><b>Für die Schraubenprüfung:</b> Entscheidend ist, <i>ob</i> an einer Position eine Schraube oder eine leere Bohrung ist. Dafür reicht eine Box, die ungefähr sitzt. 0,5 ist hier sinnvoll.</li>
-    <li>Strenger wäre nötig, wenn die genaue Lage zählt (z. B. Greifpunkt für einen Roboter). Dafür gibt es die Kennzahl <span class="mono">mAP50-95</span>: Sie mittelt über strenge Schwellen von 0,5 bis 0,95 und ist deshalb immer kleiner als mAP50.</li></ul>
+    <li>Strenger wäre nötig, wenn die genaue Lage zählt (z. B. Greifpunkt für einen Roboter). Dafür gibt es die Kennzahl <span class="mono">mAP50-95</span>: Sie mittelt über strenge IoU-Grenzen von 0,5 bis 0,95 und ist deshalb immer kleiner als mAP50.</li></ul>
     <p class="mini"><b>Selbstcheck:</b> Haben Sie die Folge für die Kennzahlen <i>und</i> eine begründete Bewertung für die Anwendung genannt?</p>`,
   eh65:`<b>Erwartungshorizont 6.5</b><ul>
     <li><b>Abwägung:</b> Ein übersehener Fehler (FN) ist hier viel teurer als ein Fehlalarm (FP): Ölaustritt, Reklamation, Imageschaden gegenüber 10 s Nachprüfung.</li>
-    <li><b>Folgerung:</b> Recall ist wichtiger als Precision. Die Schwelle eher <b>niedrig</b> wählen, z. B. 0,10–0,25 (Werte aus 6.2: bei 0,12 Recall 90 %, Precision ca. 69 %; bei 0,25 Recall 80 %, Precision ca. 76 %).</li>
-    <li><b>Grenze:</b> Bei zu niedriger Schwelle steigen die Fehlalarme so stark, dass die Werker die Meldungen nicht mehr ernst nehmen. Jede Meldung muss dann von Hand nachgeprüft werden.</li>
-    <li><b>Hinweis:</b> Selbst bei der niedrigsten Schwelle bleiben 2 leere Bohrungen übersehen (verwechselt mit schraube). Das löst keine Schwelle, sondern nur bessere Daten: mehr Fehlerbilder (Rücksprung zur Phase Daten).</li></ul>
-    <p class="mini"><b>Selbstcheck:</b> Haben Sie eine konkrete Schwelle genannt, beide Fehlerarten mit ihren Folgen verglichen und Zahlen aus 6.2 verwendet?</p>`,
+    <li><b>Folgerung:</b> Recall ist wichtiger als Precision. Die Konfidenzschwelle eher <b>niedrig</b> wählen, z. B. 0,10–0,25 (Werte aus 6.2: bei 0,12 Recall 90 %, Precision ca. 69 %; bei 0,25 Recall 80 %, Precision ca. 76 %).</li>
+    <li><b>Grenze:</b> Bei zu niedriger Konfidenzschwelle steigen die Fehlalarme so stark, dass die Werker die Meldungen nicht mehr ernst nehmen. Jede Meldung muss dann von Hand nachgeprüft werden.</li>
+    <li><b>Hinweis:</b> Selbst bei der niedrigsten Konfidenzschwelle bleiben 2 leere Bohrungen übersehen (verwechselt mit schraube). Das löst keine Konfidenzschwelle, sondern nur bessere Daten: mehr Fehlerbilder (Rücksprung zur Phase Daten).</li></ul>
+    <p class="mini"><b>Selbstcheck:</b> Haben Sie eine konkrete Konfidenzschwelle genannt, beide Fehlerarten mit ihren Folgen verglichen, gesagt, ob Recall oder Precision Vorrang hat, und Zahlen aus 6.2 verwendet?</p>`,
   eh44:`<b>Erwartungshorizont 4.4</b><ul>
     <li><b>1. Verlauf:</b> Von A bis B fallen beide Kurven, das Modell lernt. Ab B fällt train/box_loss weiter, val/box_loss steigt dagegen wieder an. Bei C liegen die Kurven weit auseinander (Schere).</li>
     <li><b>2. Punkt B:</b> Hier ist val/box_loss am kleinsten (um Epoche 45). Das Modell erkennt <b>unbekannte</b> Bilder hier am besten. B ist der sinnvolle Stopppunkt.</li>
@@ -1511,7 +1502,7 @@ $('c52').onclick=()=>{check52();changed()};
 const R53=REF.deckel_03;
 const POS53=['ol','or','l','r','ul','ur'];
 const P53=[
-  {k:'P1',c:0,conf:.88,b:{x0:297,y0:458,x1:341,y1:500},ok:'tp',why:'liegt passgenau auf der Schraube unten rechts, Klasse stimmt.'},
+  {k:'P1',lab:'br',c:0,conf:.88,b:{x0:297,y0:458,x1:341,y1:500},ok:'tp',why:'liegt passgenau auf der Schraube unten rechts, Klasse stimmt.'},
   {k:'P2',c:1,conf:.34,b:{x0:212,y0:300,x1:254,y1:340},ok:'fp',why:'An dieser Stelle ist gar kein Objekt, nur glatte Deckelfläche (Reflexion).'},
   {k:'P3',c:0,conf:.91,b:{x0:114,y0:140,x1:166,y1:195},ok:'tp',why:'liegt passgenau auf der Schraube oben links.'},
   {k:'P4',c:0,conf:.55,b:{x0:37,y0:297,x1:81,y1:341},ok:'cls',why:'sitzt genau auf der leeren Bohrung links, aber mit der Klasse schraube.'},
@@ -1523,7 +1514,7 @@ const T53=[['','– Typ –'],['dup','doppelt'],['tp','Treffer'],['fp','Fehlalar
 const bestIoU=b=>Math.max(...R53.map(r=>iou(b,r)));
 function draw53(){const im=IMGS.deckel_03,show=$('lab53').checked;
   let g=show?R53.map(r=>boxSVG(r,CLS[r.c].hex,'',{sw:2})).join(''):'';
-  g+=P53.map(p=>boxSVG(p.b,'#ffd43b','',{dash:true,sw:2.5})+`<text x="${p.b.x0}" y="${p.b.y1+15}" fill="#ffd43b" style="font:700 14px system-ui">${p.k}</text>`).join('');
+  g+=P53.map(p=>boxSVG(p.b,'#ffd43b','',{dash:true,sw:2.5})+(p.lab==='br'?`<text x="${p.b.x1+6}" y="${p.b.y1-4}" fill="#ffd43b" style="font:700 14px system-ui">${p.k}</text>`:`<text x="${p.b.x0}" y="${p.b.y1+15}" fill="#ffd43b" style="font:700 14px system-ui">${p.k}</text>`)).join('');
   $('img53').innerHTML=`<div class="annot ro"><img src="${im.src}" alt="deckel_03.jpg"><svg viewBox="0 0 ${im.w} ${im.h}">${g}</svg></div>`}
 $('lab53').onchange=draw53;
 $('tab53').innerHTML='<tr><th>Box</th><th>Klasse</th><th>Konfidenz</th><th>IoU zur nächsten echten Box</th><th>Typ</th></tr>'+P53.map(p=>`<tr id="r53_${p.k}"><td><b>${p.k}</b></td><td class="mono">${CLS[p.c].n}</td><td>${de(p.conf,2)}</td><td>${de(bestIoU(p.b),2)}</td><td><select data-sel="t53_${p.k}" aria-label="Typ ${p.k}">${T53.map(o=>`<option value="${o[0]}">${o[1]}</option>`).join('')}</select></td></tr>`).join('');
@@ -1535,13 +1526,9 @@ function check53(){let n=0;P53.forEach(p=>{const ok=S.sel['t53_'+p.k]===p.ok;n+=
   if(S.chk.c53)h='<b>Alles richtig.</b><ul>'+P53.map(p=>`<li><b>${p.k}</b> (${T53.find(t=>t[0]===p.ok)[1]}): ${p.why}</li>`).join('')+'<li><b>Übersehen:</b> Die Schraube unten links hat keine Vorhersage bekommen.</li></ul><p class="mini">Genau diese Fehlertypen tragen Sie im Colab-Projekt bei der Fehleranalyse (Aufgabe 3) mit Bild-Nr. ein. Zählt man alles aus, ergibt sich die Konfusionsmatrix in Station ⑥.</p>';
   fb('f53',S.chk.c53?'ok':'bad',h)}
 $('c53').onclick=()=>{check53();changed()};
-function check55(){S.chk.c55=near('c55',0.14,0.011);
-  fb('f55',S.chk.c55?'ok':'bad',S.chk.c55?'<b>Richtig: IoU ≈ 0,14.</b> Überschneidung 50 × 50 = 2.500, Vereinigung 10.000 + 10.000 − 2.500 = 17.500, IoU = 2.500 ÷ 17.500 ≈ 0,14. Obwohl die Box „nur halb daneben“ liegt, ist sie weit von einem Treffer entfernt: Verschiebungen in zwei Richtungen multiplizieren sich.':
-  'Noch nicht. Tipp: Die Überschneidung ist in beiden Richtungen nur 50 px breit.')}
-$('c55').onclick=()=>{check55();changed()};
 
 /* =========================================================
-   STATION 6 – Konfusionsmatrix, Schwelle, Kurven
+   STATION 6 – Konfusionsmatrix, Konfidenzschwelle, Kurven
    ========================================================= */
 function check61(){const m={m11:36,m12:60,m21:4,m22:1900};let nm=0;Object.entries(m).forEach(([k,v])=>{const ok=numv(k)===v;nm+=ok;document.querySelector(`[data-num="${k}"]`).parentElement.style.background=ok?'var(--ok-soft)':'var(--bad-soft)'});
   const a=near('acc',96.8,0.15),p=near('pre',37.5,0.15),r=near('rec',90,0.15);S.chk.c61=nm===4&&a&&p&&r;
@@ -1555,7 +1542,7 @@ function check61t(){const a=near('tacc',98,0.15),r=near('trec',0,0.15),k=S.sel.t
   `<ul>${it(a,'Accuracy')}${it(r,'Recall')}${it(k,'Kennzahl')}</ul><p class="mini">Tipp: Das System meldet nie n. i. O. Also TP = 0 und FP = 0.</p>`)}
 $('c61t').onclick=()=>{check61t();changed()};
 
-/* 6.2 Schwelle: Boxen der Klasse bohrung_leer im Validierungssatz (passt zu 6.3 bei Schwelle 0,25) */
+/* 6.2 Konfidenzschwelle: Boxen der Klasse bohrung_leer im Validierungssatz (passt zu 6.3 bei Konfidenzschwelle 0,25) */
 const D62={tp:[.93,.91,.90,.88,.86,.84,.81,.79,.76,.72,.68,.63,.57,.49,.41,.33,.18,.12],fp:[.71,.52,.44,.31,.27,.22,.20,.15,.10,.07],never:2,total:20};
 const cnt62=t=>{const TP=D62.tp.filter(c=>c>=t).length,FP=D62.fp.filter(c=>c>=t).length;return{TP,FP,FN:D62.total-TP}};
 function draw62(){const t=+$('thr62').value;$('thr62v').textContent=de(t,2);const C=cnt62(t);
@@ -1566,8 +1553,8 @@ function draw62(){const t=+$('thr62').value;$('thr62v').textContent=de(t,2);cons
   rows.forEach(r=>{const parts=r.l.split('|');g+=parts.map((s,i)=>`<text x="${ml-8}" y="${r.y+4+(i-(parts.length-1)/2)*13}" text-anchor="end" style="fill:var(--ink);font-size:11px">${s}</text>`).join('');
     r.d.forEach((c,i)=>{const on=c>=t;g+=`<circle cx="${X(c)}" cy="${r.y+((i%2)?6:-6)}" r="6" fill="${on?r.col:'none'}" stroke="${r.col}" stroke-width="2" opacity="${on?1:.55}"><title>Konfidenz ${de(c,2)}</title></circle>`})});
   g+=`<text x="${ml-8}" y="${45+(sm?30:18)}" text-anchor="end" style="fill:var(--muted);font-size:10px">+ 2 nie vorgeschl.</text>`;
-  g+=`<line x1="${X(t)}" x2="${X(t)}" y1="14" y2="${H-25}" stroke="var(--ink)" stroke-width="2"/><text x="${X(t)+4}" y="13" style="fill:var(--ink);font-size:11px;font-weight:700">Schwelle ${de(t,2)}</text>`;
-  el.classList.add('chart');el.innerHTML=`<div class="lgd"><span><i style="border-color:var(--tr)"></i>gefüllt = gemeldet</span><span>leer = unter der Schwelle, nicht gemeldet</span></div><svg viewBox="0 0 ${W} ${H+16}" role="img" aria-label="Konfidenzen der Boxen bohrung_leer">${g}</svg>`;
+  g+=`<line x1="${X(t)}" x2="${X(t)}" y1="14" y2="${H-25}" stroke="var(--ink)" stroke-width="2"/><text x="${t>0.55?X(t)-4:X(t)+4}" y="13" text-anchor="${t>0.55?'end':'start'}" style="fill:var(--ink);font-size:11px;font-weight:700">Konfidenzschwelle ${de(t,2)}</text>`;
+  el.classList.add('chart');el.innerHTML=`<div class="lgd"><span><i style="border-color:var(--tr)"></i>gefüllt = gemeldet</span><span>leer = unter der Konfidenzschwelle, nicht gemeldet</span></div><svg viewBox="0 0 ${W} ${H+16}" role="img" aria-label="Konfidenzen der Boxen bohrung_leer">${g}</svg>`;
   const show=S.chk.c62a;
   $('kp62').innerHTML=`<div class="kpi"><b>${C.TP}</b><span>TP: richtig gemeldet</span></div><div class="kpi"><b>${C.FP}</b><span>FP: Fehlalarme</span></div><div class="kpi"><b>${C.FN}</b><span>FN: übersehen</span></div>`+
     (show?`<div class="kpi"><b>${C.TP+C.FP?de(C.TP/(C.TP+C.FP)*100,1):'–'} %</b><span>Precision</span></div><div class="kpi"><b>${de(C.TP/D62.total*100,1)} %</b><span>Recall</span></div>`:'<div class="kpi"><b>?</b><span>Precision und Recall erscheinen hier, sobald a) gelöst ist.</span></div>');
@@ -1577,7 +1564,7 @@ function check62(){const p=near('p62',86.7,0.15),r=near('r62',65,0.15),b=S.sel.q
   if(p&&r)S.chk.c62a=true;S.chk.c62=p&&r&&b&&c&&c2;draw62();
   let h=`<ul>${it(p,'a) Precision')}${it(r,'a) Recall')}${it(b,'b)')}${it(c&&c2,'c)')}</ul>`;
   if(!(p&&r))h+='<p class="mini">Tipp: Bei 0,50 gilt TP = 13, FP = 2, FN = 7. Precision = TP ÷ (TP + FP), Recall = TP ÷ (TP + FN).</p>';
-  if(S.chk.c62)h='<b>Richtig.</b> Bei Schwelle 0,50: Precision = 13 ÷ 15 = <b>86,7 %</b>, Recall = 13 ÷ 20 = <b>65 %</b>. Senkt man die Schwelle, meldet das Modell mehr: Es findet mehr echte leere Bohrungen (Recall ↑), aber auch mehr Fehlalarme (Precision ↓). Die Schwelle ist eine <b>Entscheidung für den Einsatz</b>, keine Eigenschaft des Modells. Zwei Bohrungen bleiben immer übersehen: Das Modell hat sie als schraube erkannt (siehe 6.3). Das lässt sich nur über bessere Daten lösen. Im Colab-Projekt heißt die Schwelle <span class="mono">KONF</span>.';
+  if(S.chk.c62)h='<b>Richtig.</b> Bei Konfidenzschwelle 0,50: Precision = 13 ÷ 15 = <b>86,7 %</b>, Recall = 13 ÷ 20 = <b>65 %</b>. Senkt man die Konfidenzschwelle, meldet das Modell mehr: Es findet mehr echte leere Bohrungen (Recall ↑), aber auch mehr Fehlalarme (Precision ↓). Die Konfidenzschwelle ist eine <b>Entscheidung für den Einsatz</b>, keine Eigenschaft des Modells. Zwei Bohrungen bleiben immer übersehen: Das Modell hat sie als schraube erkannt (siehe 6.3). Das lässt sich nur über bessere Daten lösen. Im Colab-Projekt heißt die Konfidenzschwelle <span class="mono">KONF</span>.';
   fb('f62',S.chk.c62?'ok':'bad',h)}
 $('c62').onclick=()=>{check62();changed()};
 
@@ -1600,7 +1587,7 @@ const K64=[
   {k:'k3',n:'metrics/mAP50(B)',w:'map',i:'val',d:'up'}];
 const W64=[['','– Was zeigt sie? –'],['cls','Fehler bei der Wahl der Klasse'],['map','Gesamtqualität: Treffer mit IoU ≥ 0,5 und richtiger Klasse, gemittelt über die Klassen'],['box','Abweichung der vorhergesagten Boxen von den gelabelten Boxen'],['time','Rechenzeit pro Epoche']];
 const I64=[['','– auf welchen Bildern? –'],['val','Validierungsbilder'],['train','Trainingsbilder']];
-const D64=[['','– gute Richtung –'],['up','steigt'],['down','sinkt'],['flat','bleibt gleich']];
+const D64=[['','– auswählen –'],['up','steigt'],['down','sinkt'],['flat','bleibt gleich']];
 function drawCurves(){$('curves64').innerHTML=`<div class="sc"><b class="mini">train/box_loss und val/box_loss</b><div id="c64a"></div></div><div class="sc"><b class="mini">metrics/mAP50(B)</b><div id="c64b"></div></div>`;
   lineChart($('c64a'),{series:[{name:'train/box_loss',short:'train',data:MAIN.tr,col:'--tr'},{name:'val/box_loss',short:'val',data:MAIN.va,col:'--va',dash:true}],xMax:100,h:200});
   lineChart($('c64b'),{series:[{name:'mAP50(B)',short:'mAP50',data:MAP,col:'--ms'}],xMax:100,yMax:1,h:200,yLab:'mAP50'})}
@@ -2041,16 +2028,15 @@ $('btnHeft').onclick=async()=>{
     '<table><tr><th>Teilaufgabe</th><th>Rechnung</th><th>Ergebnis</th></tr><tr><td>a) Überschneidung</td><td>(80 − 20) · 60</td><td>3.600 px²</td></tr><tr><td>b) Vereinigung</td><td>4.800 + 4.800 − 3.600</td><td>6.000 px²</td></tr><tr><td>c) IoU</td><td>3.600 ÷ 6.000</td><td>0,60</td></tr><tr><td>d) Treffer?</td><td>0,60 ≥ 0,5</td><td>ja</td></tr></table>');
   b+=blk('5.3','Treffer oder Fehler?','Vorhersagen P1–P7 auf deckel_03 einem Typ zuordnen, übersehenes Objekt finden.',A(P53.map(p=>`${p.k}: ${selT(T53,'t53_'+p.k)}`).join('\n')+`\nübersehen: ${($('[data-sel=q53m] option[value="'+(S.sel.q53m||'')+'"]')||{}).textContent||'—'}`),R(chk('c53'),st('c53')),
     '<ul>'+P53.map(p=>`<li><b>${p.k}</b> (${T53.find(x=>x[0]===p.ok)[1]}): ${p.why}</li>`).join('')+'<li><b>Übersehen:</b> Schraube unten links</li></ul>');
-  b+=blk('5.4','Strenger prüfen?','Folgen einer Treffer-Schwelle IoU ≥ 0,9 und Bewertung für die Schraubenprüfung.',A(T('t54')),'',EH.eh54.replace(/^<b>[^<]*<\/b>/,''));
-  b+=blk('5.5 ⭐','Schräg daneben','Echte Box 0–100 × 0–100, Vorhersage 50–150 × 50–150: IoU?',A(nv('c55')),R(chk('c55'),st('c55')),'<p>Überschneidung 50 · 50 = 2.500, Vereinigung 10.000 + 10.000 − 2.500 = 17.500, IoU = 0,14.</p>');
-  b+=`<h2>Station ⑥ Prüfstand II: Schwelle und Matrix</h2>`;
+  b+=blk('5.4','Strenger prüfen?','Folgen einer IoU-Grenze von 0,9 und Bewertung für die Schraubenprüfung.',A(T('t54')),'',EH.eh54.replace(/^<b>[^<]*<\/b>/,''));
+  b+=`<h2>Station ⑥ Prüfstand II: Konfidenzschwelle und Matrix</h2>`;
   b+=blk('6.1','Konfusionsmatrix aufstellen und rechnen','2.000 Deckel, 40 n. i. O., 36 erkannt, 60 Fehlalarme. Matrix (Zeilen = Vorhersage, Spalten = Realität), Accuracy, Precision, Recall. Accuracy-Falle.',
     A(`TP ${nv('m11')} · FP ${nv('m12')} · FN ${nv('m21')} · TN ${nv('m22')}\nAccuracy ${nv('acc')} % · Precision ${nv('pre')} % · Recall ${nv('rec')} %\nAccuracy-Falle: Accuracy ${nv('tacc')} % · Recall ${nv('trec')} % · Kennzahl: ${({acc:'Accuracy',rec:'Recall',none:'keine'})[S.sel.tkey]||'—'}\n${usedHelp(['h61a','h61b'])}`),
     R(chk('c61')&&chk('c61t')?true:(S.chk.c61===undefined?null:false),`Matrix und Kennzahlen: ${st('c61')} · Accuracy-Falle: ${st('c61t')}`),
     '<table><tr><th></th><th>tatsächlich n. i. O.</th><th>tatsächlich i. O.</th></tr><tr><th>gemeldet n. i. O.</th><td>TP 36</td><td>FP 60</td></tr><tr><th>gemeldet i. O.</th><td>FN 4</td><td>TN 1.900</td></tr></table><table><tr><th>Kennzahl</th><th>Formel</th><th>Rechnung</th><th>Ergebnis</th></tr><tr><td>Accuracy</td><td>(TP + TN) ÷ alle</td><td>1.936 ÷ 2.000</td><td>96,8 %</td></tr><tr><td>Precision</td><td>TP ÷ (TP + FP)</td><td>36 ÷ 96</td><td>37,5 %</td></tr><tr><td>Recall</td><td>TP ÷ (TP + FN)</td><td>36 ÷ 40</td><td>90 %</td></tr><tr><td>Accuracy „immer i. O.“</td><td>TN ÷ alle</td><td>1.960 ÷ 2.000</td><td>98 %</td></tr><tr><td>Recall „immer i. O.“</td><td>0 ÷ 40</td><td></td><td>0 %</td></tr></table><p>Bei seltenen Fehlern ist die Accuracy irreführend. Entscheidend ist der Recall.</p>');
-  b+=blk('6.2','Die Konfidenzschwelle einstellen','a) Precision und Recall bei Schwelle 0,50. b) Wirkung einer niedrigeren Schwelle. c) Übersehene Bohrungen bei niedrigster Schwelle und Grund.',
+  b+=blk('6.2','Die Konfidenzschwelle einstellen','a) Precision und Recall bei Konfidenzschwelle 0,50. b) Wirkung einer niedrigeren Konfidenzschwelle. c) Übersehene Bohrungen bei niedrigster Konfidenzschwelle und Grund.',
     A(`a) Precision ${nv('p62')} % · Recall ${nv('r62')} %\nb) ${selT([['ru_pd','Recall steigt, Precision sinkt'],['bu','beide steigen'],['rd_pu','Recall sinkt, Precision steigt'],['bd','beide sinken']],'q62b')}\nc) ${nv('n62c')} · ${($('[data-sel=q62c] option[value="'+(S.sel.q62c||'')+'"]')||{}).textContent||'—'}`),R(chk('c62'),st('c62')),
-    '<table><tr><th>Schwelle</th><th>TP</th><th>FP</th><th>FN</th><th>Precision</th><th>Recall</th></tr><tr><td>0,50</td><td>13</td><td>2</td><td>7</td><td>86,7 %</td><td>65 %</td></tr><tr><td>0,25</td><td>16</td><td>5</td><td>4</td><td>76,2 %</td><td>80 %</td></tr><tr><td>0,12</td><td>18</td><td>8</td><td>2</td><td>69,2 %</td><td>90 %</td></tr></table><p>b) Schwelle senken: Recall steigt, Precision sinkt. c) 2 bleiben übersehen, weil das Modell sie als schraube verwechselt hat. Abhilfe nur über bessere Daten.</p>');
+    '<table><tr><th>Konfidenzschwelle</th><th>TP</th><th>FP</th><th>FN</th><th>Precision</th><th>Recall</th></tr><tr><td>0,50</td><td>13</td><td>2</td><td>7</td><td>86,7 %</td><td>65 %</td></tr><tr><td>0,25</td><td>16</td><td>5</td><td>4</td><td>76,2 %</td><td>80 %</td></tr><tr><td>0,12</td><td>18</td><td>8</td><td>2</td><td>69,2 %</td><td>90 %</td></tr></table><p>b) Konfidenzschwelle senken: Recall steigt, Precision sinkt. c) 2 bleiben übersehen, weil das Modell sie als schraube verwechselt hat. Abhilfe nur über bessere Daten.</p>');
   b+=blk('6.3','Die Konfusionsmatrix von YOLO lesen','Übersehene, verwechselte leere Bohrungen, Fehlalarme, Recall und Precision für bohrung_leer.',
     A(`übersehen ${nv('m63a')} · verwechselt ${nv('m63b')} · Fehlalarme ${nv('m63c')} · Recall ${nv('m63r')} % · Precision ${nv('m63p')} %\n${usedHelp(['h63'])}`),R(chk('c63'),st('c63')),
     '<p>Übersehen 2 (Zeile background, Spalte bohrung_leer) · verwechselt 2 (Zeile schraube) · Fehlalarme 4 (Spalte background) · Recall = 16 ÷ 20 = 80 % · Precision = 16 ÷ 21 = 76,2 %. Kein TN-Feld: „Hintergrund als Hintergrund“ ist nicht zählbar, deshalb keine Accuracy.</p>');
@@ -2094,7 +2080,7 @@ function renderAll(){
   ['io_dx','io_dy'].forEach(k=>$(k).value=S.num[k]||0);$('io_sc').value=S.num.io_sc||100;$('thr62').value=S.num.thr62||0.25;$('trap61').style.display='none';
   P53.forEach(p=>$('r53_'+p.k).style.background='');K64.forEach(r=>$('r64_'+r.k).style.background='');document.querySelectorAll('#cm61 td').forEach(td=>td.style.background='');
   staticImg($('m2Img'),'deckel_03');
-  ['m1Fb','m2Fb','zFb','zcFb','rvFb','scFb','lsFb','ordFb','castFb','gapFb','cntFb','cnFb','s31Fb','splitFb','vcFb','pctFb','f41','f42','f43','f51','f52','f53','f55','f61','f61t','f62','f63','f64','f66'].forEach(fbHide);
+  ['m1Fb','m2Fb','zFb','zcFb','rvFb','scFb','lsFb','ordFb','castFb','gapFb','cntFb','cnFb','s31Fb','splitFb','vcFb','pctFb','f41','f42','f43','f51','f52','f53','f61','f61t','f62','f63','f64','f66'].forEach(fbHide);
   ['zp0','zp1','zp2','zp3','zp4'].forEach(id=>$(id).classList.remove('ok','no'));
   $('zCalc').style.display='none';
   if(S.chk.m1!==undefined)checkM1();
@@ -2115,7 +2101,7 @@ function renderAll(){
   if(S.chk.c42!==undefined)check42();
   if(S.chk.c43!==undefined)check43();
   if(S.chk.s45)show45();
-  if(S.chk.c51!==undefined)check51();if(S.chk.c52!==undefined)check52();if(S.chk.c53!==undefined)check53();if(S.chk.c55!==undefined)check55();
+  if(S.chk.c51!==undefined)check51();if(S.chk.c52!==undefined)check52();if(S.chk.c53!==undefined)check53();
   if(S.chk.c61!==undefined)check61();if(S.chk.c61t!==undefined)check61t();if(S.chk.c62!==undefined)check62();if(S.chk.c63!==undefined)check63();if(S.chk.c64!==undefined)check64();if(S.chk.c66!==undefined)check66();
   if(S.chk.ord!==undefined)checkOrd();
   LS.cur='deckel_02';LS.sel=-1;LS.showRef=false;if(S.annRes[LS.cur])LS.showFb();
