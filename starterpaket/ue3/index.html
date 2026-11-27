@@ -134,6 +134,10 @@ tr.rgood td{background:var(--ok)}tr.rbad td{background:var(--bad)}
 @media(max-width:800px){.starg{grid-template-columns:1fr 1fr}}
 @media(max-width:600px){.starg{grid-template-columns:1fr}}
 .stfoot{display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap;margin-top:1.2rem;padding-top:.8rem;border-top:1px solid var(--line)}
+
+.pf2{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin:.6rem 0}
+@media(max-width:600px){.pf2{grid-template-columns:1fr}}
+#obs{min-width:600px}
 </style>
 </head>
 <body>
@@ -158,120 +162,83 @@ tr.rgood td{background:var(--ok)}tr.rbad td{background:var(--bad)}
 
 <section class="card" id="start">
   <h2>Start</h2>
-  <p>Heute üben Sie das Vorstellungsgespräch mit einer KI als Personalerin. Sie arbeiten als <b>Tandem</b> auf <b>einer</b> Kursseite: In Runde 1 wird Person 1 interviewt und Person 2 beobachtet, in Runde 2 tauschen Sie.</p>
+  <p>Heute üben Sie das Vorstellungsgespräch: Eine KI spielt die Personalerin, Sie antworten per Sprache. Sie arbeiten als <b>Tandem</b> auf <b>einer</b> Kursseite. In Runde 1 wird Person 1 interviewt und Person 2 beobachtet, in Runde 2 tauschen Sie.</p>
   <label>Teamname (Pflicht, <b>keine Klarnamen</b>)<input type="text" id="team" maxlength="40"></label>
-  <p class="muted" style="font-size:.9rem">Sie brauchen: ein Smartphone mit Ihrer KI-App (für den Sprachmodus), wenn möglich Kopfhörer, und Ihre Sicherung aus UE 2.</p>
+  <p class="muted" style="font-size:.9rem">Sie brauchen: ein Smartphone mit Ihrer KI-App, wenn möglich Kopfhörer, und Ihre Sicherung aus UE 2.</p>
 </section>
 
 <nav class="st" id="nav"></nav>
 
 <!-- Station 1 -->
 <section class="card sec" id="s1">
-  <h2>① Gute Antworten bauen: die STAR-Methode</h2>
+  <h2>① Vorbereiten (ca. 10 Minuten)</h2>
+  <h3>So antworten Sie gut: die STAR-Methode</h3>
   <div class="star">
-    <p><b>Warum?</b> Im Vorstellungsgespräch kommen fast immer <b>Verhaltensfragen</b>: „Erzählen Sie von einer Situation, in der …“. Personaler wollen dabei kein „Ich bin teamfähig“ hören, sondern <b>was Sie in einer echten Situation getan haben</b>. Wie Sie früher gehandelt haben, sagt am meisten darüber aus, wie Sie künftig handeln werden.</p>
-    <p><b>STAR</b> ist eine Bauanleitung für solche Antworten. Die vier Buchstaben stehen für vier Bausteine, die in dieser Reihenfolge kommen:</p>
+    <p>Im Gespräch kommen fast immer Fragen wie <b>„Erzählen Sie von einer Situation, in der …“</b>. Gesucht ist dann kein „Ich bin teamfähig“, sondern <b>was Sie in einer echten Situation getan haben</b>. STAR ist die Bauanleitung dafür, vier Bausteine in dieser Reihenfolge:</p>
     <div class="starg">
-      <div class="sb s"><b>S – Situation</b><span>Wo, wann, was war los?</span><i>„In der Nachtschicht fiel an Linie 2 die Hydraulikpresse aus. Am nächsten Morgen sollte eine Lieferung raus.“</i></div>
-      <div class="sb t"><b>T – Aufgabe</b> <small>(engl. Task)</small><span>Was war <u>Ihre</u> Rolle, was sollten Sie erreichen?</span><i>„Ich war als Instandhalter allein zuständig und sollte die Presse bis Schichtende wieder zum Laufen bringen.“</i></div>
-      <div class="sb a"><b>A – Aktion</b><span>Was haben <u>Sie</u> konkret getan? (der wichtigste Teil)</span><i>„Ich habe mit dem Hydraulikplan systematisch gesucht, ein defektes Wegeventil gefunden, Ersatz aus dem Lager eingebaut und den Schichtleiter laufend informiert.“</i></div>
-      <div class="sb r"><b>R – Resultat</b><span>Was kam heraus? Am besten mit Zahl. Und was haben Sie gelernt?</span><i>„Nach zweieinhalb Stunden lief die Presse wieder, die Lieferung ging pünktlich raus. Danach haben wir das Ventil als Ersatzteil mit Mindestbestand eingeführt.“</i></div>
+      <div class="sb s"><b>S – Situation</b><span>Wo, wann, was war los?</span><i>„In der Nachtschicht fiel die Hydraulikpresse aus, morgens sollte eine Lieferung raus.“</i></div>
+      <div class="sb t"><b>T – Aufgabe</b> <small>(engl. Task)</small><span>Was war <u>Ihre</u> Rolle?</span><i>„Ich war allein zuständig und sollte die Presse bis Schichtende wieder zum Laufen bringen.“</i></div>
+      <div class="sb a"><b>A – Aktion</b><span>Was haben <u>Sie</u> getan? (der längste Teil)</span><i>„Mit dem Hydraulikplan systematisch gesucht, defektes Ventil gefunden, Ersatz eingebaut, Schichtleiter informiert.“</i></div>
+      <div class="sb r"><b>R – Resultat</b><span>Was kam heraus, möglichst mit Zahl?</span><i>„Nach 2,5 Stunden lief die Presse, die Lieferung ging pünktlich raus.“</i></div>
     </div>
-    <p class="muted" style="font-size:.92rem">Merkhilfe: Wie bei einer <b>Störungsmeldung</b> – Was war? Wer war zuständig? Was wurde gemacht? Läuft es wieder? Eine gute STAR-Antwort dauert gesprochen etwa 1–2 Minuten.</p>
+    <p class="muted" style="font-size:.92rem">Merkhilfe: wie eine Störungsmeldung. Was war? Wer war zuständig? Was wurde gemacht? Läuft es wieder? Gesprochen dauert eine Antwort etwa 1–2 Minuten.</p>
   </div>
-  <h3><span class="badge pf">Pflicht</span>a) Welche Antwort ist die beste?</h3>
-  <p>Frage an Person A: <b>„Erzählen Sie von einem Konflikt im Team und wie Sie ihn gelöst haben.“</b></p>
-  <div class="pool" id="answers"></div>
-  <div id="s1afb"></div>
-  <div id="s1b" style="display:none">
-    <h3><span class="badge pf">Pflicht</span>b) Ordnen Sie die Sätze der besten Antwort den STAR-Bausteinen zu.</h3>
-    <div class="scroll"><table id="starTab"></table></div>
-    <button class="btn" id="s1bcheck">Prüfen</button><div id="s1bfb"></div>
+  <h3>Ihr Prompt für die KI-Personalerin</h3>
+  <p>Laden Sie Ihre UE-2-Sicherung, dann werden Firma und Anschreiben eingesetzt. Oder tragen Sie die Angaben selbst ein (<b>anonymisiert</b>).</p>
+  <button class="btn sec2" id="bUE2">UE-2-Sicherung laden</button>
+  <div class="pf2">
+    <label>Firma <input type="text" data-k="s1.firma" placeholder="z. B. Muster Antriebstechnik GmbH"></label>
+    <label>Stellentitel <input type="text" data-k="s1.stelle" placeholder="z. B. Techniker (m/w/d) Arbeitsvorbereitung"></label>
   </div>
-  <h3><span class="badge zu">Zusatz</span>Was fehlt in Antwort C? Welche STAR-Bausteine sind schwach oder fehlen ganz?</h3>
-  <textarea data-k="s1.zusatz" placeholder="In Antwort C …"></textarea>
-  <div class="cnt" data-cnt="s1.zusatz"></div>
-  <details class="eh locked" data-e="s1.zusatz"><summary>Erwartungshorizont (ab 40 Zeichen)</summary>
-  <p>Antwort C erzählt nur die <b>Situation</b>, und das sehr ausführlich. Eine eigene <b>Aufgabe</b> fehlt, die <b>Aktion</b> fehlt ganz („da konnte man nichts machen“), das <b>Resultat</b> hat jemand anderes erreicht (der Meister). Dazu kommt: Die Schuld wird dem Kollegen gegeben. Das wirkt auf Personaler wie fehlende Verantwortung.</p></details>
+  <label>Anschreiben (mit [Name], [Adresse] statt echter Daten)<textarea data-k="s1.letter" style="min-height:6rem"></textarea></label>
+  <pre class="copy" id="promptOut"></pre>
+  <button class="btn" data-copy="promptOut">Prompt kopieren</button>
 </section>
 
 <!-- Station 2 -->
 <section class="card sec" id="s2">
-  <h2>② Rollen-Prompt: die KI wird zur Personalerin <span class="gate">Gate 1</span></h2>
-  <p>Ohne gute Anweisung stellt die KI alle Fragen auf einmal, beantwortet sie gleich selbst oder lobt alles. Ein <b>Rollen-Prompt</b> legt fest, wer die KI ist, was sie weiß und nach welchen Regeln sie handelt.</p>
-  <p><span class="badge pf">Pflicht</span>Bauen Sie den Prompt aus den Bausteinen. <b>Drei Bausteine schaden.</b></p>
-  <div class="pool" id="blocks"></div>
-  <button class="btn sec2" id="s2reset">Zurücksetzen</button>
-  <button class="btn" id="s2check">Prüfen</button>
+  <h2>② Simulation im Tandem (ca. 45 Minuten)</h2>
+  <div class="fb info">
+    <b>So starten Sie:</b>
+    <ol style="margin:.3rem 0">
+      <li>In der KI-App einen <b>neuen Chat</b> öffnen und den Prompt aus ① <b>als Text</b> einfügen.</li>
+      <li>Im <b>selben Chat</b> den Sprachmodus starten (meist ein Mikrofon- oder Wellen-Symbol). Geht das nicht, nutzen Sie den Textchat.</li>
+      <li>Normal laut sprechen, am besten mit Kopfhörern.</li>
+      <li>Nach der Verabschiedung sagen: <b>„Feedback bitte.“</b> Das Feedback aus dem Chatverlauf kopieren und unten einfügen.</li>
+    </ol>
+    <b>Datenschutz:</b> Ihre Stimme wird an den Anbieter übertragen. Keine Namen, Firmen oder Adressen nennen. Fragt die KI nach Ihrem Namen, sagen Sie „Person A“.
+  </div>
+  <p><span class="badge pf">Pflicht</span>Die beobachtende Person notiert <b>während</b> des Gesprächs pro Frage ein Stichwort und hakt ab, welche STAR-Bausteine in der Antwort vorkamen (mind. 4 Fragen je Runde).</p>
+  <div class="tabs" id="s2tabs"><button data-t="1" class="act">Runde 1</button><button data-t="2">Runde 2</button></div>
+  <div class="scroll"><table class="mx" id="obs"></table></div>
+  <p><b>KI-Feedback zu dieser Runde</b> (aus dem Chat kopieren)</p>
+  <textarea id="kifb" placeholder="Feedback der KI einfügen …" style="min-height:7rem"></textarea>
   <div id="s2fb"></div>
-  <h3>Ihr Prompt</h3>
-  <p class="muted" style="font-size:.92rem">Laden Sie Ihre UE-2-Sicherung, dann werden Firma und Anschreiben automatisch eingesetzt. Den Stellentitel ergänzen Sie selbst.</p>
-  <button class="btn sec2" id="bUE2">UE-2-Sicherung laden (optional)</button>
-  <pre class="copy" id="promptOut"></pre>
-  <button class="btn sec2" data-copy="promptOut">Prompt kopieren</button>
-  <div id="g1"></div>
 </section>
 
 <!-- Station 3 -->
 <section class="card sec" id="s3">
-  <h2>③ Simulation im Tandem (Sprachmodus)</h2>
-  <div class="fb info">
-    <b>So starten Sie:</b>
-    <ol style="margin:.3rem 0">
-      <li>Öffnen Sie Ihre KI-App auf dem Smartphone, starten Sie einen <b>neuen Chat</b> und fügen Sie den Prompt aus ② <b>als Text</b> ein. Platzhalter ausfüllen!</li>
-      <li>Starten Sie im <b>selben Chat</b> den Sprachmodus. Meist ist das ein Mikrofon- oder Wellen-Symbol, je nach App unterschiedlich.</li>
-      <li>Sprechen Sie in normaler Lautstärke, am besten mit Kopfhörern. Wenn der Sprachmodus nicht geht, nutzen Sie den Textchat.</li>
-      <li>Nach der Verabschiedung sagen Sie: <b>„Feedback bitte.“</b> Kopieren Sie das Feedback aus dem Chatverlauf. Viele Apps zeigen dort eine Mitschrift.</li>
-    </ol>
-    <b>Datenschutz:</b> Im Sprachmodus wird Ihre Stimme an den Anbieter übertragen. Nennen Sie keine Namen, Firmen oder Adressen. Bei Fragen nach Ihrem Namen sagen Sie einfach „Person A“.
-  </div>
-  <p><span class="badge pf">Pflicht</span>Die beobachtende Person füllt den Bogen <b>während</b> des Gesprächs aus, eine Zeile pro Frage (mind. 4 Fragen je Runde). Danach tauschen Sie.</p>
-  <div class="tabs" id="s3tabs"><button data-t="1" class="act">Runde 1</button><button data-t="2">Runde 2</button></div>
-  <div class="scroll"><table class="mx" id="obs"></table></div>
-  <p><b>KI-Feedback zu dieser Runde</b> (aus dem Chat kopieren)</p>
-  <textarea id="kifb" placeholder="Feedback der KI einfügen …" style="min-height:7rem"></textarea>
-  <div id="s3fb"></div>
-</section>
-
-<!-- Station 4 -->
-<section class="card sec" id="s4">
-  <h2>④ KI-Feedback kritisch prüfen</h2>
-  <div class="tabs" id="s4tabs"><button data-t="a" class="act">a) Musterfall</button><button data-t="b">b) Ihr Feedback-Protokoll</button></div>
-  <div class="sub act" data-s="a">
-    <p>Ausschnitt aus dem Gespräch von Person A:</p>
-    <div class="trans" id="trans"></div>
-    <p><span class="badge pf">Pflicht</span>So hat die KI das Gespräch bewertet. Ordnen Sie jede Aussage ein.</p>
-    <div class="scroll"><table id="fbTab"></table></div>
-    <button class="btn" id="s4acheck">Prüfen</button><div id="s4afb"></div>
-  </div>
-  <div class="sub" data-s="b">
-    <p><span class="badge pf">Pflicht</span>Vergleichen Sie für jede Runde das KI-Feedback mit Ihrem Beobachtungsbogen. Schreiben Sie das Protokoll für die interviewte Person.</p>
-    <div class="tabs" id="s4btabs"><button data-t="1" class="act">Runde 1</button><button data-t="2">Runde 2</button></div>
-    <div id="proto"></div>
-  </div>
-</section>
-
-<!-- Station 5 -->
-<section class="card sec" id="s5">
-  <h2>⑤ Antworten überarbeiten <span class="gate">Gate 2</span></h2>
-  <p><span class="badge pf">Pflicht</span>Jede Person wählt ihre <b>drei schwächsten Antworten</b> aus dem Gespräch und formuliert sie nach STAR neu, so wie Sie sie beim nächsten Mal sagen würden. Haken Sie ab, welche Bausteine enthalten sind.</p>
-  <div class="tabs" id="s5tabs"><button data-t="1" class="act">Person aus Runde 1</button><button data-t="2">Person aus Runde 2</button></div>
-  <div id="rew"></div>
+  <h2>③ Auswerten &amp; verbessern (ca. 25 Minuten)</h2>
+  <div class="fb info"><b>Vorsicht beim KI-Feedback:</b> Sprachmodelle loben gern zu viel. Freundliche Antworten werden beim Training oft besser bewertet. Ihr Beobachtungsbogen ist das Gegengewicht: Wo die KI „sehr gut“ sagt, aber der Bogen kein Resultat (R) zeigt, gilt der Bogen.</div>
+  <div class="tabs" id="s3tabs"><button data-t="1" class="act">Person aus Runde 1</button><button data-t="2">Person aus Runde 2</button></div>
+  <div id="eval"></div>
+  <h3><span class="badge zu">Zusatz</span>Zweiter Versuch</h3>
+  <p>Bitten Sie die KI im selben Chat: <i>„Stell mir die Frage … noch einmal.“</i> Antworten Sie mit Ihrer neuen STAR-Version. Was sagt die KI jetzt?</p>
+  <textarea data-k="s3.retry" placeholder="Beim zweiten Versuch …"></textarea>
   <h3><span class="badge zu">Zusatz</span>Würden Sie sich von einer KI interviewen lassen? Was spricht dafür, was dagegen?</h3>
-  <textarea data-k="s5.zusatz" placeholder="Dafür spricht … Dagegen spricht …"></textarea>
-  <div class="cnt" data-cnt="s5.zusatz"></div>
-  <details class="eh locked" data-e="s5.zusatz"><summary>Erwartungshorizont (ab 40 Zeichen)</summary>
-  <p><b>Dafür:</b> immer verfügbar, gleiche Fragen für alle, schnelle Vorauswahl bei vielen Bewerbungen.<br>
-  <b>Dagegen:</b> Die KI kann Vorurteile aus ihren Trainingsdaten übernehmen (z. B. bei Akzent oder Sprechweise). Ihre Entscheidung ist schwer nachvollziehbar, und der persönliche Eindruck fehlt.<br>
-  <b>Recht:</b> Der EU AI Act stuft KI, die bei der Auswahl von Bewerbern eingesetzt wird, als <b>Hochrisiko-KI</b> ein. Dafür gelten strenge Pflichten, z. B. menschliche Aufsicht und Transparenz.</p></details>
+  <textarea data-k="s3.zusatz" placeholder="Dafür spricht … Dagegen spricht …"></textarea>
+  <div class="cnt" data-cnt="s3.zusatz"></div>
+  <details class="eh locked" data-e="s3.zusatz"><summary>Erwartungshorizont (ab 40 Zeichen)</summary>
+  <p><b>Dafür:</b> immer verfügbar, gleiche Fragen für alle, schnelle Vorauswahl.<br>
+  <b>Dagegen:</b> Vorurteile aus Trainingsdaten möglich (z. B. bei Akzent oder Sprechweise), schwer nachvollziehbar, kein persönlicher Eindruck.<br>
+  <b>Recht:</b> Der EU AI Act stuft KI in der Personalauswahl als <b>Hochrisiko-KI</b> ein, mit strengen Pflichten wie menschlicher Aufsicht und Transparenz.</p></details>
   <div id="g2"></div>
   <div class="card" id="fin" style="display:none;background:#eaf1f9;margin-top:1rem">
     <h3 style="margin-top:0">Geschafft: UE 3 abgeschlossen</h3>
-    <p>1. Laden Sie Ihr <b>Lernheft</b> herunter. Beide Personen speichern es in ihrem OneDrive.<br>
-    2. Vergleichen Sie mit dem <b>Erwartungshorizont</b>.</p>
+    <p>Laden Sie Ihr <b>Lernheft</b> herunter. Beide Personen speichern es in ihrem OneDrive. Vergleichen Sie mit dem <b>Erwartungshorizont</b>.</p>
     <button class="btn" id="bBook2">Lernheft herunterladen</button>
     <a class="btn sec2" style="text-decoration:none;display:inline-block" href="erwartungshorizont_ue3.pdf" download>Erwartungshorizont (PDF)</a>
-    <p class="muted" style="font-size:.9rem">Ausblick UE 4: Jetzt kommt der Fachvorgesetzte mit Fachfragen, Stressfragen und der Gehaltsverhandlung. Ihre überarbeiteten Antworten sind Ihre Vorbereitung.</p>
+    <p class="muted" style="font-size:.9rem">Ausblick UE 4: Jetzt kommt der Fachvorgesetzte mit Fachfragen, Stressfragen und der Gehaltsverhandlung.</p>
   </div>
 </section>
 </main>
@@ -280,62 +247,30 @@ tr.rgood td{background:var(--ok)}tr.rbad td{background:var(--bad)}
 
 <script>
 "use strict";
-const UNIT = "S1-UE3", VERSION = 1;
+const UNIT = "S1-UE3", VERSION = 2;
 const REIHE = [
   ["UE 1","Spielregeln & Stellenanzeige"],["UE 2","Anschreiben & Arbeitgeber-Check"],["UE 3","Gesprächssimulator I"],
   ["UE 4","Gesprächssimulator II"],["UE 5","Prompt-Bibliothek & Einarbeitung"],["UE 6","Eigener Assistent & Verantwortung"]];
 const NOW = 2;
-const STATIONS = [["s1","① STAR-Methode"],["s2","② Rollen-Prompt"],["s3","③ Simulation"],["s4","④ KI-Feedback prüfen"],["s5","⑤ Antworten überarbeiten"]];
-
-/* ---------- Inhalte ---------- */
-const ANSWERS = [
- {id:"A", t:"„Konflikte gibt es ja überall. Ich bin ein sehr teamfähiger Mensch und versuche immer, ruhig zu bleiben und alle Meinungen zu hören. Meistens findet man dann eine gute Lösung.“",
-  why:"Kein konkreter Fall: nur Eigenschaften und Allgemeinplätze. Keiner der vier STAR-Bausteine ist wirklich erkennbar."},
- {id:"B", t:"„In meinem Technikerprojekt waren wir uns im Team uneinig, ob wir die Montagevorrichtung als Schweißkonstruktion oder aus Aluminiumprofilen bauen. Die Diskussion hat uns eine Woche gekostet. Als Teamleiter musste ich eine Entscheidung herbeiführen, ohne dass sich jemand übergangen fühlt. Ich habe beide Varianten in einer Tabelle nach Kosten, Fertigungszeit und Gewicht bewerten lassen und eine Besprechung angesetzt, in der jeder seine Argumente einbringen konnte. Wir haben uns in dieser einen Sitzung für die Profile entschieden, die Woche Verzug aufgeholt und die Vorrichtung termingerecht übergeben. Seitdem entscheide ich solche Fragen immer mit einer Bewertungstabelle.“",
-  why:"Konkrete Situation, eigene Rolle, nachvollziehbares Vorgehen, messbares Ergebnis und eine Lehre daraus: vollständig nach STAR."},
- {id:"C", t:"„Ein Kollege in der Montage hat ständig seine Arbeit liegen lassen, und wir mussten das dann ausbaden. Das ging monatelang so, jeder hat sich darüber aufgeregt, auch in den Pausen war das immer Thema. Er war einfach nicht motiviert. Da konnte man nichts machen, irgendwann hat der Meister das dann geregelt.“",
-  why:"Lange Situation, aber keine eigene Aufgabe und keine eigene Aktion. Das Resultat hat jemand anderes erreicht, und die Schuld liegt beim Kollegen. Das wirkt wie fehlende Verantwortung."}];
-const STARS = [
- ["b3","Ich habe beide Varianten in einer Tabelle nach Kosten, Fertigungszeit und Gewicht bewerten lassen und eine Besprechung angesetzt, in der jeder seine Argumente einbringen konnte.","A"],
- ["b1","In meinem Technikerprojekt waren wir uns im Team uneinig, ob wir die Montagevorrichtung als Schweißkonstruktion oder aus Aluminiumprofilen bauen. Die Diskussion hat uns eine Woche gekostet.","S"],
- ["b4","Wir haben uns in dieser einen Sitzung für die Profile entschieden, die Woche Verzug aufgeholt und die Vorrichtung termingerecht übergeben. Seitdem entscheide ich solche Fragen immer mit einer Bewertungstabelle.","R"],
- ["b2","Als Teamleiter musste ich eine Entscheidung herbeiführen, ohne dass sich jemand übergangen fühlt.","T"]];
+const STATIONS = [["s1","① Vorbereiten"],["s2","② Simulation"],["s3","③ Auswerten & verbessern"]];
 const SL = {S:"S – Situation", T:"T – Aufgabe", A:"A – Aktion", R:"R – Resultat"};
 
-const BLOCKS = [
- {id:"g3", t:"Stelle immer nur eine Frage und warte auf meine Antwort. Sprich kurz und natürlich, ohne Aufzählungen.", ok:true, rank:3},
- {id:"x2", t:"Sei freundlich und lobe meine Antworten, damit ich motiviert bleibe.", ok:false, why:"Dann ist das Feedback wertlos. Sprachmodelle neigen ohnehin dazu, zu viel zu loben (siehe ④)."},
- {id:"g1", t:"Du bist Personalreferentin bei [Firma] und führst mit mir ein Vorstellungsgespräch für die Stelle [Stellentitel].", ok:true, rank:1},
- {id:"g6", t:"Erst wenn ich „Feedback bitte“ sage: Bewerte jede meiner Antworten nach der STAR-Methode (Situation, Aufgabe, Aktion, Resultat). Sei ehrlich und kritisch und nenne zu jeder Antwort, was gefehlt hat.", ok:true, rank:6},
- {id:"x1", t:"Gib mir vorher alle Fragen mit Musterantworten, damit ich sie ablesen kann.", ok:false, why:"Dann üben Sie Ablesen statt Antworten. Im echten Gespräch kennen Sie die Fragen auch nicht."},
- {id:"g4", t:"Wenn meine Antwort allgemein bleibt, frag nach einem konkreten Beispiel nach.", ok:true, rank:4},
- {id:"g2", t:"Hier ist mein Anschreiben (anonymisiert): [Anschreiben]", ok:true, rank:2},
- {id:"x3", t:"Damit es echt wirkt: Ich heiße [Vorname Nachname], hier ist mein vollständiger Lebenslauf.", ok:false, why:"Datenschutz: Für das Üben braucht die KI weder Ihren Namen noch Ihren Lebenslauf (Spielregeln aus UE 1)."},
- {id:"g5", t:"Ablauf: kurze Begrüßung, dann sechs Fragen, davon mindestens drei Verhaltensfragen („Erzählen Sie von einer Situation, in der …“), dann Verabschiedung.", ok:true, rank:5}];
-
-const TRANS = [
- ["Warum möchten Sie zu uns?","Weil Sie Getriebe herstellen und ich vier Jahre Getriebe montiert habe. Außerdem reizt mich die Arbeitsvorbereitung, weil ich dort Abläufe mitgestalten kann, die ich bisher nur ausgeführt habe."],
- ["Erzählen Sie von einem Fehler, den Sie gemacht haben.","Hm, eigentlich mache ich wenig Fehler. Ich bin sehr gründlich."],
- ["Erzählen Sie von einer Situation, in der Sie unter Zeitdruck standen.","In der Nachtschicht ist mal die Presse ausgefallen, die musste bis morgen laufen. Ich habe dann den Fehler gesucht und das Ventil getauscht."]];
-const FB = [
- ["Antwort 1: Sehr gut, klarer Bezug zur Firma und zur Stelle.","Z","Stimmt: Getriebe-Erfahrung und Motivation für die Arbeitsvorbereitung werden konkret genannt."],
- ["Antwort 2: Souverän, Sie zeigen Selbstbewusstsein.","F","Geschönt. Die Frage wurde nicht beantwortet. Wer „keine Fehler“ macht, wirkt unreflektiert. Besser: einen echten, kleinen Fehler nach STAR erzählen, mit dem, was man daraus gelernt hat."],
- ["Antwort 3: Vollständig nach STAR aufgebaut.","X","Falsch: Das Resultat fehlt (Lief die Presse? Wurde der Termin gehalten?), die Aktion ist sehr knapp."],
- ["Antwort 3: Die Situation ist gut gewählt, weil sie Belastbarkeit zeigt.","Z","Stimmt: Zeitdruck in der Nachtschicht ist ein passendes Beispiel."],
- ["Antwort 3: Ergänzen Sie, wie lange die Reparatur dauerte und ob der Termin gehalten wurde.","Z","Stimmt: genau der fehlende Resultat-Baustein."],
- ["Insgesamt: Sie sind bestens vorbereitet, Verbesserungen sind kaum nötig.","F","Geschönt. Bei zwei von drei Antworten fehlt Wesentliches."]];
-const FBL = {Z:"zutreffend", F:"zu freundlich (geschönt)", X:"sachlich falsch"};
+const PROMPT = [
+ "Du bist Personalreferentin bei [Firma] und führst mit mir ein Vorstellungsgespräch für die Stelle [Stellentitel].",
+ "Hier ist mein Anschreiben (anonymisiert): [Anschreiben]",
+ "Stelle immer nur eine Frage und warte auf meine Antwort. Sprich kurz und natürlich, ohne Aufzählungen.",
+ "Wenn meine Antwort allgemein bleibt, frag nach einem konkreten Beispiel nach.",
+ "Ablauf: kurze Begrüßung, dann sechs Fragen, davon mindestens drei Verhaltensfragen („Erzählen Sie von einer Situation, in der …“), dann Verabschiedung.",
+ "Erst wenn ich „Feedback bitte“ sage: Bewerte jede meiner Antworten nach der STAR-Methode (Situation, Aufgabe, Aktion, Resultat). Sei ehrlich und kritisch und nenne zu jeder Antwort, was gefehlt hat."];
 
 /* ---------- Zustand ---------- */
 const emptyObs = () => Array.from({length:6}, () => ({}));
-const emptyRew = () => Array.from({length:3}, () => ({}));
+const emptyRew = () => Array.from({length:2}, () => ({}));
 function fresh(){ return {
   team:"", station:"s1",
-  s1:{ans:"", star:{}, checked:false, zusatz:""},
-  s2:{chosen:[], checked:false, firma:"", letter:""},
-  s3:{tab:"1", obs:{1:emptyObs(), 2:emptyObs()}, kifb:{1:"", 2:""}},
-  s4:{tab:"a", btab:"1", cls:{}, checked:false, proto:{1:{}, 2:{}}},
-  s5:{tab:"1", rew:{1:emptyRew(), 2:emptyRew()}, zusatz:""}
+  s1:{firma:"", stelle:"", letter:""},
+  s2:{tab:"1", obs:{1:emptyObs(), 2:emptyObs()}, kifb:{1:"", 2:""}},
+  s3:{tab:"1", ev:{1:{ab:"", rew:emptyRew()}, 2:{ab:"", rew:emptyRew()}}, retry:"", zusatz:""}
 };}
 let S = fresh();
 const $ = id => document.getElementById(id);
@@ -346,25 +281,18 @@ function info(t){ $("modalTxt").textContent = t; $("modal").classList.add("on");
 const len = t => String(t||"").trim().length;
 
 /* ---------- Auswertung ---------- */
-const starOk = () => STARS.every(([id,,k]) => S.s1.star[id] === k);
-const s1done = () => S.s1.ans === "B" && S.s1.checked && starOk();
-const GOOD = BLOCKS.filter(b=>b.ok).map(b=>b.id);
-const s2ok = () => GOOD.length === S.s2.chosen.length && GOOD.every(id => S.s2.chosen.includes(id));
-const s2done = () => S.s2.checked && s2ok();
-const obsRows = r => S.s3.obs[r].filter(o => len(o.q) && o.len).length;
-const s3round = r => obsRows(r) >= 4 && len(S.s3.kifb[r]) >= 40;
-const s3done = () => s3round(1) && s3round(2);
-const s4a = () => S.s4.checked && FB.every((f,i) => S.s4.cls[i] === f[1]);
-const protoOk = r => ["st","vb","ab"].every(k => len(S.s4.proto[r][k]) >= 40);
-const s4done = () => s4a() && protoOk(1) && protoOk(2);
-const rewOk = r => S.s5.rew[r].every(x => len(x.q) && len(x.a) >= 120 && ["S","T","A","R"].every(k => x[k]));
-const s5done = () => rewOk(1) && rewOk(2);
-const DONE = {s1:s1done, s2:s2done, s3:s3done, s4:s4done, s5:s5done};
+const s1done = () => len(S.s1.firma) > 0 && len(S.s1.stelle) > 0;
+const obsRows = r => S.s2.obs[r].filter(o => len(o.q)).length;
+const s2round = r => obsRows(r) >= 4 && len(S.s2.kifb[r]) >= 40;
+const s2done = () => s2round(1) && s2round(2);
+const evOk = r => len(S.s3.ev[r].ab) >= 40 && S.s3.ev[r].rew.every(x => len(x.q) && len(x.a) >= 120 && ["S","T","A","R"].every(k => x[k]));
+const s3done = () => evOk(1) && evOk(2);
+const DONE = {s1:s1done, s2:s2done, s3:s3done};
 
 /* ---------- Rahmen ---------- */
 function renderMap(){
   $("map").innerHTML = REIHE.map((r,i) => `<div class="${i===NOW?"now":""} ${i<NOW?"past":""}"><b>${r[0]}${i<NOW?" ✔":""}</b>${esc(r[1])}</div>`).join("");
-  const items = [["Rollen-Prompt Interviewer", s2done()],["Beobachtungsbogen", s3done()],["Feedback-Protokoll", s4done()],["STAR-Antworten", s5done()]];
+  const items = [["Interview-Prompt", s1done()],["Beobachtungsbogen", s2done()],["STAR-Antworten", s3done()]];
   $("pack").innerHTML = items.map(([t,ok]) => `<span class="${ok?"ok":""}">${ok?"✔ ":"○ "}${t}</span>`).join("");
 }
 function renderNav(){
@@ -373,65 +301,21 @@ function renderNav(){
   STATIONS.forEach(([id]) => {
     const b = $("nav").querySelector(`[data-go="${id}"]`);
     b.classList.toggle("act", S.station===id); b.classList.toggle("done", DONE[id]());
-    b.classList.toggle("lock", ["s3","s4","s5"].includes(id) && !s2done());
     $(id).classList.toggle("act", S.station===id);
   });
   $("teamShow").textContent = "Team: " + (S.team || "–");
 }
 function refresh(){ renderMap(); renderNav(); }
-function tabs(boxId, key, val){ document.querySelectorAll(`#${boxId} button`).forEach(b => b.classList.toggle("act", b.dataset.t===val)); }
+function tabs(boxId, val){ document.querySelectorAll(`#${boxId} button`).forEach(b => b.classList.toggle("act", b.dataset.t===val)); }
 
 /* ---------- Station 1 ---------- */
-function renderAnswers(){
-  $("answers").innerHTML = ANSWERS.map(a => { const on = S.s1.ans === a.id;
-    return `<button class="pi ${on ? (a.id==="B"?"good":"badl") : ""}" data-a="${a.id}"><b>Antwort ${a.id}</b><br>${esc(a.t)}${on ? `<span class="mini">${a.id==="B"?"✔ ":"✘ "}${esc(a.why)}</span>` : ""}</button>`; }).join("");
-  $("s1afb").innerHTML = S.s1.ans && S.s1.ans !== "B" ? `<div class="fb bad">Noch nicht die beste Antwort. Lesen Sie die Begründung und wählen Sie erneut.</div>` : "";
-  $("s1b").style.display = S.s1.ans === "B" ? "block" : "none";
-}
-$("answers").addEventListener("click", e => { const b = e.target.closest("button[data-a]"); if (!b) return;
-  S.s1.ans = b.dataset.a; renderAnswers(); refresh(); });
-function renderStar(){
-  const ch = S.s1.checked;
-  $("starTab").innerHTML = `<tr><th>Satz aus Antwort B</th><th style="width:12rem">STAR-Baustein</th></tr>` + STARS.map(([id,t,k]) =>
-    `<tr class="${ch ? (S.s1.star[id]===k?"rgood":"rbad") : ""}"><td>${esc(t)}</td><td><select data-st="${id}"><option value="">–</option>${["S","T","A","R"].map(x=>`<option value="${x}" ${S.s1.star[id]===x?"selected":""}>${SL[x]}</option>`).join("")}</select></td></tr>`).join("");
-}
-$("starTab").addEventListener("change", e => { const s = e.target.closest("select[data-st]"); if (!s) return;
-  S.s1.star[s.dataset.st] = s.value; S.s1.checked = false; $("s1bfb").innerHTML = ""; renderStar(); refresh(); });
-$("s1bcheck").onclick = () => {
-  if (STARS.some(([id]) => !S.s1.star[id])) { $("s1bfb").innerHTML = `<div class="fb info">Bitte alle vier Sätze zuordnen.</div>`; return; }
-  S.s1.checked = true; renderStar();
-  $("s1bfb").innerHTML = starOk() ? `<div class="fb ok"><b>Richtig.</b> Die Aktion ist der längste Teil, so soll es sein. Und das Resultat enthält etwas Messbares (Woche aufgeholt, termingerecht) plus eine Lehre.</div>`
-    : `<div class="fb bad">Noch nicht ganz. Tipp: Die Aufgabe beschreibt <i>Ihre Rolle</i>, die Aktion <i>was Sie getan haben</i>.</div>`; refresh();
-};
-
-/* ---------- Station 2 ---------- */
 function promptText(){
-  let t = S.s2.chosen.length ? S.s2.chosen.map(id => BLOCKS.find(b=>b.id===id).t).join("\n\n") : "(noch leer – klicken Sie Bausteine an)";
-  if (S.s2.firma) t = t.replace("[Firma]", S.s2.firma);
-  if (S.s2.letter) t = t.replace("[Anschreiben]", "\n" + S.s2.letter);
-  return t;
+  return PROMPT.join("\n\n")
+    .replace("[Firma]", S.s1.firma.trim() || "[Firma]")
+    .replace("[Stellentitel]", S.s1.stelle.trim() || "[Stellentitel]")
+    .replace("[Anschreiben]", S.s1.letter.trim() ? "\n" + S.s1.letter.trim() : "[Anschreiben]");
 }
-function renderBlocks(){
-  const ch = S.s2.checked;
-  $("blocks").innerHTML = BLOCKS.map(b => { const pos = S.s2.chosen.indexOf(b.id);
-    let cls = pos>=0 ? "on" : ""; if (ch && pos>=0) cls += b.ok ? " good" : " badl"; if (ch && pos<0 && b.ok) cls = "miss";
-    return `<button class="pi ${cls}" data-b="${b.id}"><b>${pos>=0 ? pos+1+"." : "+"}</b> ${esc(b.t)}${ch && pos>=0 && !b.ok ? `<span class="mini">✘ ${esc(b.why)}</span>` : ""}</button>`; }).join("");
-  $("promptOut").textContent = promptText();
-  $("g1").innerHTML = s2done() ? `<div class="fb ok"><b>Gate 1 geschafft.</b> Kopieren Sie den Prompt, füllen Sie die restlichen Platzhalter aus und weiter geht es mit ③.</div>`
-    : `<div class="fb info">Gate 1: alle 6 sinnvollen Bausteine, kein schädlicher.</div>`;
-}
-$("blocks").addEventListener("click", e => { const b = e.target.closest("button[data-b]"); if (!b) return;
-  const id = b.dataset.b, k = S.s2.chosen.indexOf(id); if (k>=0) S.s2.chosen.splice(k,1); else S.s2.chosen.push(id);
-  S.s2.checked = false; $("s2fb").innerHTML = ""; renderBlocks(); refresh(); });
-$("s2reset").onclick = () => { S.s2.chosen = []; S.s2.checked = false; $("s2fb").innerHTML = ""; renderBlocks(); refresh(); };
-$("s2check").onclick = () => {
-  S.s2.checked = true; renderBlocks();
-  const good = S.s2.chosen.filter(id => GOOD.includes(id)).length, bad = S.s2.chosen.length - good;
-  let h = s2ok() ? `<div class="fb ok"><b>Alle 6 sinnvollen Bausteine, kein schädlicher.</b></div>` : `<div class="fb bad">${good} von 6 sinnvollen Bausteinen${bad ? `, ${bad} schädliche(r) dabei` : ""}.</div>`;
-  const order = S.s2.chosen.filter(id => GOOD.includes(id)).map(id => BLOCKS.find(b=>b.id===id).rank);
-  if (s2ok() && order.some((r,i) => i && r < order[i-1])) h += `<div class="fb info">Tipp zur Reihenfolge (keine Pflicht): Rolle → Anschreiben → Gesprächsregeln → Nachhaken → Ablauf → Feedback.</div>`;
-  $("s2fb").innerHTML = h; renderBlocks(); refresh();
-};
+function renderPrompt(){ $("promptOut").textContent = promptText(); }
 $("bUE2").onclick = () => $("fileUE2").click();
 $("fileUE2").onchange = e => {
   const f = e.target.files[0]; if (!f) return;
@@ -440,110 +324,86 @@ $("fileUE2").onchange = e => {
       const d = JSON.parse(rd.result);
       if (d.unit !== "S1-UE2") { info("Das ist keine Sicherung aus UE 2. Bitte die Datei „UE2_…json“ wählen."); return; }
       const st = d.state || {};
-      S.s2.firma = (((st.s5||{}).prof||{}).firma_v || "").trim();
-      S.s2.letter = ((st.s4||{}).letter || "").trim();
-      renderBlocks();
-      info(`Übernommen: ${S.s2.firma ? "Firma „" + S.s2.firma + "“" : "keine Firma"}, ${S.s2.letter ? "Anschreiben (" + S.s2.letter.length + " Zeichen)" : "kein Anschreiben"}. Die Werte erscheinen im Prompt, sobald die passenden Bausteine gewählt sind.`);
+      const firma = (((st.s5||{}).prof||{}).firma_v || "").trim(), letter = ((st.s4||{}).letter || "").trim();
+      if (firma) S.s1.firma = firma; if (letter) S.s1.letter = letter;
+      syncSimple(); renderPrompt(); refresh();
+      info(`Übernommen: ${firma ? "Firma" : "keine Firma"}, ${letter ? "Anschreiben" : "kein Anschreiben"}. Ergänzen Sie noch den Stellentitel.`);
     } catch (err) { info("Die Datei konnte nicht gelesen werden."); }
     e.target.value = ""; };
   rd.readAsText(f);
 };
 
-/* ---------- Station 3 ---------- */
+/* ---------- Station 2 ---------- */
 function renderObs(){
-  const r = S.s3.tab; tabs("s3tabs", null, r);
-  $("obs").innerHTML = `<tr><th style="width:2rem">#</th><th>Frage der KI (Stichwort)</th><th style="width:11.5rem">STAR enthalten</th><th style="width:7rem">Konkreter Beleg?</th><th style="width:7.5rem">Länge</th><th>Notiz</th></tr>` +
-    S.s3.obs[r].map((o,i) => `<tr><td>${i+1}</td>
+  const r = S.s2.tab; tabs("s2tabs", r);
+  $("obs").innerHTML = `<tr><th style="width:2rem">#</th><th>Frage der KI (Stichwort)</th><th style="width:11.5rem">STAR in der Antwort</th><th>Notiz</th></tr>` +
+    S.s2.obs[r].map((o,i) => `<tr><td>${i+1}</td>
       <td><input type="text" data-o="${i}" data-f="q" value="${esc(o.q)}"></td>
       <td class="stc">${["S","T","A","R"].map(k=>`<label><input type="checkbox" data-o="${i}" data-f="${k}" ${o[k]?"checked":""}>${k}</label>`).join("")}</td>
-      <td><select data-o="${i}" data-f="bel"><option value="">–</option>${["ja","nein"].map(v=>`<option ${o.bel===v?"selected":""}>${v}</option>`).join("")}</select></td>
-      <td><select data-o="${i}" data-f="len"><option value="">–</option>${["zu kurz","passend","zu lang"].map(v=>`<option ${o.len===v?"selected":""}>${v}</option>`).join("")}</select></td>
-      <td><input type="text" data-o="${i}" data-f="note" value="${esc(o.note)}"></td></tr>`).join("");
-  $("kifb").value = S.s3.kifb[r] || "";
-  s3info();
+      <td><input type="text" data-o="${i}" data-f="note" placeholder="z. B. Resultat fehlt, zu allgemein" value="${esc(o.note)}"></td></tr>`).join("");
+  $("kifb").value = S.s2.kifb[r] || "";
+  s2info();
 }
-function s3info(){
-  const r = S.s3.tab;
-  $("s3fb").innerHTML = `<p class="cnt">Runde ${r}: ${obsRows(r)} von mind. 4 Zeilen (Frage + Länge), KI-Feedback ${len(S.s3.kifb[r]) >= 40 ? "✔" : "fehlt noch"}.</p>` +
-    (s3done() ? `<div class="fb ok"><b>Beide Runden dokumentiert.</b> Weiter mit ④.</div>` : "");
+function s2info(){
+  const r = S.s2.tab;
+  $("s2fb").innerHTML = `<p class="cnt">Runde ${r}: ${obsRows(r)} von mind. 4 Fragen notiert, KI-Feedback ${len(S.s2.kifb[r]) >= 40 ? "✔" : "fehlt noch"}.</p>` +
+    (s2done() ? `<div class="fb ok"><b>Beide Runden dokumentiert.</b> Weiter mit ③.</div>` : "");
 }
-$("s3tabs").addEventListener("click", e => { const b = e.target.closest("button[data-t]"); if (!b) return; S.s3.tab = b.dataset.t; renderObs(); });
+$("s2tabs").addEventListener("click", e => { const b = e.target.closest("button[data-t]"); if (!b) return; S.s2.tab = b.dataset.t; renderObs(); });
 $("obs").addEventListener("input", e => { const el = e.target.closest("[data-o]"); if (!el) return;
-  S.s3.obs[S.s3.tab][+el.dataset.o][el.dataset.f] = el.type === "checkbox" ? el.checked : el.value; s3info(); refresh(); });
-$("kifb").addEventListener("input", e => { S.s3.kifb[S.s3.tab] = e.target.value; s3info(); refresh(); });
+  S.s2.obs[S.s2.tab][+el.dataset.o][el.dataset.f] = el.type === "checkbox" ? el.checked : el.value; s2info(); refresh(); });
+$("kifb").addEventListener("input", e => { S.s2.kifb[S.s2.tab] = e.target.value; s2info(); refresh(); });
 
-/* ---------- Station 4 ---------- */
-$("trans").innerHTML = TRANS.map(([q,a],i) => `<p><b>KI:</b> ${esc(q)}<br><b>Person A:</b> ${esc(a)} <span class="muted">(Antwort ${i+1})</span></p>`).join("");
-function renderFB(){
-  const ch = S.s4.checked;
-  $("fbTab").innerHTML = `<tr><th>Aussage im KI-Feedback</th><th style="width:13rem">Einordnung</th>${ch?"<th>Rückmeldung</th>":""}</tr>` + FB.map((f,i) =>
-    `<tr class="${ch ? (S.s4.cls[i]===f[1]?"rgood":"rbad") : ""}"><td>${esc(f[0])}</td><td><select data-fb="${i}"><option value="">–</option>${["X","Z","F"].map(k=>`<option value="${k}" ${S.s4.cls[i]===k?"selected":""}>${FBL[k]}</option>`).join("")}</select></td>${
-      ch ? `<td>${S.s4.cls[i]===f[1] ? "✔ " + esc(f[2]) : "✘ Vergleichen Sie mit dem Gesprächsausschnitt oben."}</td>` : ""}</tr>`).join("");
+/* ---------- Station 3 ---------- */
+function renderEval(){
+  const r = S.s3.tab, ev = S.s3.ev[r]; tabs("s3tabs", r);
+  const weak = S.s2.obs[r].filter(o => len(o.q) && !["S","T","A","R"].every(k => o[k])).map(o => o.q);
+  $("eval").innerHTML = `<p><span class="badge pf">Pflicht</span><b>1. Abgleich:</b> Wo war das KI-Feedback zu freundlich oder anders als Ihr Beobachtungsbogen?</p>
+    <textarea data-ev="ab">${esc(ev.ab)}</textarea><div class="cnt" id="abCnt"></div>
+    <p style="margin-top:.8rem"><span class="badge pf">Pflicht</span><b>2. Zwei Antworten verbessern:</b> Nehmen Sie die zwei schwächsten Antworten und formulieren Sie sie nach STAR neu, so wie Sie sie beim nächsten Mal sagen würden.</p>
+    ${weak.length ? `<p class="muted" style="font-size:.9rem">Laut Bogen unvollständig: ${weak.map(esc).join(" · ")}</p>` : ""}
+    ${ev.rew.map((x,i) => `<div class="rw"><b>Antwort ${i+1}</b>
+      <input type="text" data-rw="${i}" data-f="q" placeholder="Frage aus dem Gespräch" value="${esc(x.q)}">
+      <textarea data-rw="${i}" data-f="a" placeholder="Situation → Aufgabe → Aktion → Resultat">${esc(x.a)}</textarea>
+      <div class="stc">Enthalten: ${["S","T","A","R"].map(k=>`<label><input type="checkbox" data-rw="${i}" data-f="${k}" ${x[k]?"checked":""}> ${SL[k]}</label>`).join("")}</div>
+      <div class="cnt" data-rwc="${i}"></div></div>`).join("")}`;
+  evInfo();
 }
-$("fbTab").addEventListener("change", e => { const s = e.target.closest("select[data-fb]"); if (!s) return;
-  S.s4.cls[s.dataset.fb] = s.value; S.s4.checked = false; $("s4afb").innerHTML = ""; renderFB(); refresh(); });
-$("s4acheck").onclick = () => {
-  if (FB.some((f,i) => !S.s4.cls[i])) { $("s4afb").innerHTML = `<div class="fb info">Bitte alle Aussagen einordnen.</div>`; return; }
-  S.s4.checked = true; renderFB();
-  const r = FB.filter((f,i) => S.s4.cls[i]===f[1]).length;
-  $("s4afb").innerHTML = r === FB.length ? `<div class="fb ok"><b>Alles richtig.</b> Warum lobt die KI so gern? Sprachmodelle werden unter anderem mit menschlichen Bewertungen nachtrainiert, und freundliche, zustimmende Antworten werden dabei oft besser bewertet. Deshalb neigen sie zum Schönreden. Ihr Beobachtungsbogen ist das Gegengewicht. Weiter mit b).</div>`
-    : `<div class="fb bad">${r} von ${FB.length} richtig. Korrigieren Sie die rot markierten Zeilen.</div>`; refresh();
-};
-function showTab4(t){ S.s4.tab = t; tabs("s4tabs", null, t); document.querySelectorAll("#s4 .sub").forEach(d => d.classList.toggle("act", d.dataset.s===t)); }
-$("s4tabs").addEventListener("click", e => { const b = e.target.closest("button[data-t]"); if (b) showTab4(b.dataset.t); });
-const PF = [["st","3 Stärken (mit Beleg aus Bogen oder Chat)"],["vb","2 Verbesserungen (konkret: welche Antwort, welcher STAR-Baustein fehlte)"],["ab","Abgleich: Wo war das KI-Feedback zu freundlich oder falsch, verglichen mit dem Beobachtungsbogen?"]];
-function renderProto(){
-  const r = S.s4.btab; tabs("s4btabs", null, r);
-  $("proto").innerHTML = PF.map(([k,t]) => `<p style="margin:.6rem 0 .2rem"><b>${t}</b></p><textarea data-pr="${k}">${esc(S.s4.proto[r][k])}</textarea><div class="cnt" data-prc="${k}"></div>`).join("") + `<div id="protoState"></div>`;
-  protoInfo();
-}
-function protoInfo(){
-  const r = S.s4.btab;
-  PF.forEach(([k]) => { const n = len(S.s4.proto[r][k]); const el = document.querySelector(`[data-prc="${k}"]`); if (el) el.textContent = n < 40 ? `${n} / 40 Zeichen` : "✔"; });
-  $("protoState").innerHTML = s4done() ? `<div class="fb ok"><b>Feedback-Protokolle für beide Runden fertig.</b></div>` : `<p class="cnt">Runde 1: ${protoOk(1)?"✔":"offen"} · Runde 2: ${protoOk(2)?"✔":"offen"}</p>`;
-}
-$("s4btabs").addEventListener("click", e => { const b = e.target.closest("button[data-t]"); if (!b) return; S.s4.btab = b.dataset.t; renderProto(); });
-$("proto").addEventListener("input", e => { const el = e.target.closest("[data-pr]"); if (!el) return; S.s4.proto[S.s4.btab][el.dataset.pr] = el.value; protoInfo(); refresh(); });
-
-/* ---------- Station 5 ---------- */
-function renderRew(){
-  const r = S.s5.tab; tabs("s5tabs", null, r);
-  $("rew").innerHTML = S.s5.rew[r].map((x,i) => `<div class="rw"><p style="margin:.2rem 0"><b>Antwort ${i+1}</b></p>
-    <input type="text" data-rw="${i}" data-f="q" placeholder="Frage aus dem Gespräch" value="${esc(x.q)}">
-    <textarea data-rw="${i}" data-f="a" placeholder="Ihre neue Antwort nach STAR (Situation → Aufgabe → Aktion → Resultat)">${esc(x.a)}</textarea>
-    <div class="stc">Enthalten: ${["S","T","A","R"].map(k=>`<label><input type="checkbox" data-rw="${i}" data-f="${k}" ${x[k]?"checked":""}> ${SL[k]}</label>`).join("")}</div>
-    <div class="cnt" data-rwc="${i}"></div></div>`).join("");
-  rewInfo();
-}
-function rewInfo(){
-  const r = S.s5.tab;
-  S.s5.rew[r].forEach((x,i) => { const el = document.querySelector(`[data-rwc="${i}"]`); if (el) el.textContent = len(x.a) < 120 ? `${len(x.a)} / 120 Zeichen` : "Länge ✔"; });
+function evInfo(){
+  const r = S.s3.tab, ev = S.s3.ev[r];
+  const n = len(ev.ab); $("abCnt").textContent = n < 40 ? `${n} / 40 Zeichen` : "✔";
+  ev.rew.forEach((x,i) => { const el = document.querySelector(`[data-rwc="${i}"]`); if (el) el.textContent = len(x.a) < 120 ? `${len(x.a)} / 120 Zeichen` : "Länge ✔"; });
   renderG2();
 }
-$("s5tabs").addEventListener("click", e => { const b = e.target.closest("button[data-t]"); if (!b) return; S.s5.tab = b.dataset.t; renderRew(); });
-$("rew").addEventListener("input", e => { const el = e.target.closest("[data-rw]"); if (!el) return;
-  S.s5.rew[S.s5.tab][+el.dataset.rw][el.dataset.f] = el.type === "checkbox" ? el.checked : el.value; rewInfo(); refresh(); });
+$("s3tabs").addEventListener("click", e => { const b = e.target.closest("button[data-t]"); if (!b) return; S.s3.tab = b.dataset.t; renderEval(); });
+$("eval").addEventListener("input", e => {
+  const ev = S.s3.ev[S.s3.tab], el = e.target;
+  if (el.dataset.ev) ev.ab = el.value;
+  else if (el.dataset.rw !== undefined) ev.rew[+el.dataset.rw][el.dataset.f] = el.type === "checkbox" ? el.checked : el.value;
+  else return;
+  evInfo(); refresh();
+});
 function renderG2(){
-  const ok = s5done();
-  $("g2").innerHTML = ok ? `<div class="fb ok"><b>Gate 2 geschafft.</b> Sechs Antworten nach STAR, drei pro Person.</div>`
-    : `<div class="fb info">Gate 2: pro Person 3 Antworten (je mind. 120 Zeichen) mit allen vier STAR-Bausteinen. Person 1: ${rewOk(1)?"✔":"offen"} · Person 2: ${rewOk(2)?"✔":"offen"}</div>`;
+  const ok = s3done();
+  $("g2").innerHTML = ok ? `<div class="fb ok"><b>Fertig.</b> Pro Person zwei Antworten nach STAR.</div>`
+    : `<div class="fb info">Abschluss: pro Person Abgleich (mind. 40 Zeichen) und zwei Antworten mit allen vier STAR-Bausteinen. Person 1: ${evOk(1)?"✔":"offen"} · Person 2: ${evOk(2)?"✔":"offen"}</div>`;
   $("fin").style.display = ok ? "block" : "none";
 }
 
 /* ---------- Felder, Navigation ---------- */
+function syncSimple(){ document.querySelectorAll("[data-k]").forEach(el => el.value = getK(el.dataset.k) ?? ""); updEH(); }
 function updEH(){
   document.querySelectorAll("[data-cnt]").forEach(el => { const n = len(getK(el.dataset.cnt));
     el.textContent = n < 40 ? `${n} / 40 Zeichen bis zum Erwartungshorizont` : "Erwartungshorizont freigeschaltet: erst schreiben, dann vergleichen."; });
   document.querySelectorAll("details.eh").forEach(d => { const ok = len(getK(d.dataset.e)) >= 40; d.classList.toggle("locked", !ok); if (!ok) d.open = false; });
 }
 document.addEventListener("toggle", e => { const d = e.target; if (d.matches && d.matches("details.eh.locked") && d.open) d.open = false; }, true);
-function onField(e){ const el = e.target; if (!el.dataset || !el.dataset.k) return; setK(el.dataset.k, el.value); updEH(); }
-document.addEventListener("input", onField);
+document.addEventListener("input", e => { const el = e.target; if (!el.dataset || !el.dataset.k) return;
+  setK(el.dataset.k, el.value); updEH(); renderPrompt(); refresh(); });
 $("team").addEventListener("input", e => { S.team = e.target.value.trim(); refresh(); });
 $("nav").addEventListener("click", e => {
   const b = e.target.closest("button[data-go]"); if (!b) return;
-  if (b.classList.contains("lock")) { info("Erst Gate 1 (② Rollen-Prompt) abschließen. Ohne guten Prompt wird die Simulation nicht realistisch."); return; }
-  S.station = b.dataset.go; refresh(); window.scrollTo({top: $("nav").offsetTop - 70, behavior: "smooth"});
+  S.station = b.dataset.go; if (S.station === "s3") renderEval(); refresh(); window.scrollTo({top: $("nav").offsetTop - 70, behavior: "smooth"});
 });
 document.addEventListener("click", e => {
   const b = e.target.closest("button[data-copy]"); if (!b) return;
@@ -570,7 +430,8 @@ $("fileIn").onchange = e => {
   const rd = new FileReader();
   rd.onload = () => { try {
       const d = JSON.parse(rd.result);
-      if (d.unit !== UNIT) { info(d.unit === "S1-UE2" ? "Das ist Ihre Sicherung aus UE 2. Die laden Sie in Station ② über „UE-2-Sicherung laden“." : `Diese Datei gehört zu einer anderen Einheit (${d.unit || "unbekannt"}).`); return; }
+      if (d.unit !== UNIT) { info(d.unit === "S1-UE2" ? "Das ist Ihre Sicherung aus UE 2. Die laden Sie in Station ① über „UE-2-Sicherung laden“." : `Diese Datei gehört zu einer anderen Einheit (${d.unit || "unbekannt"}).`); return; }
+      if (d.version !== VERSION) { info("Diese Sicherung stammt aus einer älteren Fassung von UE 3 und passt nicht mehr."); return; }
       applyState(d.state); info(`Stand von Team „${S.team}“ geladen.`);
     } catch (err) { info("Die Datei konnte nicht gelesen werden."); }
     e.target.value = ""; };
@@ -598,33 +459,21 @@ function book(){
   <button class="np" onclick="print()">Drucken / als PDF speichern</button>
   <h1>Lernheft UE 3: Gesprächssimulator I</h1>
   <p>KI-Kon · Starterpaket Techniker<br>Team: <b>${esc(S.team || "–")}</b> · erstellt am ${today()}</p>
-  <div class="eh"><b>STAR-Methode:</b> <b>S</b>ituation (Wo, wann, was war los?) → <b>T</b> Aufgabe (Was war Ihre Rolle?) → <b>A</b>ktion (Was haben Sie konkret getan?) → <b>R</b>esultat (Was kam heraus, möglichst mit Zahl, und was haben Sie gelernt?)</div>`;
-
-  h += `<h2>① STAR-Methode ${st(s1done())}</h2><p>Ihre Wahl: Antwort ${esc(S.s1.ans || "–")}</p><table><tr><th>Antwort</th><th>Erwartungshorizont</th></tr>${
-    ANSWERS.map(a=>`<tr><td><b>${a.id}</b>: ${esc(a.t)}</td><td>${a.id==="B"?"<b>Beste Antwort.</b> ":""}${esc(a.why)}</td></tr>`).join("")}</table>
-  <table><tr><th>Satz aus Antwort B</th><th>Ihre Zuordnung</th><th>Lösung</th></tr>${STARS.map(([id,t,k])=>`<tr><td>${esc(t)}</td><td>${SL[S.s1.star[id]]||"–"}</td><td>${SL[k]}</td></tr>`).join("")}</table>
-  <p><b>Zusatz: Was fehlt in Antwort C?</b></p>${ans(S.s1.zusatz)}
-  <div class="eh"><b>Erwartungshorizont:</b> Nur Situation, keine eigene Aufgabe, keine eigene Aktion. Das Resultat hat ein anderer erreicht, die Schuld wird abgeschoben. Das wirkt wie fehlende Verantwortung.</div>`;
-
-  h += `<h2>② Rollen-Prompt ${st(s2done())}</h2><p><b>Ihr Prompt:</b></p>${ans(promptText())}
-  <div class="eh"><b>Erwartungshorizont:</b><br>${BLOCKS.filter(b=>b.ok).sort((a,b)=>a.rank-b.rank).map(b=>esc(b.t)).join("<br>")}<br><br><b>Schädlich:</b> ${BLOCKS.filter(b=>!b.ok).map(b=>`„${esc(b.t)}“ (${esc(b.why)})`).join(" · ")}</div>`;
-
-  h += `<h2>③ Simulation ${st(s3done())}</h2>`;
-  [1,2].forEach(r => { const rows = S.s3.obs[r].filter(o => len(o.q));
-    h += `<h3>Runde ${r}: Beobachtungsbogen</h3><table><tr><th>Frage</th><th>STAR</th><th>Beleg</th><th>Länge</th><th>Notiz</th></tr>${
-      rows.length ? rows.map(o=>`<tr><td>${esc(o.q)}</td><td>${["S","T","A","R"].filter(k=>o[k]).join(" ")||"–"}</td><td>${esc(o.bel||"–")}</td><td>${esc(o.len||"–")}</td><td>${esc(o.note)}</td></tr>`).join("") : `<tr><td colspan="5"><i>nicht bearbeitet</i></td></tr>`}</table>
-    <p><b>KI-Feedback Runde ${r}:</b></p>${ans(S.s3.kifb[r])}`; });
-
-  h += `<h2>④ KI-Feedback prüfen ${st(s4done())}</h2><table><tr><th>Aussage der KI</th><th>Ihre Einordnung</th><th>Erwartungshorizont</th></tr>${
-    FB.map((f,i)=>`<tr><td>${esc(f[0])}</td><td>${FBL[S.s4.cls[i]]||"–"}</td><td><b>${FBL[f[1]]}</b>: ${esc(f[2])}</td></tr>`).join("")}</table>
-  <div class="eh"><b>Warum lobt die KI so gern?</b> Sprachmodelle werden mit menschlichen Bewertungen nachtrainiert, und freundliche, zustimmende Antworten werden dabei oft besser bewertet. Ihr Beobachtungsbogen ist das Gegengewicht.</div>`;
-  [1,2].forEach(r => { h += `<h3>Feedback-Protokoll Runde ${r}</h3>` + PF.map(([k,t]) => `<p><b>${t}</b></p>${ans(S.s4.proto[r][k])}`).join(""); });
-
-  h += `<h2>⑤ Überarbeitete Antworten ${st(s5done())}</h2>`;
-  [1,2].forEach(r => { h += `<h3>Person aus Runde ${r}</h3>` + S.s5.rew[r].map((x,i)=>`<p><b>${i+1}. ${esc(x.q || "–")}</b> (STAR: ${["S","T","A","R"].filter(k=>x[k]).join(" ")||"–"})</p>${ans(x.a)}`).join(""); });
-  h += `<div class="eh"><b>Erwartungshorizont:</b> Jede Antwort enthält eine konkrete Situation, Ihre eigene Rolle, Ihr Vorgehen (der längste Teil) und ein Ergebnis, möglichst mit Zahl, plus eine Lehre. Gesprochen 1–2 Minuten. Bei der Fehlerfrage einen echten, kleinen Fehler wählen und zeigen, was Sie daraus gelernt haben.</div>
-  <p><b>Zusatz: Von einer KI interviewt werden?</b></p>${ans(S.s5.zusatz)}
-  <div class="eh"><b>Erwartungshorizont:</b> Dafür: verfügbar, einheitlich, schnelle Vorauswahl. Dagegen: Vorurteile aus Trainingsdaten möglich (z. B. Akzent), schwer nachvollziehbar, kein persönlicher Eindruck. Der EU AI Act stuft KI in der Personalauswahl als Hochrisiko-KI ein (u. a. menschliche Aufsicht, Transparenz).</div></body></html>`;
+  <div class="eh"><b>STAR-Methode:</b> <b>S</b>ituation (Wo, wann, was war los?) → <b>T</b> Aufgabe (Was war Ihre Rolle?) → <b>A</b>ktion (Was haben Sie getan? der längste Teil) → <b>R</b>esultat (Was kam heraus, möglichst mit Zahl?)</div>
+  <h2>① Ihr Interview-Prompt ${st(s1done())}</h2>${ans(promptText())}
+  <h2>② Simulation ${st(s2done())}</h2>`;
+  [1,2].forEach(r => { const rows = S.s2.obs[r].filter(o => len(o.q));
+    h += `<h3>Runde ${r}: Beobachtungsbogen</h3><table><tr><th>Frage</th><th>STAR</th><th>Notiz</th></tr>${
+      rows.length ? rows.map(o=>`<tr><td>${esc(o.q)}</td><td>${["S","T","A","R"].filter(k=>o[k]).join(" ")||"–"}</td><td>${esc(o.note)}</td></tr>`).join("") : `<tr><td colspan="3"><i>nicht bearbeitet</i></td></tr>`}</table>
+    <p><b>KI-Feedback Runde ${r}:</b></p>${ans(S.s2.kifb[r])}`; });
+  h += `<h2>③ Auswerten &amp; verbessern ${st(s3done())}</h2>`;
+  [1,2].forEach(r => { const ev = S.s3.ev[r];
+    h += `<h3>Person aus Runde ${r}</h3><p><b>Abgleich KI-Feedback ↔ Bogen:</b></p>${ans(ev.ab)}` +
+      ev.rew.map((x,i)=>`<p><b>${i+1}. ${esc(x.q || "–")}</b> (STAR: ${["S","T","A","R"].filter(k=>x[k]).join(" ")||"–"})</p>${ans(x.a)}`).join(""); });
+  h += `<div class="eh"><b>Erwartungshorizont:</b> Jede Antwort hat eine konkrete Situation, Ihre eigene Rolle, Ihr Vorgehen als längsten Teil und ein Ergebnis, möglichst mit Zahl. Gesprochen 1–2 Minuten. Im Abgleich mindestens eine Stelle, an der die KI zu freundlich war (z. B. „sehr gut“, obwohl das Resultat fehlte), oder eine Begründung, warum ihr Feedback zum Bogen passte.</div>
+  <p><b>Zusatz: Zweiter Versuch</b></p>${ans(S.s3.retry)}
+  <p><b>Zusatz: Von einer KI interviewt werden?</b></p>${ans(S.s3.zusatz)}
+  <div class="eh"><b>Erwartungshorizont:</b> Dafür: verfügbar, einheitlich, schnelle Vorauswahl. Dagegen: Vorurteile aus Trainingsdaten möglich, schwer nachvollziehbar, kein persönlicher Eindruck. Der EU AI Act stuft KI in der Personalauswahl als Hochrisiko-KI ein (u. a. menschliche Aufsicht, Transparenz).</div></body></html>`;
   return h;
 }
 function doBook(){
@@ -636,14 +485,12 @@ $("bBook").onclick = doBook; $("bBook2").onclick = doBook;
 /* ---------- Start ---------- */
 function renderAll(){
   $("team").value = S.team;
-  document.querySelectorAll("[data-k]").forEach(el => el.value = getK(el.dataset.k) ?? "");
-  renderAnswers(); renderStar(); renderBlocks(); renderObs(); renderFB(); showTab4(S.s4.tab || "a"); renderProto(); renderRew(); updEH(); refresh();
+  syncSimple(); renderPrompt(); renderObs(); renderEval(); refresh();
 }
 renderAll();
 try { const raw = localStorage.getItem("kikon-" + UNIT);
-  if (raw) { const d = JSON.parse(raw); if (d && d.unit === UNIT) applyState(d.state); } } catch (e) {}
+  if (raw) { const d = JSON.parse(raw); if (d && d.unit === UNIT && d.version === VERSION) applyState(d.state); } } catch (e) {}
 setInterval(() => { try { localStorage.setItem("kikon-" + UNIT, JSON.stringify({unit:UNIT, version:VERSION, state:S})); } catch (e) {} }, 5000);
-
 
 /* ---------- Weiter-/Zurück-Buttons am Ende jeder Station ---------- */
 (function(){
@@ -659,6 +506,7 @@ setInterval(() => { try { localStorage.setItem("kikon-" + UNIT, JSON.stringify({
     $("nav").querySelector(`[data-go="${b.dataset.nav}"]`).click();
   });
 })();
+
 </script>
 </body>
 </html>
