@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UE 3 · Gesprächssimulator I · Starterpaket Techniker</title>
+<style>
+:root{--ink:#1d2733;--muted:#5b6775;--blue:#1F3A5F;--blue2:#2f5d8f;--line:#d5dbe2;--bg:#f5f7fa;--card:#fff;
+--g:#cdebd3;--gd:#1e7a36;--y:#fff1b8;--yd:#8a6a00;--r:#f6c9c9;--rd:#a42323;--ok:#e6f4ea;--bad:#fdecec}
+*{box-sizing:border-box}
+body{margin:0;font-family:Calibri,Carlito,"Segoe UI",Arial,sans-serif;font-size:17px;line-height:1.5;color:var(--ink);background:var(--bg)}
+header{position:sticky;top:0;z-index:20;background:var(--blue);color:#fff;padding:.5rem 1rem;display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+header .t{font-weight:700;margin-right:auto}
+header a.home{color:#fff;text-decoration:none;font-size:1.3rem;font-weight:700;padding:0 .4rem;border:1px solid rgba(255,255,255,.5);border-radius:6px}
+header .t small{display:block;font-weight:400;opacity:.85;font-size:.8rem}
+header button{background:#fff;color:var(--blue);border:0;border-radius:6px;padding:.35rem .7rem;font:inherit;font-size:.85rem;cursor:pointer}
+header .team{font-size:.85rem;opacity:.95}
+main{max-width:980px;margin:0 auto;padding:1rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:1rem 1.2rem;margin:0 0 1rem}
+h1{font-size:1.5rem;color:var(--blue);margin:.2rem 0 .4rem}
+h2{font-size:1.25rem;color:var(--blue);margin:.2rem 0 .6rem}
+h3{font-size:1.05rem;margin:1rem 0 .4rem}
+.muted{color:var(--muted)}
+.map{display:flex;gap:.4rem;flex-wrap:wrap;margin:.4rem 0}
+.map div{flex:1 1 140px;border:1px solid var(--line);border-radius:8px;padding:.4rem .55rem;font-size:.82rem;background:#fff;color:var(--muted)}
+.map div b{display:block;color:var(--ink)}
+.map .now{border:2px solid var(--blue);background:#eaf1f9;color:var(--ink)}
+.map .now::after{content:"Sie sind hier";display:table;margin-top:.2rem;font-size:.72rem;background:var(--blue);color:#fff;border-radius:4px;padding:0 .35rem}
+nav.st{display:flex;gap:.35rem;flex-wrap:wrap;margin:.6rem 0 1rem}
+nav.st button{flex:1 1 150px;text-align:left;border:1px solid var(--line);background:#fff;border-radius:8px;padding:.45rem .6rem;font:inherit;font-size:.88rem;cursor:pointer}
+nav.st button.act{border:2px solid var(--blue);background:#eaf1f9}
+nav.st button .dot{display:inline-block;width:.7rem;height:.7rem;border-radius:50%;background:#c9d0d8;margin-right:.35rem;vertical-align:middle}
+nav.st button.done .dot{background:var(--gd)}
+nav.st button.lock{opacity:.5}
+.gate{display:inline-block;font-size:.72rem;background:#333;color:#fff;border-radius:4px;padding:0 .35rem;margin-left:.3rem}
+.badge{display:inline-block;font-size:.75rem;border-radius:4px;padding:.05rem .45rem;margin-right:.35rem;font-weight:700}
+.pf{background:var(--blue);color:#fff}.zu{background:#7a5ea8;color:#fff}
+.sec{display:none}.sec.act{display:block}
+.btn{background:var(--blue);color:#fff;border:0;border-radius:6px;padding:.45rem .9rem;font:inherit;cursor:pointer;margin:.3rem .3rem .3rem 0}
+.btn.sec2{background:#fff;color:var(--blue);border:1px solid var(--blue)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.fb{border-radius:8px;padding:.5rem .7rem;margin:.5rem 0;font-size:.95rem}
+.fb.ok{background:var(--ok);border:1px solid #9fd1ad}.fb.bad{background:var(--bad);border:1px solid #efb0b0}.fb.info{background:#eef3f9;border:1px solid #c5d5e8}
+textarea,input[type=text],select{font:inherit;font-size:.95rem;border:1px solid #b9c3ce;border-radius:6px;padding:.4rem .5rem;width:100%;background:#fff}
+textarea{min-height:5.5rem}
+details.eh{margin:.4rem 0;border:1px dashed #9aa5b1;border-radius:8px;padding:.4rem .7rem;background:#fbfcfd}
+details.eh summary{cursor:pointer;font-weight:700;color:var(--blue)}
+details.eh.locked summary{color:#999;cursor:not-allowed}
+.cnt{font-size:.8rem;color:var(--muted)}
+/* Chat */
+.chat{display:flex;flex-direction:column;gap:.6rem}
+.msg{border-radius:10px;padding:.6rem .8rem;max-width:92%}
+.msg.u{background:#e7eef7;align-self:flex-end}.msg.k{background:#f1f1f1;align-self:flex-start}
+.msg .who{font-size:.75rem;font-weight:700;color:var(--muted);display:block}
+.seg{cursor:pointer;border-radius:3px;padding:0 .1rem;transition:background .15s}
+.seg:hover{background:#fff6c4;outline:1px dashed #c9a800}
+.seg.hit{background:var(--r);outline:1px solid var(--rd)}
+.seg.miss{background:#e3e3e3;text-decoration:line-through dotted}
+/* Fallkarten */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:.7rem}
+.fc{border:1px solid var(--line);border-radius:10px;padding:.7rem;background:#fff;display:flex;flex-direction:column}
+.fc .no{font-size:.75rem;font-weight:700;color:var(--muted)}
+.fc p{margin:.2rem 0 .5rem;flex:1}
+.amp{display:flex;gap:.3rem}
+.amp button{flex:1;border:1px solid #aaa;border-radius:6px;padding:.3rem;font:inherit;font-size:.85rem;cursor:pointer;background:#fff}
+.amp button.G.on{background:var(--g);border-color:var(--gd);font-weight:700}
+.amp button.Y.on{background:var(--y);border-color:var(--yd);font-weight:700}
+.amp button.R.on{background:var(--r);border-color:var(--rd);font-weight:700}
+.fc.right{box-shadow:0 0 0 2px #9fd1ad}.fc.wrong{box-shadow:0 0 0 2px #efb0b0}
+.fc .why{font-size:.88rem;margin-top:.4rem;display:none}.fc.checked .why{display:block}
+/* Reihenfolge */
+.pick{display:flex;flex-direction:column;gap:.35rem}
+.pick button{text-align:left;border:1px solid #b9c3ce;border-radius:8px;background:#fff;padding:.45rem .6rem;font:inherit;font-size:.95rem;cursor:pointer}
+.pick button.used{background:#eaf1f9;border-color:var(--blue)}
+.pick button .n{display:inline-block;min-width:1.4rem;font-weight:700;color:var(--blue)}
+.tree{display:flex;flex-direction:column;gap:.5rem;margin-top:.6rem}
+.tree .row{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;align-items:center;border:1px solid var(--line);border-radius:8px;padding:.5rem}
+/* Tabellen */
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{border:1px solid var(--line);padding:.35rem .45rem;vertical-align:top;text-align:left}
+th{background:#eef1f5}
+tr.mk{cursor:pointer}tr.mk:hover td{background:#fffbe3}
+tr.mk.on td{background:#fde3e3}
+tr.mk.good td{background:var(--ok)}tr.mk.badr td{background:var(--bad)}
+.scroll{overflow-x:auto}
+pre.copy{white-space:pre-wrap;background:#f7f7f7;border:1px solid var(--line);border-radius:8px;padding:.6rem;font-family:inherit;font-size:.9rem;margin:.3rem 0}
+.tabs{display:flex;gap:.3rem;flex-wrap:wrap;margin:.3rem 0 .6rem}
+.tabs button{border:1px solid var(--line);background:#fff;border-radius:6px;padding:.3rem .6rem;font:inherit;font-size:.88rem;cursor:pointer}
+.tabs button.act{background:var(--blue);color:#fff;border-color:var(--blue)}
+.sub{display:none}.sub.act{display:block}
+.mx input,.mx select{font-size:.88rem;padding:.25rem .3rem}
+.warn{color:var(--rd);font-size:.85rem}
+.chk label{display:block;margin:.25rem 0}
+.pack{display:flex;gap:.4rem;flex-wrap:wrap}
+.pack span{font-size:.82rem;border-radius:6px;padding:.2rem .5rem;border:1px solid var(--line);background:#fff}
+.pack span.ok{background:var(--ok);border-color:#9fd1ad}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:50}
+.modal.on{display:flex}
+.modal .box{background:#fff;border-radius:10px;padding:1rem 1.2rem;max-width:420px;width:90%}
+@media(max-width:600px){header{padding:.35rem .6rem;gap:.3rem}header .t{font-size:.9rem}header .t small,header .team{display:none}header button{font-size:.72rem;padding:.25rem .45rem}body{font-size:16px}.tree .row{grid-template-columns:1fr}main{padding:.6rem}.card{padding:.8rem}}
+
+.map .past{background:#f0f7f2}
+.letter{background:#fff;border:1px solid var(--line);border-radius:8px;padding:1rem 1.2rem;font-family:"Times New Roman",Georgia,serif;font-size:1rem;line-height:1.65;margin:.5rem 0}
+.ls{cursor:pointer;border-radius:3px;padding:0 .1rem}
+.ls sup{font-family:Calibri,Arial,sans-serif;font-size:.65rem;color:var(--muted);margin-right:.1rem}
+.ls:hover{background:#fff6c4;outline:1px dashed #c9a800}
+.ls.on{background:#fde3e3;outline:1px solid #e9a0a0}
+.ls.good{background:var(--ok);outline:1px solid #9fd1ad}.ls.badl{background:var(--bad);outline:2px solid var(--rd)}
+.mini{display:block;font-size:.82rem;margin-top:.25rem;font-weight:400}
+.pool{display:flex;flex-direction:column;gap:.35rem;margin:.4rem 0}
+.pi{text-align:left;border:1px solid #b9c3ce;border-radius:8px;background:#fff;padding:.45rem .6rem;font:inherit;font-size:.95rem;cursor:pointer}
+.pi.on{background:#eaf1f9;border-color:var(--blue)}
+.pi.good{background:var(--ok);border-color:#9fd1ad}.pi.badl{background:var(--bad);border-color:var(--rd)}
+.pi.miss{border:2px dashed var(--yd)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+details.mat{margin:.8rem 0;border:1px solid var(--line);border-radius:8px;padding:.4rem .7rem;background:#fafbfc}
+details.mat summary{cursor:pointer;font-weight:700;color:var(--blue)}
+.steps li{margin:.2rem 0}.steps ul{margin:.2rem 0}code{background:#eef1f5;border-radius:4px;padding:0 .25rem;font-family:inherit;font-weight:700}
+.chg{display:flex;flex-direction:column;gap:.35rem}
+tr.rgood td{background:var(--ok)}tr.rbad td{background:var(--bad)}
+@media(max-width:600px){#prof tr:first-child{display:none}#prof tr{display:block;border:1px solid var(--line);border-radius:8px;margin-bottom:.4rem;padding:.3rem}#prof td{display:block;border:0;padding:.15rem}.two{grid-template-columns:1fr}.letter{padding:.7rem}}
+
+.star{background:#f7f9fc;border:1px solid var(--line);border-radius:10px;padding:.8rem 1rem;margin:.4rem 0 1rem}
+.starg{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin:.5rem 0}
+.sb{border-radius:8px;padding:.55rem .65rem;font-size:.9rem;display:flex;flex-direction:column;gap:.25rem}
+.sb b{font-size:1rem}.sb span{font-weight:600}.sb i{color:#333}
+.sb.s{background:#e3eefb;border:1px solid #9dbbe0}.sb.t{background:#efe7f8;border:1px solid #c2a9df}
+.sb.a{background:#e6f4ea;border:1px solid #9fd1ad}.sb.r{background:#fff1d6;border:1px solid #e3c27a}
+.trans{background:#fff;border:1px solid var(--line);border-radius:8px;padding:.5rem .9rem;margin:.4rem 0}
+.trans p{margin:.4rem 0}
+.stc label{display:inline-block;margin-right:.45rem;white-space:nowrap;font-size:.88rem}
+#obs{min-width:720px}
+.rw{border:1px solid var(--line);border-radius:8px;padding:.5rem .7rem;margin:.5rem 0;background:#fff;display:flex;flex-direction:column;gap:.35rem}
+@media(max-width:800px){.starg{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.starg{grid-template-columns:1fr}}
+.stfoot{display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap;margin-top:1.2rem;padding-top:.8rem;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<header>
+  <a class="home" href="../" title="Zur Übersicht">←</a>
+  <div class="t">UE 3 · Gesprächssimulator I<small>KI-Kon · Starterpaket Techniker</small></div>
+  <span class="team" id="teamShow">Team: –</span>
+  <button id="bSave">Zwischenstand speichern</button>
+  <button id="bLoad">Zwischenstand laden</button>
+  <button id="bBook">Lernheft herunterladen</button>
+  <input type="file" id="fileIn" accept=".json,application/json" hidden>
+  <input type="file" id="fileUE2" accept=".json,application/json" hidden>
+</header>
+
+<main>
+<section class="card">
+  <h1>Starterpaket Techniker – KI für Bewerbung &amp; Berufsstart</h1>
+  <div class="map" id="map"></div>
+  <div class="muted" style="font-size:.9rem">Ihr Starterpaket aus dieser Einheit:</div>
+  <div class="pack" id="pack"></div>
+</section>
+
+<section class="card" id="start">
+  <h2>Start</h2>
+  <p>Heute üben Sie das Vorstellungsgespräch mit einer KI als Personalerin. Sie arbeiten als <b>Tandem</b> auf <b>einer</b> Kursseite: In Runde 1 wird Person 1 interviewt und Person 2 beobachtet, in Runde 2 tauschen Sie.</p>
+  <label>Teamname (Pflicht, <b>keine Klarnamen</b>)<input type="text" id="team" maxlength="40"></label>
+  <p class="muted" style="font-size:.9rem">Sie brauchen: ein Smartphone mit Ihrer KI-App (für den Sprachmodus), wenn möglich Kopfhörer, und Ihre Sicherung aus UE 2.</p>
+</section>
+
+<nav class="st" id="nav"></nav>
+
+<!-- Station 1 -->
+<section class="card sec" id="s1">
+  <h2>① Gute Antworten bauen: die STAR-Methode</h2>
+  <div class="star">
+    <p><b>Warum?</b> Im Vorstellungsgespräch kommen fast immer <b>Verhaltensfragen</b>: „Erzählen Sie von einer Situation, in der …“. Personaler wollen dabei kein „Ich bin teamfähig“ hören, sondern <b>was Sie in einer echten Situation getan haben</b>. Wie Sie früher gehandelt haben, sagt am meisten darüber aus, wie Sie künftig handeln werden.</p>
+    <p><b>STAR</b> ist eine Bauanleitung für solche Antworten. Die vier Buchstaben stehen für vier Bausteine, die in dieser Reihenfolge kommen:</p>
+    <div class="starg">
+      <div class="sb s"><b>S – Situation</b><span>Wo, wann, was war los?</span><i>„In der Nachtschicht fiel an Linie 2 die Hydraulikpresse aus. Am nächsten Morgen sollte eine Lieferung raus.“</i></div>
+      <div class="sb t"><b>T – Aufgabe</b> <small>(engl. Task)</small><span>Was war <u>Ihre</u> Rolle, was sollten Sie erreichen?</span><i>„Ich war als Instandhalter allein zuständig und sollte die Presse bis Schichtende wieder zum Laufen bringen.“</i></div>
+      <div class="sb a"><b>A – Aktion</b><span>Was haben <u>Sie</u> konkret getan? (der wichtigste Teil)</span><i>„Ich habe mit dem Hydraulikplan systematisch gesucht, ein defektes Wegeventil gefunden, Ersatz aus dem Lager eingebaut und den Schichtleiter laufend informiert.“</i></div>
+      <div class="sb r"><b>R – Resultat</b><span>Was kam heraus? Am besten mit Zahl. Und was haben Sie gelernt?</span><i>„Nach zweieinhalb Stunden lief die Presse wieder, die Lieferung ging pünktlich raus. Danach haben wir das Ventil als Ersatzteil mit Mindestbestand eingeführt.“</i></div>
+    </div>
+    <p class="muted" style="font-size:.92rem">Merkhilfe: Wie bei einer <b>Störungsmeldung</b> – Was war? Wer war zuständig? Was wurde gemacht? Läuft es wieder? Eine gute STAR-Antwort dauert gesprochen etwa 1–2 Minuten.</p>
+  </div>
+  <h3><span class="badge pf">Pflicht</span>a) Welche Antwort ist die beste?</h3>
+  <p>Frage an Person A: <b>„Erzählen Sie von einem Konflikt im Team und wie Sie ihn gelöst haben.“</b></p>
+  <div class="pool" id="answers"></div>
+  <div id="s1afb"></div>
+  <div id="s1b" style="display:none">
+    <h3><span class="badge pf">Pflicht</span>b) Ordnen Sie die Sätze der besten Antwort den STAR-Bausteinen zu.</h3>
+    <div class="scroll"><table id="starTab"></table></div>
+    <button class="btn" id="s1bcheck">Prüfen</button><div id="s1bfb"></div>
+  </div>
+  <h3><span class="badge zu">Zusatz</span>Was fehlt in Antwort C? Welche STAR-Bausteine sind schwach oder fehlen ganz?</h3>
+  <textarea data-k="s1.zusatz" placeholder="In Antwort C …"></textarea>
+  <div class="cnt" data-cnt="s1.zusatz"></div>
+  <details class="eh locked" data-e="s1.zusatz"><summary>Erwartungshorizont (ab 40 Zeichen)</summary>
+  <p>Antwort C erzählt nur die <b>Situation</b>, und das sehr ausführlich. Eine eigene <b>Aufgabe</b> fehlt, die <b>Aktion</b> fehlt ganz („da konnte man nichts machen“), das <b>Resultat</b> hat jemand anderes erreicht (der Meister). Dazu kommt: Die Schuld wird dem Kollegen gegeben. Das wirkt auf Personaler wie fehlende Verantwortung.</p></details>
+</section>
+
+<!-- Station 2 -->
+<section class="card sec" id="s2">
+  <h2>② Rollen-Prompt: die KI wird zur Personalerin <span class="gate">Gate 1</span></h2>
+  <p>Ohne gute Anweisung stellt die KI alle Fragen auf einmal, beantwortet sie gleich selbst oder lobt alles. Ein <b>Rollen-Prompt</b> legt fest, wer die KI ist, was sie weiß und nach welchen Regeln sie handelt.</p>
+  <p><span class="badge pf">Pflicht</span>Bauen Sie den Prompt aus den Bausteinen. <b>Drei Bausteine schaden.</b></p>
+  <div class="pool" id="blocks"></div>
+  <button class="btn sec2" id="s2reset">Zurücksetzen</button>
+  <button class="btn" id="s2check">Prüfen</button>
+  <div id="s2fb"></div>
+  <h3>Ihr Prompt</h3>
+  <p class="muted" style="font-size:.92rem">Laden Sie Ihre UE-2-Sicherung, dann werden Firma und Anschreiben automatisch eingesetzt. Den Stellentitel ergänzen Sie selbst.</p>
+  <button class="btn sec2" id="bUE2">UE-2-Sicherung laden (optional)</button>
+  <pre class="copy" id="promptOut"></pre>
+  <button class="btn sec2" data-copy="promptOut">Prompt kopieren</button>
+  <div id="g1"></div>
+</section>
+
+<!-- Station 3 -->
+<section class="card sec" id="s3">
+  <h2>③ Simulation im Tandem (Sprachmodus)</h2>
+  <div class="fb info">
+    <b>So starten Sie:</b>
+    <ol style="margin:.3rem 0">
+      <li>Öffnen Sie Ihre KI-App auf dem Smartphone, starten Sie einen <b>neuen Chat</b> und fügen Sie den Prompt aus ② <b>als Text</b> ein. Platzhalter ausfüllen!</li>
+      <li>Starten Sie im <b>selben Chat</b> den Sprachmodus. Meist ist das ein Mikrofon- oder Wellen-Symbol, je nach App unterschiedlich.</li>
+      <li>Sprechen Sie in normaler Lautstärke, am besten mit Kopfhörern. Wenn der Sprachmodus nicht geht, nutzen Sie den Textchat.</li>
+      <li>Nach der Verabschiedung sagen Sie: <b>„Feedback bitte.“</b> Kopieren Sie das Feedback aus dem Chatverlauf. Viele Apps zeigen dort eine Mitschrift.</li>
+    </ol>
+    <b>Datenschutz:</b> Im Sprachmodus wird Ihre Stimme an den Anbieter übertragen. Nennen Sie keine Namen, Firmen oder Adressen. Bei Fragen nach Ihrem Namen sagen Sie einfach „Person A“.
+  </div>
+  <p><span class="badge pf">Pflicht</span>Die beobachtende Person füllt den Bogen <b>während</b> des Gesprächs aus, eine Zeile pro Frage (mind. 4 Fragen je Runde). Danach tauschen Sie.</p>
+  <div class="tabs" id="s3tabs"><button data-t="1" class="act">Runde 1</button><button data-t="2">Runde 2</button></div>
+  <div class="scroll"><table class="mx" id="obs"></table></div>
+  <p><b>KI-Feedback zu dieser Runde</b> (aus dem Chat kopieren)</p>
+  <textarea id="kifb" placeholder="Feedback der KI einfügen …" style="min-height:7rem"></textarea>
+  <div id="s3fb"></div>
+</section>
+
+<!-- Station 4 -->
+<section class="card sec" id="s4">
+  <h2>④ KI-Feedback kritisch prüfen</h2>
+  <div class="tabs" id="s4tabs"><button data-t="a" class="act">a) Musterfall</button><button data-t="b">b) Ihr Feedback-Protokoll</button></div>
+  <div class="sub act" data-s="a">
+    <p>Ausschnitt aus dem Gespräch von Person A:</p>
+    <div class="trans" id="trans"></div>
+    <p><span class="badge pf">Pflicht</span>So hat die KI das Gespräch bewertet. Ordnen Sie jede Aussage ein.</p>
+    <div class="scroll"><table id="fbTab"></table></div>
+    <button class="btn" id="s4acheck">Prüfen</button><div id="s4afb"></div>
+  </div>
+  <div class="sub" data-s="b">
+    <p><span class="badge pf">Pflicht</span>Vergleichen Sie für jede Runde das KI-Feedback mit Ihrem Beobachtungsbogen. Schreiben Sie das Protokoll für die interviewte Person.</p>
+    <div class="tabs" id="s4btabs"><button data-t="1" class="act">Runde 1</button><button data-t="2">Runde 2</button></div>
+    <div id="proto"></div>
+  </div>
+</section>
+
+<!-- Station 5 -->
+<section class="card sec" id="s5">
+  <h2>⑤ Antworten überarbeiten <span class="gate">Gate 2</span></h2>
+  <p><span class="badge pf">Pflicht</span>Jede Person wählt ihre <b>drei schwächsten Antworten</b> aus dem Gespräch und formuliert sie nach STAR neu, so wie Sie sie beim nächsten Mal sagen würden. Haken Sie ab, welche Bausteine enthalten sind.</p>
+  <div class="tabs" id="s5tabs"><button data-t="1" class="act">Person aus Runde 1</button><button data-t="2">Person aus Runde 2</button></div>
+  <div id="rew"></div>
+  <h3><span class="badge zu">Zusatz</span>Würden Sie sich von einer KI interviewen lassen? Was spricht dafür, was dagegen?</h3>
+  <textarea data-k="s5.zusatz" placeholder="Dafür spricht … Dagegen spricht …"></textarea>
+  <div class="cnt" data-cnt="s5.zusatz"></div>
+  <details class="eh locked" data-e="s5.zusatz"><summary>Erwartungshorizont (ab 40 Zeichen)</summary>
+  <p><b>Dafür:</b> immer verfügbar, gleiche Fragen für alle, schnelle Vorauswahl bei vielen Bewerbungen.<br>
+  <b>Dagegen:</b> Die KI kann Vorurteile aus ihren Trainingsdaten übernehmen (z. B. bei Akzent oder Sprechweise). Ihre Entscheidung ist schwer nachvollziehbar, und der persönliche Eindruck fehlt.<br>
+  <b>Recht:</b> Der EU AI Act stuft KI, die bei der Auswahl von Bewerbern eingesetzt wird, als <b>Hochrisiko-KI</b> ein. Dafür gelten strenge Pflichten, z. B. menschliche Aufsicht und Transparenz.</p></details>
+  <div id="g2"></div>
+  <div class="card" id="fin" style="display:none;background:#eaf1f9;margin-top:1rem">
+    <h3 style="margin-top:0">Geschafft: UE 3 abgeschlossen</h3>
+    <p>1. Laden Sie Ihr <b>Lernheft</b> herunter. Beide Personen speichern es in ihrem OneDrive.<br>
+    2. Vergleichen Sie mit dem <b>Erwartungshorizont</b>.</p>
+    <button class="btn" id="bBook2">Lernheft herunterladen</button>
+    <a class="btn sec2" style="text-decoration:none;display:inline-block" href="erwartungshorizont_ue3.pdf" download>Erwartungshorizont (PDF)</a>
+    <p class="muted" style="font-size:.9rem">Ausblick UE 4: Jetzt kommt der Fachvorgesetzte mit Fachfragen, Stressfragen und der Gehaltsverhandlung. Ihre überarbeiteten Antworten sind Ihre Vorbereitung.</p>
+  </div>
+</section>
+</main>
+
+<div class="modal" id="modal"><div class="box"><p id="modalTxt"></p><button class="btn" onclick="document.getElementById('modal').classList.remove('on')">OK</button></div></div>
+
+<script>
+"use strict";
+const UNIT = "S1-UE3", VERSION = 1;
+const REIHE = [
+  ["UE 1","Spielregeln & Stellenanzeige"],["UE 2","Anschreiben & Arbeitgeber-Check"],["UE 3","Gesprächssimulator I"],
+  ["UE 4","Gesprächssimulator II"],["UE 5","Prompt-Bibliothek & Einarbeitung"],["UE 6","Eigener Assistent & Verantwortung"]];
+const NOW = 2;
+const STATIONS = [["s1","① STAR-Methode"],["s2","② Rollen-Prompt"],["s3","③ Simulation"],["s4","④ KI-Feedback prüfen"],["s5","⑤ Antworten überarbeiten"]];
+
+/* ---------- Inhalte ---------- */
+const ANSWERS = [
+ {id:"A", t:"„Konflikte gibt es ja überall. Ich bin ein sehr teamfähiger Mensch und versuche immer, ruhig zu bleiben und alle Meinungen zu hören. Meistens findet man dann eine gute Lösung.“",
+  why:"Kein konkreter Fall: nur Eigenschaften und Allgemeinplätze. Keiner der vier STAR-Bausteine ist wirklich erkennbar."},
+ {id:"B", t:"„In meinem Technikerprojekt waren wir uns im Team uneinig, ob wir die Montagevorrichtung als Schweißkonstruktion oder aus Aluminiumprofilen bauen. Die Diskussion hat uns eine Woche gekostet. Als Teamleiter musste ich eine Entscheidung herbeiführen, ohne dass sich jemand übergangen fühlt. Ich habe beide Varianten in einer Tabelle nach Kosten, Fertigungszeit und Gewicht bewerten lassen und eine Besprechung angesetzt, in der jeder seine Argumente einbringen konnte. Wir haben uns in dieser einen Sitzung für die Profile entschieden, die Woche Verzug aufgeholt und die Vorrichtung termingerecht übergeben. Seitdem entscheide ich solche Fragen immer mit einer Bewertungstabelle.“",
+  why:"Konkrete Situation, eigene Rolle, nachvollziehbares Vorgehen, messbares Ergebnis und eine Lehre daraus: vollständig nach STAR."},
+ {id:"C", t:"„Ein Kollege in der Montage hat ständig seine Arbeit liegen lassen, und wir mussten das dann ausbaden. Das ging monatelang so, jeder hat sich darüber aufgeregt, auch in den Pausen war das immer Thema. Er war einfach nicht motiviert. Da konnte man nichts machen, irgendwann hat der Meister das dann geregelt.“",
+  why:"Lange Situation, aber keine eigene Aufgabe und keine eigene Aktion. Das Resultat hat jemand anderes erreicht, und die Schuld liegt beim Kollegen. Das wirkt wie fehlende Verantwortung."}];
+const STARS = [
+ ["b3","Ich habe beide Varianten in einer Tabelle nach Kosten, Fertigungszeit und Gewicht bewerten lassen und eine Besprechung angesetzt, in der jeder seine Argumente einbringen konnte.","A"],
+ ["b1","In meinem Technikerprojekt waren wir uns im Team uneinig, ob wir die Montagevorrichtung als Schweißkonstruktion oder aus Aluminiumprofilen bauen. Die Diskussion hat uns eine Woche gekostet.","S"],
+ ["b4","Wir haben uns in dieser einen Sitzung für die Profile entschieden, die Woche Verzug aufgeholt und die Vorrichtung termingerecht übergeben. Seitdem entscheide ich solche Fragen immer mit einer Bewertungstabelle.","R"],
+ ["b2","Als Teamleiter musste ich eine Entscheidung herbeiführen, ohne dass sich jemand übergangen fühlt.","T"]];
+const SL = {S:"S – Situation", T:"T – Aufgabe", A:"A – Aktion", R:"R – Resultat"};
+
+const BLOCKS = [
+ {id:"g3", t:"Stelle immer nur eine Frage und warte auf meine Antwort. Sprich kurz und natürlich, ohne Aufzählungen.", ok:true, rank:3},
+ {id:"x2", t:"Sei freundlich und lobe meine Antworten, damit ich motiviert bleibe.", ok:false, why:"Dann ist das Feedback wertlos. Sprachmodelle neigen ohnehin dazu, zu viel zu loben (siehe ④)."},
+ {id:"g1", t:"Du bist Personalreferentin bei [Firma] und führst mit mir ein Vorstellungsgespräch für die Stelle [Stellentitel].", ok:true, rank:1},
+ {id:"g6", t:"Erst wenn ich „Feedback bitte“ sage: Bewerte jede meiner Antworten nach der STAR-Methode (Situation, Aufgabe, Aktion, Resultat). Sei ehrlich und kritisch und nenne zu jeder Antwort, was gefehlt hat.", ok:true, rank:6},
+ {id:"x1", t:"Gib mir vorher alle Fragen mit Musterantworten, damit ich sie ablesen kann.", ok:false, why:"Dann üben Sie Ablesen statt Antworten. Im echten Gespräch kennen Sie die Fragen auch nicht."},
+ {id:"g4", t:"Wenn meine Antwort allgemein bleibt, frag nach einem konkreten Beispiel nach.", ok:true, rank:4},
+ {id:"g2", t:"Hier ist mein Anschreiben (anonymisiert): [Anschreiben]", ok:true, rank:2},
+ {id:"x3", t:"Damit es echt wirkt: Ich heiße [Vorname Nachname], hier ist mein vollständiger Lebenslauf.", ok:false, why:"Datenschutz: Für das Üben braucht die KI weder Ihren Namen noch Ihren Lebenslauf (Spielregeln aus UE 1)."},
+ {id:"g5", t:"Ablauf: kurze Begrüßung, dann sechs Fragen, davon mindestens drei Verhaltensfragen („Erzählen Sie von einer Situation, in der …“), dann Verabschiedung.", ok:true, rank:5}];
+
+const TRANS = [
+ ["Warum möchten Sie zu uns?","Weil Sie Getriebe herstellen und ich vier Jahre Getriebe montiert habe. Außerdem reizt mich die Arbeitsvorbereitung, weil ich dort Abläufe mitgestalten kann, die ich bisher nur ausgeführt habe."],
+ ["Erzählen Sie von einem Fehler, den Sie gemacht haben.","Hm, eigentlich mache ich wenig Fehler. Ich bin sehr gründlich."],
+ ["Erzählen Sie von einer Situation, in der Sie unter Zeitdruck standen.","In der Nachtschicht ist mal die Presse ausgefallen, die musste bis morgen laufen. Ich habe dann den Fehler gesucht und das Ventil getauscht."]];
+const FB = [
+ ["Antwort 1: Sehr gut, klarer Bezug zur Firma und zur Stelle.","Z","Stimmt: Getriebe-Erfahrung und Motivation für die Arbeitsvorbereitung werden konkret genannt."],
+ ["Antwort 2: Souverän, Sie zeigen Selbstbewusstsein.","F","Geschönt. Die Frage wurde nicht beantwortet. Wer „keine Fehler“ macht, wirkt unreflektiert. Besser: einen echten, kleinen Fehler nach STAR erzählen, mit dem, was man daraus gelernt hat."],
+ ["Antwort 3: Vollständig nach STAR aufgebaut.","X","Falsch: Das Resultat fehlt (Lief die Presse? Wurde der Termin gehalten?), die Aktion ist sehr knapp."],
+ ["Antwort 3: Die Situation ist gut gewählt, weil sie Belastbarkeit zeigt.","Z","Stimmt: Zeitdruck in der Nachtschicht ist ein passendes Beispiel."],
+ ["Antwort 3: Ergänzen Sie, wie lange die Reparatur dauerte und ob der Termin gehalten wurde.","Z","Stimmt: genau der fehlende Resultat-Baustein."],
+ ["Insgesamt: Sie sind bestens vorbereitet, Verbesserungen sind kaum nötig.","F","Geschönt. Bei zwei von drei Antworten fehlt Wesentliches."]];
+const FBL = {Z:"zutreffend", F:"zu freundlich (geschönt)", X:"sachlich falsch"};
+
+/* ---------- Zustand ---------- */
+const emptyObs = () => Array.from({length:6}, () => ({}));
+const emptyRew = () => Array.from({length:3}, () => ({}));
+function fresh(){ return {
+  team:"", station:"s1",
+  s1:{ans:"", star:{}, checked:false, zusatz:""},
+  s2:{chosen:[], checked:false, firma:"", letter:""},
+  s3:{tab:"1", obs:{1:emptyObs(), 2:emptyObs()}, kifb:{1:"", 2:""}},
+  s4:{tab:"a", btab:"1", cls:{}, checked:false, proto:{1:{}, 2:{}}},
+  s5:{tab:"1", rew:{1:emptyRew(), 2:emptyRew()}, zusatz:""}
+};}
+let S = fresh();
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function getK(k){ const [a,b] = k.split("."); return S[a][b]; }
+function setK(k,v){ const [a,b] = k.split("."); S[a][b] = v; }
+function info(t){ $("modalTxt").textContent = t; $("modal").classList.add("on"); }
+const len = t => String(t||"").trim().length;
+
+/* ---------- Auswertung ---------- */
+const starOk = () => STARS.every(([id,,k]) => S.s1.star[id] === k);
+const s1done = () => S.s1.ans === "B" && S.s1.checked && starOk();
+const GOOD = BLOCKS.filter(b=>b.ok).map(b=>b.id);
+const s2ok = () => GOOD.length === S.s2.chosen.length && GOOD.every(id => S.s2.chosen.includes(id));
+const s2done = () => S.s2.checked && s2ok();
+const obsRows = r => S.s3.obs[r].filter(o => len(o.q) && o.len).length;
+const s3round = r => obsRows(r) >= 4 && len(S.s3.kifb[r]) >= 40;
+const s3done = () => s3round(1) && s3round(2);
+const s4a = () => S.s4.checked && FB.every((f,i) => S.s4.cls[i] === f[1]);
+const protoOk = r => ["st","vb","ab"].every(k => len(S.s4.proto[r][k]) >= 40);
+const s4done = () => s4a() && protoOk(1) && protoOk(2);
+const rewOk = r => S.s5.rew[r].every(x => len(x.q) && len(x.a) >= 120 && ["S","T","A","R"].every(k => x[k]));
+const s5done = () => rewOk(1) && rewOk(2);
+const DONE = {s1:s1done, s2:s2done, s3:s3done, s4:s4done, s5:s5done};
+
+/* ---------- Rahmen ---------- */
+function renderMap(){
+  $("map").innerHTML = REIHE.map((r,i) => `<div class="${i===NOW?"now":""} ${i<NOW?"past":""}"><b>${r[0]}${i<NOW?" ✔":""}</b>${esc(r[1])}</div>`).join("");
+  const items = [["Rollen-Prompt Interviewer", s2done()],["Beobachtungsbogen", s3done()],["Feedback-Protokoll", s4done()],["STAR-Antworten", s5done()]];
+  $("pack").innerHTML = items.map(([t,ok]) => `<span class="${ok?"ok":""}">${ok?"✔ ":"○ "}${t}</span>`).join("");
+}
+function renderNav(){
+  if (!$("nav").children.length)
+    $("nav").innerHTML = STATIONS.map(([id,t]) => `<button data-go="${id}"><span class="dot"></span>${t}</button>`).join("");
+  STATIONS.forEach(([id]) => {
+    const b = $("nav").querySelector(`[data-go="${id}"]`);
+    b.classList.toggle("act", S.station===id); b.classList.toggle("done", DONE[id]());
+    b.classList.toggle("lock", ["s3","s4","s5"].includes(id) && !s2done());
+    $(id).classList.toggle("act", S.station===id);
+  });
+  $("teamShow").textContent = "Team: " + (S.team || "–");
+}
+function refresh(){ renderMap(); renderNav(); }
+function tabs(boxId, key, val){ document.querySelectorAll(`#${boxId} button`).forEach(b => b.classList.toggle("act", b.dataset.t===val)); }
+
+/* ---------- Station 1 ---------- */
+function renderAnswers(){
+  $("answers").innerHTML = ANSWERS.map(a => { const on = S.s1.ans === a.id;
+    return `<button class="pi ${on ? (a.id==="B"?"good":"badl") : ""}" data-a="${a.id}"><b>Antwort ${a.id}</b><br>${esc(a.t)}${on ? `<span class="mini">${a.id==="B"?"✔ ":"✘ "}${esc(a.why)}</span>` : ""}</button>`; }).join("");
+  $("s1afb").innerHTML = S.s1.ans && S.s1.ans !== "B" ? `<div class="fb bad">Noch nicht die beste Antwort. Lesen Sie die Begründung und wählen Sie erneut.</div>` : "";
+  $("s1b").style.display = S.s1.ans === "B" ? "block" : "none";
+}
+$("answers").addEventListener("click", e => { const b = e.target.closest("button[data-a]"); if (!b) return;
+  S.s1.ans = b.dataset.a; renderAnswers(); refresh(); });
+function renderStar(){
+  const ch = S.s1.checked;
+  $("starTab").innerHTML = `<tr><th>Satz aus Antwort B</th><th style="width:12rem">STAR-Baustein</th></tr>` + STARS.map(([id,t,k]) =>
+    `<tr class="${ch ? (S.s1.star[id]===k?"rgood":"rbad") : ""}"><td>${esc(t)}</td><td><select data-st="${id}"><option value="">–</option>${["S","T","A","R"].map(x=>`<option value="${x}" ${S.s1.star[id]===x?"selected":""}>${SL[x]}</option>`).join("")}</select></td></tr>`).join("");
+}
+$("starTab").addEventListener("change", e => { const s = e.target.closest("select[data-st]"); if (!s) return;
+  S.s1.star[s.dataset.st] = s.value; S.s1.checked = false; $("s1bfb").innerHTML = ""; renderStar(); refresh(); });
+$("s1bcheck").onclick = () => {
+  if (STARS.some(([id]) => !S.s1.star[id])) { $("s1bfb").innerHTML = `<div class="fb info">Bitte alle vier Sätze zuordnen.</div>`; return; }
+  S.s1.checked = true; renderStar();
+  $("s1bfb").innerHTML = starOk() ? `<div class="fb ok"><b>Richtig.</b> Die Aktion ist der längste Teil, so soll es sein. Und das Resultat enthält etwas Messbares (Woche aufgeholt, termingerecht) plus eine Lehre.</div>`
+    : `<div class="fb bad">Noch nicht ganz. Tipp: Die Aufgabe beschreibt <i>Ihre Rolle</i>, die Aktion <i>was Sie getan haben</i>.</div>`; refresh();
+};
+
+/* ---------- Station 2 ---------- */
+function promptText(){
+  let t = S.s2.chosen.length ? S.s2.chosen.map(id => BLOCKS.find(b=>b.id===id).t).join("\n\n") : "(noch leer – klicken Sie Bausteine an)";
+  if (S.s2.firma) t = t.replace("[Firma]", S.s2.firma);
+  if (S.s2.letter) t = t.replace("[Anschreiben]", "\n" + S.s2.letter);
+  return t;
+}
+function renderBlocks(){
+  const ch = S.s2.checked;
+  $("blocks").innerHTML = BLOCKS.map(b => { const pos = S.s2.chosen.indexOf(b.id);
+    let cls = pos>=0 ? "on" : ""; if (ch && pos>=0) cls += b.ok ? " good" : " badl"; if (ch && pos<0 && b.ok) cls = "miss";
+    return `<button class="pi ${cls}" data-b="${b.id}"><b>${pos>=0 ? pos+1+"." : "+"}</b> ${esc(b.t)}${ch && pos>=0 && !b.ok ? `<span class="mini">✘ ${esc(b.why)}</span>` : ""}</button>`; }).join("");
+  $("promptOut").textContent = promptText();
+  $("g1").innerHTML = s2done() ? `<div class="fb ok"><b>Gate 1 geschafft.</b> Kopieren Sie den Prompt, füllen Sie die restlichen Platzhalter aus und weiter geht es mit ③.</div>`
+    : `<div class="fb info">Gate 1: alle 6 sinnvollen Bausteine, kein schädlicher.</div>`;
+}
+$("blocks").addEventListener("click", e => { const b = e.target.closest("button[data-b]"); if (!b) return;
+  const id = b.dataset.b, k = S.s2.chosen.indexOf(id); if (k>=0) S.s2.chosen.splice(k,1); else S.s2.chosen.push(id);
+  S.s2.checked = false; $("s2fb").innerHTML = ""; renderBlocks(); refresh(); });
+$("s2reset").onclick = () => { S.s2.chosen = []; S.s2.checked = false; $("s2fb").innerHTML = ""; renderBlocks(); refresh(); };
+$("s2check").onclick = () => {
+  S.s2.checked = true; renderBlocks();
+  const good = S.s2.chosen.filter(id => GOOD.includes(id)).length, bad = S.s2.chosen.length - good;
+  let h = s2ok() ? `<div class="fb ok"><b>Alle 6 sinnvollen Bausteine, kein schädlicher.</b></div>` : `<div class="fb bad">${good} von 6 sinnvollen Bausteinen${bad ? `, ${bad} schädliche(r) dabei` : ""}.</div>`;
+  const order = S.s2.chosen.filter(id => GOOD.includes(id)).map(id => BLOCKS.find(b=>b.id===id).rank);
+  if (s2ok() && order.some((r,i) => i && r < order[i-1])) h += `<div class="fb info">Tipp zur Reihenfolge (keine Pflicht): Rolle → Anschreiben → Gesprächsregeln → Nachhaken → Ablauf → Feedback.</div>`;
+  $("s2fb").innerHTML = h; renderBlocks(); refresh();
+};
+$("bUE2").onclick = () => $("fileUE2").click();
+$("fileUE2").onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  const rd = new FileReader();
+  rd.onload = () => { try {
+      const d = JSON.parse(rd.result);
+      if (d.unit !== "S1-UE2") { info("Das ist keine Sicherung aus UE 2. Bitte die Datei „UE2_…json“ wählen."); return; }
+      const st = d.state || {};
+      S.s2.firma = (((st.s5||{}).prof||{}).firma_v || "").trim();
+      S.s2.letter = ((st.s4||{}).letter || "").trim();
+      renderBlocks();
+      info(`Übernommen: ${S.s2.firma ? "Firma „" + S.s2.firma + "“" : "keine Firma"}, ${S.s2.letter ? "Anschreiben (" + S.s2.letter.length + " Zeichen)" : "kein Anschreiben"}. Die Werte erscheinen im Prompt, sobald die passenden Bausteine gewählt sind.`);
+    } catch (err) { info("Die Datei konnte nicht gelesen werden."); }
+    e.target.value = ""; };
+  rd.readAsText(f);
+};
+
+/* ---------- Station 3 ---------- */
+function renderObs(){
+  const r = S.s3.tab; tabs("s3tabs", null, r);
+  $("obs").innerHTML = `<tr><th style="width:2rem">#</th><th>Frage der KI (Stichwort)</th><th style="width:11.5rem">STAR enthalten</th><th style="width:7rem">Konkreter Beleg?</th><th style="width:7.5rem">Länge</th><th>Notiz</th></tr>` +
+    S.s3.obs[r].map((o,i) => `<tr><td>${i+1}</td>
+      <td><input type="text" data-o="${i}" data-f="q" value="${esc(o.q)}"></td>
+      <td class="stc">${["S","T","A","R"].map(k=>`<label><input type="checkbox" data-o="${i}" data-f="${k}" ${o[k]?"checked":""}>${k}</label>`).join("")}</td>
+      <td><select data-o="${i}" data-f="bel"><option value="">–</option>${["ja","nein"].map(v=>`<option ${o.bel===v?"selected":""}>${v}</option>`).join("")}</select></td>
+      <td><select data-o="${i}" data-f="len"><option value="">–</option>${["zu kurz","passend","zu lang"].map(v=>`<option ${o.len===v?"selected":""}>${v}</option>`).join("")}</select></td>
+      <td><input type="text" data-o="${i}" data-f="note" value="${esc(o.note)}"></td></tr>`).join("");
+  $("kifb").value = S.s3.kifb[r] || "";
+  s3info();
+}
+function s3info(){
+  const r = S.s3.tab;
+  $("s3fb").innerHTML = `<p class="cnt">Runde ${r}: ${obsRows(r)} von mind. 4 Zeilen (Frage + Länge), KI-Feedback ${len(S.s3.kifb[r]) >= 40 ? "✔" : "fehlt noch"}.</p>` +
+    (s3done() ? `<div class="fb ok"><b>Beide Runden dokumentiert.</b> Weiter mit ④.</div>` : "");
+}
+$("s3tabs").addEventListener("click", e => { const b = e.target.closest("button[data-t]"); if (!b) return; S.s3.tab = b.dataset.t; renderObs(); });
+$("obs").addEventListener("input", e => { const el = e.target.closest("[data-o]"); if (!el) return;
+  S.s3.obs[S.s3.tab][+el.dataset.o][el.dataset.f] = el.type === "checkbox" ? el.checked : el.value; s3info(); refresh(); });
+$("kifb").addEventListener("input", e => { S.s3.kifb[S.s3.tab] = e.target.value; s3info(); refresh(); });
+
+/* ---------- Station 4 ---------- */
+$("trans").innerHTML = TRANS.map(([q,a],i) => `<p><b>KI:</b> ${esc(q)}<br><b>Person A:</b> ${esc(a)} <span class="muted">(Antwort ${i+1})</span></p>`).join("");
+function renderFB(){
+  const ch = S.s4.checked;
+  $("fbTab").innerHTML = `<tr><th>Aussage im KI-Feedback</th><th style="width:13rem">Einordnung</th>${ch?"<th>Rückmeldung</th>":""}</tr>` + FB.map((f,i) =>
+    `<tr class="${ch ? (S.s4.cls[i]===f[1]?"rgood":"rbad") : ""}"><td>${esc(f[0])}</td><td><select data-fb="${i}"><option value="">–</option>${["X","Z","F"].map(k=>`<option value="${k}" ${S.s4.cls[i]===k?"selected":""}>${FBL[k]}</option>`).join("")}</select></td>${
+      ch ? `<td>${S.s4.cls[i]===f[1] ? "✔ " + esc(f[2]) : "✘ Vergleichen Sie mit dem Gesprächsausschnitt oben."}</td>` : ""}</tr>`).join("");
+}
+$("fbTab").addEventListener("change", e => { const s = e.target.closest("select[data-fb]"); if (!s) return;
+  S.s4.cls[s.dataset.fb] = s.value; S.s4.checked = false; $("s4afb").innerHTML = ""; renderFB(); refresh(); });
+$("s4acheck").onclick = () => {
+  if (FB.some((f,i) => !S.s4.cls[i])) { $("s4afb").innerHTML = `<div class="fb info">Bitte alle Aussagen einordnen.</div>`; return; }
+  S.s4.checked = true; renderFB();
+  const r = FB.filter((f,i) => S.s4.cls[i]===f[1]).length;
+  $("s4afb").innerHTML = r === FB.length ? `<div class="fb ok"><b>Alles richtig.</b> Warum lobt die KI so gern? Sprachmodelle werden unter anderem mit menschlichen Bewertungen nachtrainiert, und freundliche, zustimmende Antworten werden dabei oft besser bewertet. Deshalb neigen sie zum Schönreden. Ihr Beobachtungsbogen ist das Gegengewicht. Weiter mit b).</div>`
+    : `<div class="fb bad">${r} von ${FB.length} richtig. Korrigieren Sie die rot markierten Zeilen.</div>`; refresh();
+};
+function showTab4(t){ S.s4.tab = t; tabs("s4tabs", null, t); document.querySelectorAll("#s4 .sub").forEach(d => d.classList.toggle("act", d.dataset.s===t)); }
+$("s4tabs").addEventListener("click", e => { const b = e.target.closest("button[data-t]"); if (b) showTab4(b.dataset.t); });
+const PF = [["st","3 Stärken (mit Beleg aus Bogen oder Chat)"],["vb","2 Verbesserungen (konkret: welche Antwort, welcher STAR-Baustein fehlte)"],["ab","Abgleich: Wo war das KI-Feedback zu freundlich oder falsch, verglichen mit dem Beobachtungsbogen?"]];
+function renderProto(){
+  const r = S.s4.btab; tabs("s4btabs", null, r);
+  $("proto").innerHTML = PF.map(([k,t]) => `<p style="margin:.6rem 0 .2rem"><b>${t}</b></p><textarea data-pr="${k}">${esc(S.s4.proto[r][k])}</textarea><div class="cnt" data-prc="${k}"></div>`).join("") + `<div id="protoState"></div>`;
+  protoInfo();
+}
+function protoInfo(){
+  const r = S.s4.btab;
+  PF.forEach(([k]) => { const n = len(S.s4.proto[r][k]); const el = document.querySelector(`[data-prc="${k}"]`); if (el) el.textContent = n < 40 ? `${n} / 40 Zeichen` : "✔"; });
+  $("protoState").innerHTML = s4done() ? `<div class="fb ok"><b>Feedback-Protokolle für beide Runden fertig.</b></div>` : `<p class="cnt">Runde 1: ${protoOk(1)?"✔":"offen"} · Runde 2: ${protoOk(2)?"✔":"offen"}</p>`;
+}
+$("s4btabs").addEventListener("click", e => { const b = e.target.closest("button[data-t]"); if (!b) return; S.s4.btab = b.dataset.t; renderProto(); });
+$("proto").addEventListener("input", e => { const el = e.target.closest("[data-pr]"); if (!el) return; S.s4.proto[S.s4.btab][el.dataset.pr] = el.value; protoInfo(); refresh(); });
+
+/* ---------- Station 5 ---------- */
+function renderRew(){
+  const r = S.s5.tab; tabs("s5tabs", null, r);
+  $("rew").innerHTML = S.s5.rew[r].map((x,i) => `<div class="rw"><p style="margin:.2rem 0"><b>Antwort ${i+1}</b></p>
+    <input type="text" data-rw="${i}" data-f="q" placeholder="Frage aus dem Gespräch" value="${esc(x.q)}">
+    <textarea data-rw="${i}" data-f="a" placeholder="Ihre neue Antwort nach STAR (Situation → Aufgabe → Aktion → Resultat)">${esc(x.a)}</textarea>
+    <div class="stc">Enthalten: ${["S","T","A","R"].map(k=>`<label><input type="checkbox" data-rw="${i}" data-f="${k}" ${x[k]?"checked":""}> ${SL[k]}</label>`).join("")}</div>
+    <div class="cnt" data-rwc="${i}"></div></div>`).join("");
+  rewInfo();
+}
+function rewInfo(){
+  const r = S.s5.tab;
+  S.s5.rew[r].forEach((x,i) => { const el = document.querySelector(`[data-rwc="${i}"]`); if (el) el.textContent = len(x.a) < 120 ? `${len(x.a)} / 120 Zeichen` : "Länge ✔"; });
+  renderG2();
+}
+$("s5tabs").addEventListener("click", e => { const b = e.target.closest("button[data-t]"); if (!b) return; S.s5.tab = b.dataset.t; renderRew(); });
+$("rew").addEventListener("input", e => { const el = e.target.closest("[data-rw]"); if (!el) return;
+  S.s5.rew[S.s5.tab][+el.dataset.rw][el.dataset.f] = el.type === "checkbox" ? el.checked : el.value; rewInfo(); refresh(); });
+function renderG2(){
+  const ok = s5done();
+  $("g2").innerHTML = ok ? `<div class="fb ok"><b>Gate 2 geschafft.</b> Sechs Antworten nach STAR, drei pro Person.</div>`
+    : `<div class="fb info">Gate 2: pro Person 3 Antworten (je mind. 120 Zeichen) mit allen vier STAR-Bausteinen. Person 1: ${rewOk(1)?"✔":"offen"} · Person 2: ${rewOk(2)?"✔":"offen"}</div>`;
+  $("fin").style.display = ok ? "block" : "none";
+}
+
+/* ---------- Felder, Navigation ---------- */
+function updEH(){
+  document.querySelectorAll("[data-cnt]").forEach(el => { const n = len(getK(el.dataset.cnt));
+    el.textContent = n < 40 ? `${n} / 40 Zeichen bis zum Erwartungshorizont` : "Erwartungshorizont freigeschaltet: erst schreiben, dann vergleichen."; });
+  document.querySelectorAll("details.eh").forEach(d => { const ok = len(getK(d.dataset.e)) >= 40; d.classList.toggle("locked", !ok); if (!ok) d.open = false; });
+}
+document.addEventListener("toggle", e => { const d = e.target; if (d.matches && d.matches("details.eh.locked") && d.open) d.open = false; }, true);
+function onField(e){ const el = e.target; if (!el.dataset || !el.dataset.k) return; setK(el.dataset.k, el.value); updEH(); }
+document.addEventListener("input", onField);
+$("team").addEventListener("input", e => { S.team = e.target.value.trim(); refresh(); });
+$("nav").addEventListener("click", e => {
+  const b = e.target.closest("button[data-go]"); if (!b) return;
+  if (b.classList.contains("lock")) { info("Erst Gate 1 (② Rollen-Prompt) abschließen. Ohne guten Prompt wird die Simulation nicht realistisch."); return; }
+  S.station = b.dataset.go; refresh(); window.scrollTo({top: $("nav").offsetTop - 70, behavior: "smooth"});
+});
+document.addEventListener("click", e => {
+  const b = e.target.closest("button[data-copy]"); if (!b) return;
+  const t = $(b.dataset.copy).textContent;
+  (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(
+    () => { b.dataset.l = b.dataset.l || b.textContent; b.textContent = "✔ kopiert"; setTimeout(()=>b.textContent = b.dataset.l, 1500); },
+    () => info("Kopieren nicht möglich. Bitte Text markieren und mit Cmd+C bzw. Strg+C kopieren."));
+});
+
+/* ---------- Speichern / Laden ---------- */
+function download(name, content, type){
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([content], {type}));
+  a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+const today = () => new Date().toISOString().slice(0,10);
+const safe = s => s.replace(/[^\wäöüÄÖÜß-]+/g,"-").replace(/^-|-$/g,"");
+$("bSave").onclick = () => {
+  if (!S.team) { info("Bitte zuerst oben einen Teamnamen eintragen (ohne Klarnamen)."); $("team").focus(); return; }
+  download(`UE3_${safe(S.team)}_${today()}.json`, JSON.stringify({unit:UNIT, version:VERSION, saved:new Date().toISOString(), state:S}, null, 1), "application/json");
+};
+$("bLoad").onclick = () => $("fileIn").click();
+$("fileIn").onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  const rd = new FileReader();
+  rd.onload = () => { try {
+      const d = JSON.parse(rd.result);
+      if (d.unit !== UNIT) { info(d.unit === "S1-UE2" ? "Das ist Ihre Sicherung aus UE 2. Die laden Sie in Station ② über „UE-2-Sicherung laden“." : `Diese Datei gehört zu einer anderen Einheit (${d.unit || "unbekannt"}).`); return; }
+      applyState(d.state); info(`Stand von Team „${S.team}“ geladen.`);
+    } catch (err) { info("Die Datei konnte nicht gelesen werden."); }
+    e.target.value = ""; };
+  rd.readAsText(f);
+};
+function applyState(st){
+  const base = fresh();
+  for (const k of Object.keys(base)) if (st && st[k] !== undefined)
+    base[k] = (typeof base[k] === "object" && !Array.isArray(base[k])) ? Object.assign(base[k], st[k]) : st[k];
+  S = base; renderAll();
+}
+
+/* ---------- Lernheft ---------- */
+function ans(t){ t = String(t||"").trim(); return t ? `<div class="a">${esc(t).replace(/\n/g,"<br>")}</div>` : `<div class="a none">nicht bearbeitet</div>`; }
+function book(){
+  const st = ok => ok ? `<span class="ok">✔ erledigt</span>` : `<span class="no">○ nicht abgeschlossen</span>`;
+  let h = `<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><title>Lernheft UE 3 – ${esc(S.team)}</title><style>
+  body{font-family:Calibri,Carlito,Arial,sans-serif;max-width:820px;margin:1.5rem auto;padding:0 1rem;color:#1d2733;line-height:1.45}
+  h1{color:#1F3A5F;font-size:1.5rem}h2{color:#1F3A5F;font-size:1.15rem;border-bottom:1px solid #ccd;padding-bottom:.2rem;margin-top:1.6rem}h3{font-size:1rem;margin:1rem 0 .3rem}
+  table{border-collapse:collapse;width:100%;font-size:.9rem;margin:.4rem 0}th,td{border:1px solid #c5ccd4;padding:.3rem .4rem;vertical-align:top;text-align:left}th{background:#eef1f5}
+  .a{background:#f3f6fa;border-left:3px solid #2f5d8f;padding:.35rem .6rem;margin:.3rem 0}.a.none{color:#999;font-style:italic}
+  .eh{background:#fff8e6;border:1px dashed #c9a800;padding:.35rem .6rem;margin:.3rem 0 .8rem}.eh b:first-child{color:#8a6a00}
+  .ok{color:#1e7a36;font-weight:700}.no{color:#a42323;font-weight:700}
+  @media print{.np{display:none}h2{page-break-after:avoid}}</style></head><body>
+  <button class="np" onclick="print()">Drucken / als PDF speichern</button>
+  <h1>Lernheft UE 3: Gesprächssimulator I</h1>
+  <p>KI-Kon · Starterpaket Techniker<br>Team: <b>${esc(S.team || "–")}</b> · erstellt am ${today()}</p>
+  <div class="eh"><b>STAR-Methode:</b> <b>S</b>ituation (Wo, wann, was war los?) → <b>T</b> Aufgabe (Was war Ihre Rolle?) → <b>A</b>ktion (Was haben Sie konkret getan?) → <b>R</b>esultat (Was kam heraus, möglichst mit Zahl, und was haben Sie gelernt?)</div>`;
+
+  h += `<h2>① STAR-Methode ${st(s1done())}</h2><p>Ihre Wahl: Antwort ${esc(S.s1.ans || "–")}</p><table><tr><th>Antwort</th><th>Erwartungshorizont</th></tr>${
+    ANSWERS.map(a=>`<tr><td><b>${a.id}</b>: ${esc(a.t)}</td><td>${a.id==="B"?"<b>Beste Antwort.</b> ":""}${esc(a.why)}</td></tr>`).join("")}</table>
+  <table><tr><th>Satz aus Antwort B</th><th>Ihre Zuordnung</th><th>Lösung</th></tr>${STARS.map(([id,t,k])=>`<tr><td>${esc(t)}</td><td>${SL[S.s1.star[id]]||"–"}</td><td>${SL[k]}</td></tr>`).join("")}</table>
+  <p><b>Zusatz: Was fehlt in Antwort C?</b></p>${ans(S.s1.zusatz)}
+  <div class="eh"><b>Erwartungshorizont:</b> Nur Situation, keine eigene Aufgabe, keine eigene Aktion. Das Resultat hat ein anderer erreicht, die Schuld wird abgeschoben. Das wirkt wie fehlende Verantwortung.</div>`;
+
+  h += `<h2>② Rollen-Prompt ${st(s2done())}</h2><p><b>Ihr Prompt:</b></p>${ans(promptText())}
+  <div class="eh"><b>Erwartungshorizont:</b><br>${BLOCKS.filter(b=>b.ok).sort((a,b)=>a.rank-b.rank).map(b=>esc(b.t)).join("<br>")}<br><br><b>Schädlich:</b> ${BLOCKS.filter(b=>!b.ok).map(b=>`„${esc(b.t)}“ (${esc(b.why)})`).join(" · ")}</div>`;
+
+  h += `<h2>③ Simulation ${st(s3done())}</h2>`;
+  [1,2].forEach(r => { const rows = S.s3.obs[r].filter(o => len(o.q));
+    h += `<h3>Runde ${r}: Beobachtungsbogen</h3><table><tr><th>Frage</th><th>STAR</th><th>Beleg</th><th>Länge</th><th>Notiz</th></tr>${
+      rows.length ? rows.map(o=>`<tr><td>${esc(o.q)}</td><td>${["S","T","A","R"].filter(k=>o[k]).join(" ")||"–"}</td><td>${esc(o.bel||"–")}</td><td>${esc(o.len||"–")}</td><td>${esc(o.note)}</td></tr>`).join("") : `<tr><td colspan="5"><i>nicht bearbeitet</i></td></tr>`}</table>
+    <p><b>KI-Feedback Runde ${r}:</b></p>${ans(S.s3.kifb[r])}`; });
+
+  h += `<h2>④ KI-Feedback prüfen ${st(s4done())}</h2><table><tr><th>Aussage der KI</th><th>Ihre Einordnung</th><th>Erwartungshorizont</th></tr>${
+    FB.map((f,i)=>`<tr><td>${esc(f[0])}</td><td>${FBL[S.s4.cls[i]]||"–"}</td><td><b>${FBL[f[1]]}</b>: ${esc(f[2])}</td></tr>`).join("")}</table>
+  <div class="eh"><b>Warum lobt die KI so gern?</b> Sprachmodelle werden mit menschlichen Bewertungen nachtrainiert, und freundliche, zustimmende Antworten werden dabei oft besser bewertet. Ihr Beobachtungsbogen ist das Gegengewicht.</div>`;
+  [1,2].forEach(r => { h += `<h3>Feedback-Protokoll Runde ${r}</h3>` + PF.map(([k,t]) => `<p><b>${t}</b></p>${ans(S.s4.proto[r][k])}`).join(""); });
+
+  h += `<h2>⑤ Überarbeitete Antworten ${st(s5done())}</h2>`;
+  [1,2].forEach(r => { h += `<h3>Person aus Runde ${r}</h3>` + S.s5.rew[r].map((x,i)=>`<p><b>${i+1}. ${esc(x.q || "–")}</b> (STAR: ${["S","T","A","R"].filter(k=>x[k]).join(" ")||"–"})</p>${ans(x.a)}`).join(""); });
+  h += `<div class="eh"><b>Erwartungshorizont:</b> Jede Antwort enthält eine konkrete Situation, Ihre eigene Rolle, Ihr Vorgehen (der längste Teil) und ein Ergebnis, möglichst mit Zahl, plus eine Lehre. Gesprochen 1–2 Minuten. Bei der Fehlerfrage einen echten, kleinen Fehler wählen und zeigen, was Sie daraus gelernt haben.</div>
+  <p><b>Zusatz: Von einer KI interviewt werden?</b></p>${ans(S.s5.zusatz)}
+  <div class="eh"><b>Erwartungshorizont:</b> Dafür: verfügbar, einheitlich, schnelle Vorauswahl. Dagegen: Vorurteile aus Trainingsdaten möglich (z. B. Akzent), schwer nachvollziehbar, kein persönlicher Eindruck. Der EU AI Act stuft KI in der Personalauswahl als Hochrisiko-KI ein (u. a. menschliche Aufsicht, Transparenz).</div></body></html>`;
+  return h;
+}
+function doBook(){
+  if (!S.team) { info("Bitte zuerst oben einen Teamnamen eintragen (ohne Klarnamen)."); $("team").focus(); return; }
+  download(`Lernheft_UE3_${safe(S.team)}_${today()}.html`, book(), "text/html");
+}
+$("bBook").onclick = doBook; $("bBook2").onclick = doBook;
+
+/* ---------- Start ---------- */
+function renderAll(){
+  $("team").value = S.team;
+  document.querySelectorAll("[data-k]").forEach(el => el.value = getK(el.dataset.k) ?? "");
+  renderAnswers(); renderStar(); renderBlocks(); renderObs(); renderFB(); showTab4(S.s4.tab || "a"); renderProto(); renderRew(); updEH(); refresh();
+}
+renderAll();
+try { const raw = localStorage.getItem("kikon-" + UNIT);
+  if (raw) { const d = JSON.parse(raw); if (d && d.unit === UNIT) applyState(d.state); } } catch (e) {}
+setInterval(() => { try { localStorage.setItem("kikon-" + UNIT, JSON.stringify({unit:UNIT, version:VERSION, state:S})); } catch (e) {} }, 5000);
+
+
+/* ---------- Weiter-/Zurück-Buttons am Ende jeder Station ---------- */
+(function(){
+  const ids = STATIONS.map(s => s[0]);
+  ids.forEach((id,i) => {
+    const f = document.createElement("div"); f.className = "stfoot";
+    f.innerHTML = (i > 0 ? `<button class="btn sec2" data-nav="${ids[i-1]}">← ${STATIONS[i-1][1]}</button>` : "<span></span>")
+      + (i < ids.length-1 ? `<button class="btn" data-nav="${ids[i+1]}">Weiter: ${STATIONS[i+1][1]} →</button>` : "");
+    $(id).appendChild(f);
+  });
+  document.addEventListener("click", e => {
+    const b = e.target.closest("button[data-nav]"); if (!b) return;
+    $("nav").querySelector(`[data-go="${b.dataset.nav}"]`).click();
+  });
+})();
+</script>
+</body>
+</html>

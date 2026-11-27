@@ -98,6 +98,7 @@ pre.copy{white-space:pre-wrap;background:#f7f7f7;border:1px solid var(--line);bo
 .modal.on{display:flex}
 .modal .box{background:#fff;border-radius:10px;padding:1rem 1.2rem;max-width:420px;width:90%}
 @media(max-width:600px){header{padding:.35rem .6rem;gap:.3rem}header .t{font-size:.9rem}header .t small,header .team{display:none}header button{font-size:.72rem;padding:.25rem .45rem}body{font-size:16px}.tree .row{grid-template-columns:1fr}main{padding:.6rem}.card{padding:.8rem}}
+.stfoot{display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap;margin-top:1.2rem;padding-top:.8rem;border-top:1px solid var(--line)}
 </style>
 </head>
 <body>
@@ -775,6 +776,21 @@ try {
   if (raw) { const d = JSON.parse(raw); if (d && d.unit === UNIT) applyState(d.state); }
 } catch (e) { /* Speicher nicht verfügbar – kein Problem */ }
 setInterval(() => { try { localStorage.setItem("kikon-" + UNIT, JSON.stringify({unit:UNIT, version:VERSION, state:S})); } catch (e) {} }, 5000);
+
+/* ---------- Weiter-/Zurück-Buttons am Ende jeder Station ---------- */
+(function(){
+  const ids = STATIONS.map(s => s[0]);
+  ids.forEach((id,i) => {
+    const f = document.createElement("div"); f.className = "stfoot";
+    f.innerHTML = (i > 0 ? `<button class="btn sec2" data-nav="${ids[i-1]}">← ${STATIONS[i-1][1]}</button>` : "<span></span>")
+      + (i < ids.length-1 ? `<button class="btn" data-nav="${ids[i+1]}">Weiter: ${STATIONS[i+1][1]} →</button>` : "");
+    $(id).appendChild(f);
+  });
+  document.addEventListener("click", e => {
+    const b = e.target.closest("button[data-nav]"); if (!b) return;
+    $("nav").querySelector(`[data-go="${b.dataset.nav}"]`).click();
+  });
+})();
 </script>
 </body>
 </html>
